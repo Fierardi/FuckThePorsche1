@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Game Gallery</title>
+    <link rel="icon" href="Images/Icon.png" type="image/png">
+    <title>FuckThePorsche</title>
     <style>
         /* Set the background color to cyan */
         body {
@@ -50,42 +51,45 @@
             background-color: #555; /* Light gray when hovering over links */
         }
 
-        /* Styling the main game content */
-        .game-container {
-            max-width: 1200px;
-            width: 90%;
-            margin: 20px;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
+       /* Styling the main game content */
+.game-container {
+    max-width: 1200px;
+    width: 90%;
+    margin: 20px auto; /* Centers the container itself */
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center; /* Centers the game cards horizontally */
+    align-items: center; /* Optionally centers them vertically, in case the height of the container changes */
+}
 
-        .game-card {
-            background-color: #fff;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            margin: 10px;
-            padding: 15px;
-            width: 150px;
-            border-radius: 8px;
-            text-align: center;
-            cursor: pointer;
-            transition: transform 0.3s ease;
-        }
+/* Styling individual game cards */
+.game-card {
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin: 10px;
+    padding: 15px;
+    width: 150px;
+    border-radius: 8px;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
 
-        .game-card:hover {
-            transform: scale(1.05);
-        }
+.game-card:hover {
+    transform: scale(1.05);
+}
 
-        .game-card img {
-            width: 100%;
-            height: auto;
-            border-radius: 5px;
-        }
+.game-card img {
+    width: 100%;
+    height: auto;
+    border-radius: 5px;
+}
 
-        .game-card h2 {
-            font-size: 1em;
-            margin: 10px 0;
-        }
+.game-card h2 {
+    font-size: 1em;
+    margin: 10px 0;
+}
+
 
         /* Modal styling */
         #game-modal {
@@ -143,24 +147,34 @@
         <div class="logo">NapoliGames</div>
         <div class="nav-links">
             <a href="#">Home</a>
-            <a href="#">Games</a>
+            <a href="#" onclick="toggleSearch()">Games</a>
             <a href="#" onclick="comingSoon()">Login</a>
             <a href="#" onclick="comingSoon()">Sign Up</a>
         </div>
     </header>
+     
+    <div class="search-container" id="search-container" style="display: none;">
+        <input type="text" id="search-input" placeholder="Search for games..." oninput="searchGames()">
+    </div>
 
     <div class="game-container">
         <!-- Game Card 1 -->
         <div class="game-card" onclick="openGame('https://reunbozdo.github.io/')">
-            <img src="BlockIcon.jpg" alt="Game Thumbnail 1">
+            <img src="Images/BlockIcon.jpg" alt="Game Thumbnail 1">
             <h2>Block Blast</h2>
         </div>
 
         <!-- Game Card 2 -->
         <div class="game-card" onclick="openGame('https://hextris.io/')">
-            <img src="HextrisIcon.webp" alt="Game Thumbnail 2">
+            <img src="Images/HextrisIcon.webp" alt="Game Thumbnail 2">
             <h2>Hextris</h2>
         </div>
+
+                <!-- Game Card 3 -->
+                <div class="game-card" onclick="openGame('https://snake.googlemaps.com/')">
+                    <img src="Images/SnakeIcon.png" alt="Game Thumbnail 3">
+                    <h2>Google Maps Snake</h2>
+                </div>
 
         <!-- Add more games by copying the game-card block -->
     </div>
@@ -192,6 +206,26 @@
 
         function comingSoon() {
             alert("This feature is coming soon!   Tarek ;)");
+        }
+
+        function toggleSearch() {
+            const searchContainer = document.getElementById('search-container');
+            searchContainer.style.display = searchContainer.style.display === 'none' ? 'flex' : 'none';
+        }
+
+        // Search functionality
+        function searchGames() {
+            const searchInput = document.getElementById('search-input').value.toLowerCase();
+            const gameCards = document.querySelectorAll('.game-card');
+
+            gameCards.forEach(function(card) {
+                const gameTitle = card.getAttribute('data-title').toLowerCase();
+                if (gameTitle.includes(searchInput)) {
+                    card.style.display = 'block'; // Show the card
+                } else {
+                    card.style.display = 'none'; // Hide the card
+                }
+            });
         }
 
     </script>
