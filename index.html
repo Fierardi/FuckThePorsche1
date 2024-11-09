@@ -3,28 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FuckThePorsche</title>
+    <title>Game Gallery</title>
     <style>
-        /* Basic styling */
+        /* Set the background color to cyan */
         body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f4f4f9;
+            background-color: cyan;
             color: #333;
+        }
+
+        /* Header styling similar to Poki's header */
+        .header {
+            background-color: #1e1e1e; /* Dark background for the header */
+            color: white; /* White text */
             display: flex;
-            flex-direction: column;
+            justify-content: space-between; /* Space between logo and nav items */
             align-items: center;
+            padding: 20px 30px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Optional: Box shadow for 3D effect */
         }
 
-        header {
-            background-color: #333;
+        .header .logo {
+            font-size: 1.8em;
+            font-weight: bold;
             color: #fff;
-            padding: 10px;
-            text-align: center;
-            width: 100%;
+            cursor: pointer;
         }
 
+        .header .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .header .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-size: 1.1em;
+            padding: 10px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .header .nav-links a:hover {
+            background-color: #555; /* Light gray when hovering over links */
+        }
+
+        /* Styling the main game content */
         .game-container {
             max-width: 1200px;
             width: 90%;
@@ -79,8 +105,10 @@
             background-color: #fff;
             padding: 20px;
             border-radius: 8px;
-            width: 80%;
-            height: 80%;
+            width: 80%;  /* Set a fixed width for the modal */
+            height: 80%; /* Set a fixed height for the modal */
+            max-width: 1000px;  /* Max width */
+            max-height: 800px; /* Max height */
             position: relative;
         }
 
@@ -98,13 +126,27 @@
             height: 100%;
             border: none;
         }
+
+                footer {
+            text-align: center;  /* Centers the footer content */
+            padding: 20px;
+            color: white;
+            margin-top: 30px;
+        }
+
     </style>
 </head>
 <body>
 
-    <header>
-        <h1>FuckThePorsche</h1>
-        <p>Napoli!</p>
+    <!-- Header Box -->
+    <header class="header">
+        <div class="logo">NapoliGames</div>
+        <div class="nav-links">
+            <a href="#">Home</a>
+            <a href="#">Games</a>
+            <a href="#" onclick="comingSoon()">Login</a>
+            <a href="#" onclick="comingSoon()">Sign Up</a>
+        </div>
     </header>
 
     <div class="game-container">
@@ -115,9 +157,9 @@
         </div>
 
         <!-- Game Card 2 -->
-        <div class="game-card" onclick="openGame('https://example.com/game-embed-url')">
-            <image/png src="path/to/game-thumbnail2.jpg" alt="Game Thumbnail 2">
-            <h2>Game Title 2</h2>
+        <div class="game-card" onclick="openGame('https://hextris.io/')">
+            <img src="HextrisIcon.webp" alt="Game Thumbnail 2">
+            <h2>Hextris</h2>
         </div>
 
         <!-- Add more games by copying the game-card block -->
@@ -132,44 +174,26 @@
     </div>
 
     <footer>
-        <p>&copy; 2023 My Game Gallery</p>
+        <p>&copy; 2024 FuckThePorsche</p>
     </footer>
 
     <script>
-        // Function to open game in modal and request fullscreen
+        // Function to open game in modal
         function openGame(url) {
             document.getElementById("game-frame").src = url;
-            const modal = document.getElementById("game-modal");
-            modal.style.display = "flex";
-            
-            // Request fullscreen on the modal
-            if (modal.requestFullscreen) {
-                modal.requestFullscreen();
-            } else if (modal.mozRequestFullScreen) { // Firefox
-                modal.mozRequestFullScreen();
-            } else if (modal.webkitRequestFullscreen) { // Chrome, Safari and Opera
-                modal.webkitRequestFullscreen();
-            } else if (modal.msRequestFullscreen) { // IE/Edge
-                modal.msRequestFullscreen();
-            }
+            document.getElementById("game-modal").style.display = "flex";
         }
 
-        // Function to close game modal and exit fullscreen
+        // Function to close game modal
         function closeGame() {
             document.getElementById("game-frame").src = "";
             document.getElementById("game-modal").style.display = "none";
-
-            // Exit fullscreen if enabled
-            if (document.fullscreenElement) {
-                document.exitFullscreen();
-            } else if (document.mozFullScreenElement) { // Firefox
-                document.mozCancelFullScreen();
-            } else if (document.webkitFullscreenElement) { // Chrome, Safari and Opera
-                document.webkitExitFullscreen();
-            } else if (document.msFullscreenElement) { // IE/Edge
-                document.msExitFullscreen();
-            }
         }
+
+        function comingSoon() {
+            alert("This feature is coming soon!   Tarek ;)");
+        }
+
     </script>
 
 </body>
