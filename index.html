@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FuckThePorsche</title>
+    <style>
+        /* Basic styling */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        header {
+            background-color: #333;
+            color: #fff;
+            padding: 10px;
+            text-align: center;
+            width: 100%;
+        }
+
+        .game-container {
+            max-width: 1200px;
+            width: 90%;
+            margin: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .game-card {
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin: 10px;
+            padding: 15px;
+            width: 150px;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .game-card:hover {
+            transform: scale(1.05);
+        }
+
+        .game-card img {
+            width: 100%;
+            height: auto;
+            border-radius: 5px;
+        }
+
+        .game-card h2 {
+            font-size: 1em;
+            margin: 10px 0;
+        }
+
+        /* Modal styling */
+        #game-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+        }
+
+        #game-modal .modal-content {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            width: 80%;
+            height: 80%;
+            position: relative;
+        }
+
+        #game-modal .close-button {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-size: 1.5em;
+            cursor: pointer;
+            color: #333;
+        }
+
+        #game-frame {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>FuckThePorsche</h1>
+        <p>Napoli!</p>
+    </header>
+
+    <div class="game-container">
+        <!-- Game Card 1 -->
+        <div class="game-card" onclick="openGame('https://reunbozdo.github.io/')">
+            <img src="BlockIcon.jpg" alt="Game Thumbnail 1">
+            <h2>Block Blast</h2>
+        </div>
+
+        <!-- Game Card 2 -->
+        <div class="game-card" onclick="openGame('https://example.com/game-embed-url')">
+            <image/png src="path/to/game-thumbnail2.jpg" alt="Game Thumbnail 2">
+            <h2>Game Title 2</h2>
+        </div>
+
+        <!-- Add more games by copying the game-card block -->
+    </div>
+
+    <!-- Game Modal -->
+    <div id="game-modal" onclick="closeGame()">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <span class="close-button" onclick="closeGame()">&times;</span>
+            <iframe id="game-frame" src=""></iframe>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2023 My Game Gallery</p>
+    </footer>
+
+    <script>
+        // Function to open game in modal and request fullscreen
+        function openGame(url) {
+            document.getElementById("game-frame").src = url;
+            const modal = document.getElementById("game-modal");
+            modal.style.display = "flex";
+            
+            // Request fullscreen on the modal
+            if (modal.requestFullscreen) {
+                modal.requestFullscreen();
+            } else if (modal.mozRequestFullScreen) { // Firefox
+                modal.mozRequestFullScreen();
+            } else if (modal.webkitRequestFullscreen) { // Chrome, Safari and Opera
+                modal.webkitRequestFullscreen();
+            } else if (modal.msRequestFullscreen) { // IE/Edge
+                modal.msRequestFullscreen();
+            }
+        }
+
+        // Function to close game modal and exit fullscreen
+        function closeGame() {
+            document.getElementById("game-frame").src = "";
+            document.getElementById("game-modal").style.display = "none";
+
+            // Exit fullscreen if enabled
+            if (document.fullscreenElement) {
+                document.exitFullscreen();
+            } else if (document.mozFullScreenElement) { // Firefox
+                document.mozCancelFullScreen();
+            } else if (document.webkitFullscreenElement) { // Chrome, Safari and Opera
+                document.webkitExitFullscreen();
+            } else if (document.msFullscreenElement) { // IE/Edge
+                document.msExitFullscreen();
+            }
+        }
+    </script>
+
+</body>
+</html>
