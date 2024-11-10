@@ -100,29 +100,32 @@
 
 
         /* Styling the main game content */
-        .game-container {
-            max-width: 1200px;
-            width: 90%;
-            margin: 20px auto; /* Centers the container itself */
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center; /* Centers the game cards horizontally */
-            align-items: center; /* Optionally centers them vertically, in case the height of the container changes */
-            display: none; /* Initially hidden */
-        }
+       /* Styling the main game content */
+/* Styling the main game content */
+.game-container {
+    max-width: 1200px;
+    width: 90%;
+    margin: 20px auto; /* Centers the container itself */
+    display: flex;  /* Flexbox layout */
+    flex-wrap: wrap;  /* Allows the game cards to wrap when there's not enough space */
+    justify-content: center;  /* Centers the cards horizontally */
+    align-items: center;  /* Centers the cards vertically */
+    gap: 20px;  /* Adds space between cards */
+}
 
-        /* Styling individual game cards */
-        .game-card {
-            background-color: #fff;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            margin: 10px;
-            padding: 15px;
-            width: 150px;
-            border-radius: 8px;
-            text-align: center;
-            cursor: pointer;
-            transition: transform 0.3s ease;
-        }
+/* Styling individual game cards */
+.game-card {
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin: 10px;
+    padding: 15px;
+    width: 150px;
+    border-radius: 8px;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
 
         .game-card:hover {
             transform: scale(1.05);
@@ -249,25 +252,71 @@
 </div>
 
 
-    <div class="game-container" id="game-container">
-        <!-- Game Card 1 -->
-        <div class="game-card" onclick="openGame('https://reunbozdo.github.io/')" data-title="Block Blast">
-            <img src="Images/BlockIcon.jpg" alt="Game Thumbnail 1">
-            <h2>Block Blast</h2>
-        </div>
-
-        <!-- Game Card 2 -->
-        <div class="game-card" onclick="openGame('https://hextris.io/')" data-title="Hextris">
-            <img src="Images/HextrisIcon.webp" alt="Game Thumbnail 2">
-            <h2>Hextris</h2>
-        </div>
-
-        <!-- Game Card 3 -->
-        <div class="game-card" onclick="openGame('https://snake.googlemaps.com/')" data-title="Google Maps Snake">
-            <img src="Images/SnakeIcon.png" alt="Game Thumbnail 3">
-            <h2>Google Maps Snake</h2>
-        </div>
+<div class="game-container" id="game-container">
+    <!-- Game Card 1 -->
+    <div class="game-card" onclick="openGame('https://reunbozdo.github.io/')" data-title="Block Blast">
+        <img src="Images/BlockIcon.jpg" alt="Game Thumbnail 1">
+        <h2>Block Blast</h2>
     </div>
+
+    <!-- Game Card 2 -->
+    <div class="game-card" onclick="openGame('https://hextris.io/')" data-title="Hextris">
+        <img src="Images/HextrisIcon.webp" alt="Game Thumbnail 2">
+        <h2>Hextris</h2>
+    </div>
+
+    <!-- Game Card 3 -->
+    <div class="game-card" onclick="openGame('https://snake.googlemaps.com/')" data-title="Google Maps Snake">
+        <img src="Images/SnakeIcon.png" alt="Game Thumbnail 3">
+        <h2>Google Maps Snake</h2>
+    </div>
+    
+    <!-- Game Card 4 -->
+    <div class="game-card" onclick="openGame('https://games-site.github.io/projects/2048/index.html')" data-title="2048">
+        <img src="Images/2048Icon.png" alt="Game Thumbnail 4">
+        <h2>2048</h2>
+    </div>
+
+    <!-- Game Card 5 -->
+    <div class="game-card" onclick="openGame('https://games-site.github.io/projects/a-small-world-cup/index.html')" data-title="A Small World Cup">
+        <img src="Images/aSmallWorldCupIcon.png" alt="Game Thumbnail 5">
+        <h2>a small world cup</h2>
+    </div>
+
+    <!-- Game Card 6 -->
+    <div class="game-card" onclick="openGame('https://games-site.github.io/projects/blackjack/index.html')" data-title="Blackjack">
+        <img src="Images/blackJackIcon.png" alt="Game Thumbnail 6">
+        <h2>Blackjack</h2>
+    </div>
+
+    <!-- Game Card 7 -->
+    <div class="game-card" onclick="openGame('https://games-site.github.io/projects/ball-sort-puzzle/index.html')" data-title="Ball Sort Puzzle">
+        <img src="Images/BallSortIcon.jpeg" alt="Game Thumbnail 7">
+        <h2>Ball sort puzzle</h2>
+    </div>
+
+    <!-- Game Card 8 -->
+    <div class="game-card" onclick="openGame('https://games-site.github.io/projects/stickman-hook/index.html')" data-title="Stickman Hook">
+        <img src="Images/stickMannicon.jpg" alt="Game Thumbnail 8">
+        <h2>Stickman Hook</h2>
+    </div>
+
+    <!-- Game Card 9 -->
+    <div class="game-card" onclick="openGame('https://games-site.github.io/projects/temple-run-2/index.html')" data-title="Temple Run">
+        <img src="Images/TempelRunIcon.png" alt="Game Thumbnail 9">
+        <h2>Temple Run</h2>
+    </div>    
+
+    <!-- Game Card 10 -->
+    <div class="game-card" onclick="openGame('https://games-site.github.io/projects/paperio2/index.html')" data-title="paperio2">
+        <img src="Images/PaperIo2.jpg" alt="Game Thumbnail 10">
+        <h2>Paper io 2</h2>    
+    </div>
+    
+</div>
+
+
+
 
     <!-- Game Modal -->
     <div id="game-modal" onclick="closeGame()">
