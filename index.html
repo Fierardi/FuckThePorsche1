@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="Images/Icon.png" type="image/png">
-    <title>FuckThePorsche</title>
+    <title>NapoliGames</title>
     <style>
         /* Set the background color to cyan */
         body {
@@ -50,46 +50,94 @@
         .header .nav-links a:hover {
             background-color: #555; /* Light gray when hovering over links */
         }
-
-       /* Styling the main game content */
-.game-container {
-    max-width: 1200px;
-    width: 90%;
-    margin: 20px auto; /* Centers the container itself */
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center; /* Centers the game cards horizontally */
-    align-items: center; /* Optionally centers them vertically, in case the height of the container changes */
-}
-
-/* Styling individual game cards */
-.game-card {
-    background-color: #fff;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    margin: 10px;
-    padding: 15px;
-    width: 150px;
-    border-radius: 8px;
+    
+/* Home Screen */
+.home-screen {
     text-align: center;
-    cursor: pointer;
-    transition: transform 0.3s ease;
+    padding: 30px 10px;  /* Further reduced padding */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    height: 60vh;  /* Further reduced height */
+    background-image: url('Images/Napoli.png'); /* Optional: Background image */
+    background-size: cover;
+    background-position: center;
 }
 
-.game-card:hover {
+.home-screen h1 {
+    font-size: 2em;  /* Reduced font size */
+    font-weight: bold;
+    color: #fff;
+    margin-bottom: 10px;  /* Reduced margin */
+    text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.6);
+}
+
+.home-screen p {
+    font-size: 1em;  /* Reduced font size */
+    color: #fff;
+    margin-bottom: 15px;  /* Reduced margin */
+    max-width: 500px;  /* Further reduced max width */
+    text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.6);
+}
+
+.home-screen .btn {
+    background-color: #ff6347; /* Tomato color */
+    color: #fff;
+    font-size: 1em;  /* Slightly smaller button text */
+    padding: 10px 20px;  /* Reduced padding */
+    border: none;
+    border-radius: 25px;  /* Slightly smaller border radius */
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.home-screen .btn:hover {
+    background-color: #e53d34;
     transform: scale(1.05);
 }
 
-.game-card img {
-    width: 100%;
-    height: auto;
-    border-radius: 5px;
-}
 
-.game-card h2 {
-    font-size: 1em;
-    margin: 10px 0;
-}
 
+        /* Styling the main game content */
+        .game-container {
+            max-width: 1200px;
+            width: 90%;
+            margin: 20px auto; /* Centers the container itself */
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center; /* Centers the game cards horizontally */
+            align-items: center; /* Optionally centers them vertically, in case the height of the container changes */
+            display: none; /* Initially hidden */
+        }
+
+        /* Styling individual game cards */
+        .game-card {
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin: 10px;
+            padding: 15px;
+            width: 150px;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .game-card:hover {
+            transform: scale(1.05);
+        }
+
+        .game-card img {
+            width: 100%;
+            height: auto;
+            border-radius: 5px;
+        }
+
+        .game-card h2 {
+            font-size: 1em;
+            margin: 10px 0;
+        }
 
         /* Modal styling */
         #game-modal {
@@ -131,13 +179,46 @@
             border: none;
         }
 
-                footer {
+        footer {
             text-align: center;  /* Centers the footer content */
             padding: 20px;
             color: white;
             margin-top: 30px;
         }
 
+        /* Search bar styling */
+        .search-container {
+            display: none; /* Hidden by default */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: gray;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            text-align: center;
+            z-index: 1000;
+            animation: slideDown 0.3s ease-in-out;
+        }
+
+        .search-container input {
+            width: 80%;
+            padding: 10px;
+            font-size: 1.2em;
+            border: 1px solid #656464;
+            border-radius: 5px;
+            outline: none;
+        }
+
+        /* Slide-down animation */
+        @keyframes slideDown {
+            from {
+                transform: translateY(-100%);
+            }
+            to {
+                transform: translateY(0);
+            }
+        }
     </style>
 </head>
 <body>
@@ -146,37 +227,46 @@
     <header class="header">
         <div class="logo">NapoliGames</div>
         <div class="nav-links">
-            <a href="#">Home</a>
-            <a href="#" onclick="toggleSearch()">Games</a>
+            <a href="#" onclick="showHome()">Home</a>
+            <a href="#" onclick="showGames()">Games</a>
+            <a href="#" onclick="toggleSearch()">Search</a>
             <a href="#" onclick="comingSoon()">Login</a>
             <a href="#" onclick="comingSoon()">Sign Up</a>
         </div>
     </header>
      
-    <div class="search-container" id="search-container" style="display: none;">
+    <!-- Search Bar Container (initially hidden) -->
+    <div class="search-container" id="search-container">
         <input type="text" id="search-input" placeholder="Search for games..." oninput="searchGames()">
     </div>
 
-    <div class="game-container">
+    <!-- Home Screen -->
+<!-- Home Screen -->
+<div class="home-screen" id="home-screen">
+    <h1>Welcome to NapoliGames!</h1>
+    <p></p>
+    <button class="btn" onclick="showGames()">Start Exploring</button>
+</div>
+
+
+    <div class="game-container" id="game-container">
         <!-- Game Card 1 -->
-        <div class="game-card" onclick="openGame('https://reunbozdo.github.io/')">
+        <div class="game-card" onclick="openGame('https://reunbozdo.github.io/')" data-title="Block Blast">
             <img src="Images/BlockIcon.jpg" alt="Game Thumbnail 1">
             <h2>Block Blast</h2>
         </div>
 
         <!-- Game Card 2 -->
-        <div class="game-card" onclick="openGame('https://hextris.io/')">
+        <div class="game-card" onclick="openGame('https://hextris.io/')" data-title="Hextris">
             <img src="Images/HextrisIcon.webp" alt="Game Thumbnail 2">
             <h2>Hextris</h2>
         </div>
 
-                <!-- Game Card 3 -->
-                <div class="game-card" onclick="openGame('https://snake.googlemaps.com/')">
-                    <img src="Images/SnakeIcon.png" alt="Game Thumbnail 3">
-                    <h2>Google Maps Snake</h2>
-                </div>
-
-        <!-- Add more games by copying the game-card block -->
+        <!-- Game Card 3 -->
+        <div class="game-card" onclick="openGame('https://snake.googlemaps.com/')" data-title="Google Maps Snake">
+            <img src="Images/SnakeIcon.png" alt="Game Thumbnail 3">
+            <h2>Google Maps Snake</h2>
+        </div>
     </div>
 
     <!-- Game Modal -->
@@ -205,28 +295,74 @@
         }
 
         function comingSoon() {
-            alert("This feature is coming soon!   Tarek ;)");
+            alert("This feature is coming soon! Tarek ;)");
         }
 
         function toggleSearch() {
             const searchContainer = document.getElementById('search-container');
-            searchContainer.style.display = searchContainer.style.display === 'none' ? 'flex' : 'none';
+            const searchInput = document.getElementById('search-input');
+            
+            if (searchContainer.style.display === 'none' || searchContainer.style.display === '') {
+                searchContainer.style.display = 'block';
+            } else {
+                searchContainer.style.display = 'none';
+                searchInput.value = ''; // Clear the search input
+                searchGames(); // Reset any search results
+            }
         }
+
+        // Hide the search bar when clicking outside
+        document.addEventListener('click', function(event) {
+            const searchContainer = document.getElementById('search-container');
+            const searchInput = document.getElementById('search-input');
+            const isClickInsideSearch = searchContainer.contains(event.target);
+            const isClickOnSearchButton = event.target.textContent === 'Search';
+            
+            if (!isClickInsideSearch && !isClickOnSearchButton) {
+                searchContainer.style.display = 'none';
+                searchInput.value = ''; // Clear the search input
+                searchGames(); // Reset any search results
+            }
+        });
 
         // Search functionality
         function searchGames() {
             const searchInput = document.getElementById('search-input').value.toLowerCase();
+            const gameContainer = document.getElementById('game-container');
             const gameCards = document.querySelectorAll('.game-card');
-
+            
+            // Show the games container if any matching games are found
+            let hasMatches = false;
             gameCards.forEach(function(card) {
                 const gameTitle = card.getAttribute('data-title').toLowerCase();
                 if (gameTitle.includes(searchInput)) {
                     card.style.display = 'block'; // Show the card
+                    hasMatches = true;
                 } else {
                     card.style.display = 'none'; // Hide the card
                 }
             });
+            
+            // Display the games section if there are matches, hide if not
+            gameContainer.style.display = hasMatches ? 'flex' : 'none';
         }
+
+        function showHome() {
+    document.getElementById('home-screen').style.display = 'flex';
+    document.getElementById('game-container').style.display = 'none';
+    hideGames();
+}
+
+function showGames() {
+    document.getElementById('home-screen').style.display = 'none';
+    document.getElementById('game-container').style.display = 'flex';
+}
+
+
+function hideGames() {
+    document.getElementById('game-container').style.display = 'none';  // Hide the games section
+    document.getElementById('home-screen').style.display = 'flex';  // Show the home screen
+}
 
     </script>
 
