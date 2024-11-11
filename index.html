@@ -213,6 +213,46 @@
             outline: none;
         }
 
+        .fullscreen-button {
+    position: absolute;
+    top: 10px;
+    right: 60px;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.fullscreen-button img {
+    width: 24px; /* Adjust as needed */
+    height: 24px;
+    transition: transform 0.3s ease;
+}
+
+.fullscreen-button:hover img {
+    transform: scale(1.1); /* Slightly enlarge on hover */
+}
+
+
+/* Simulated fullscreen mode styling */
+.simulated-fullscreen #game-modal .modal-content {
+    width: 100vw;
+    height: 100vh;
+    max-width: 100vw;
+    max-height: 100vh;
+    top: 0;
+    left: 0;
+    padding: 0;
+    border-radius: 0;
+    margin: 0;
+}
+
+.simulated-fullscreen #game-frame {
+    width: 100%;
+    height: 100%;
+}
+
+
+
         /* Slide-down animation */
         @keyframes slideDown {
             from {
@@ -284,7 +324,7 @@
     </div>
 
     <!-- Game Card 6 -->
-    <div class="game-card" onclick="openGame('https://games-site.github.io/projects/blackjack/index.html')" data-title="Blackjack">
+    <div class="game-card" onclick="openGame('https://www.247blackjack.com/')" data-title="Blackjack">
         <img src="Images/blackJackIcon.png" alt="Game Thumbnail 6">
         <h2>Blackjack</h2>
     </div>
@@ -302,14 +342,14 @@
     </div>
 
     <!-- Game Card 9 -->
-    <div class="game-card" onclick="openGame('https://games-site.github.io/projects/temple-run-2/index.html')" data-title="Temple Run">
-        <img src="Images/TempelRunIcon.png" alt="Game Thumbnail 9">
+    <div class="game-card" onclick="openGame('https://skribbl.io/')" data-title="Temple Run">
+        <img src="Images/Skribbl.iIcon.svg" alt="Game Thumbnail 9">
         <h2>Temple Run</h2>
     </div>    
 
     <!-- Game Card 10 -->
     <div class="game-card" onclick="openGame('https://games-site.github.io/projects/paperio2/index.html')" data-title="paperio2">
-        <img src="Images/PaperIo2.jpg" alt="Game Thumbnail 10">
+        <img src="Images/Skribbl.iIcon.svg" alt="Game Thumbnail 10">
         <h2>Paper io 2</h2>    
     </div>
     
@@ -323,6 +363,11 @@
         <div class="modal-content" onclick="event.stopPropagation()">
             <span class="close-button" onclick="closeGame()">&times;</span>
             <iframe id="game-frame" src=""></iframe>
+            <button class="fullscreen-button" onclick="toggleSimulatedFullscreen()">
+                <img src="Images/fullScreenIcon.jpg" alt="Fullscreen Button">
+            </button>
+            
+
         </div>
     </div>
 
@@ -412,6 +457,24 @@ function hideGames() {
     document.getElementById('game-container').style.display = 'none';  // Hide the games section
     document.getElementById('home-screen').style.display = 'flex';  // Show the home screen
 }
+
+function toggleSimulatedFullscreen() {
+    const body = document.body;
+    const fullscreenButtonImage = document.querySelector('.fullscreen-button img');
+
+    // Toggle simulated fullscreen mode on the body
+    body.classList.toggle('simulated-fullscreen');
+    
+    // Change the button image based on fullscreen state
+    if (body.classList.contains('simulated-fullscreen')) {
+        fullscreenButtonImage.src = "Images/exitFullScreenIcon.png";  // Change to "Exit Fullscreen" icon
+    } else {
+        fullscreenButtonImage.src = "Images/fullScreenIcon.jpg";  // Change to "Enter Fullscreen" icon
+    }
+}
+
+
+
 
     </script>
 
