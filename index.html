@@ -273,7 +273,7 @@
             <a href="#" onclick="showHome()">Home</a>
             <a href="#" onclick="showGames()">Games</a>
             <a href="#" onclick="toggleSearch()">Search</a>
-            <a href="#" onclick="comingSoon()">Login</a>
+            <a href="#" onclick="openLogin()">Login</a>
             <a href="#" onclick="comingSoon()">Sign Up</a>
         </div>
     </header>
@@ -510,7 +510,6 @@ function toggleSimulatedFullscreen() {
     }
 }
 
-// Initialize the Netlify Identity widget
 window.onload = function() {
     if (window.netlifyIdentity) {
         netlifyIdentity.init();
@@ -520,16 +519,19 @@ window.onload = function() {
     netlifyIdentity.on('login', user => {
         console.log('User logged in', user);
         document.getElementById('login-signup-screen').style.display = 'none';
-        // Show the logged-in state of the website, you can redirect users or display their profile
     });
 
-    // Listen for logout events
     netlifyIdentity.on('logout', () => {
-        console.log('User logged out');
-        document.getElementById('login-signup-screen').style.display = 'flex';
-        // Handle logout UI, maybe show the login/signup screen again
-    });
-};
+    console.log('User logged out');
+    document.getElementById('login-signup-screen').style.display = 'flex'; // Show login/signup screen
+})};
+
+
+function openLogin() {
+    netlifyIdentity.open();  // This opens the Netlify Identity modal
+}
+
+
 
 
 
