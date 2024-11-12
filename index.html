@@ -265,6 +265,9 @@
     </style>
 </head>
 <body>
+    <div id="login-signup-screen">
+    </div>
+ <div id="main-content">
 
     <!-- Header Box -->
     <header class="header">
@@ -274,7 +277,7 @@
             <a href="#" onclick="showGames()">Games</a>
             <a href="#" onclick="toggleSearch()">Search</a>
             <a href="#" onclick="openLogin()">Login</a>
-            <a href="#" onclick="comingSoon()">Sign Up</a>
+            <a href="#" onclick="comingSoon('signup')">Sign Up</a>
         </div>
     </header>
      
@@ -383,7 +386,23 @@
         <h2>Basketball</h2>    
     </div>
 
-   
+   <!-- Game Card 16 -->
+   <div class="game-card" onclick="openGame('https://clockmantellstime.github.io/unblocked/territorial.html')" data-title="territorial.Io">
+    <img src="Images/terriTolialIcon.png" alt="Game Thumbnail 16">
+    <h2>territorial.Io</h2>    
+</div>
+
+<!-- Game Card 17 -->
+<div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g97/class-412/')" data-title="DreadHead">
+    <img src="Images/dreadHeadIcon.jpeg" alt="Game Thumbnail 17">
+    <h2>DreadHead</h2>    
+</div>
+
+<!-- Game Card 18 -->
+<div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g4/class-196/')" data-title="Trivia">
+    <img src="Images/TriviaIcon.png" alt="Game Thumbnail 18">
+    <h2>Trivia Crack</h2>    
+</div>
 
 
 </div>
@@ -403,10 +422,7 @@
         </div>
     </div>
 
-    <div id="login-signup-screen">
-        <h2>Login or Sign Up</h2>
-        <div id="identity-widget"></div>
-    </div>
+
 
     <footer>
         <p>&copy; 2024 FuckThePorsche</p>
@@ -425,9 +441,12 @@
             document.getElementById("game-modal").style.display = "none";
         }
 
-        function comingSoon() {
-            alert("This feature is coming soon! Tarek ;)");
-        }
+        function comingSoon(action) {
+     if (action === 'signup') {
+        netlifyIdentity.open('signup'); // Opens the sign-up modal
+    }
+}
+
 
         function toggleSearch() {
             const searchContainer = document.getElementById('search-container');
@@ -511,30 +530,62 @@ function toggleSimulatedFullscreen() {
 }
 
 window.onload = function() {
-    if (window.netlifyIdentity) {
-        netlifyIdentity.init();
-    }
+            // Initialize the Netlify Identity widget
+            if (window.netlifyIdentity) {
+                netlifyIdentity.init();
+                
+                // Check if the user is logged in
+                const user = netlifyIdentity.currentUser();
+                
+                // If no user is logged in, show the login/signup screen and disable the website's content
+                if (!user) {
+                    console.log('User is not logged in');
+                    netlifyIdentity.open(); // Automatically opens the Netlify login modal
+                    document.getElementById('main-content').style.display = 'none'; // Hide main content
+                    document.getElementById('login-signup-screen').style.display = 'flex'; // Show login/signup screen
+                } else {
+                    console.log('User is logged in:', user);
+                    document.getElementById('login-signup-screen').style.display = 'none'; // Hide login/signup screen
+                    document.getElementById('main-content').style.display = 'block'; // Show main content
+                    document.getElementById('main-content').style.pointerEvents = 'auto'; // Allow interaction
+                }
 
-    // Listen for login events
-    netlifyIdentity.on('login', user => {
-        console.log('User logged in', user);
-        document.getElementById('login-signup-screen').style.display = 'none';
-    });
+                // Listen for login events
+                netlifyIdentity.on('login', user => {
+                    console.log('User logged in', user);
+                    document.getElementById('login-signup-screen').style.display = 'none';
+                    document.getElementById('main-content').style.display = 'block'; // Show main content after login
+                    document.getElementById('main-content').style.pointerEvents = 'auto'; // Enable interactions
+                });
 
-    netlifyIdentity.on('logout', () => {
-    console.log('User logged out');
-    document.getElementById('login-signup-screen').style.display = 'flex'; // Show login/signup screen
-})};
-
-
+                // Listen for logout events
+                netlifyIdentity.on('logout', () => {
+                    console.log('User logged out');
+                    document.getElementById('login-signup-screen').style.display = 'flex';
+                    document.getElementById('main-content').style.display = 'none'; // Hide main content after logout
+                    document.getElementById('main-content').style.pointerEvents = 'none'; // Disable interaction
+                });
+            }
+        };
 function openLogin() {
     netlifyIdentity.open();  // This opens the Netlify Identity modal
 }
 
 
+let clickCount = 0;
+const websiteNameElement = document.getElementById('home-screen');
+        const homeScreenElement = document.querySelector('.home-screen');
+        const newBackgroundImage = "url('Images/Ali.webp')"; // Set the path to your PNG image
 
+        websiteNameElement.addEventListener('click', () => {
+            clickCount++;
 
-
+            // Check if user has clicked 5 times
+            if (clickCount === 5) {
+                homeScreenElement.style.backgroundImage = newBackgroundImage;
+                clickCount = 0; // Reset the count if you want to allow repeated toggles
+            }
+        });
     </script>
 <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 
