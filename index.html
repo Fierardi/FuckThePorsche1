@@ -383,6 +383,9 @@
         <h2>Basketball</h2>    
     </div>
 
+   
+
+
 </div>
 
 
@@ -398,6 +401,11 @@
             
 
         </div>
+    </div>
+
+    <div id="login-signup-screen">
+        <h2>Login or Sign Up</h2>
+        <div id="identity-widget"></div>
     </div>
 
     <footer>
@@ -502,10 +510,31 @@ function toggleSimulatedFullscreen() {
     }
 }
 
+// Initialize the Netlify Identity widget
+window.onload = function() {
+    if (window.netlifyIdentity) {
+        netlifyIdentity.init();
+    }
+
+    // Listen for login events
+    netlifyIdentity.on('login', user => {
+        console.log('User logged in', user);
+        document.getElementById('login-signup-screen').style.display = 'none';
+        // Show the logged-in state of the website, you can redirect users or display their profile
+    });
+
+    // Listen for logout events
+    netlifyIdentity.on('logout', () => {
+        console.log('User logged out');
+        document.getElementById('login-signup-screen').style.display = 'flex';
+        // Handle logout UI, maybe show the login/signup screen again
+    });
+};
 
 
 
     </script>
+<script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 
 </body>
 </html>
