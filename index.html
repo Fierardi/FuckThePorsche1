@@ -267,6 +267,9 @@
 <body>
     <div id="login-signup-screen">
     </div>
+<body>
+    <h1>Leaderboard</h1>
+    <ul id="leaderboard-list"></ul>   
  <div id="main-content">
 
     <!-- Header Box -->
@@ -586,6 +589,79 @@ const websiteNameElement = document.getElementById('home-screen');
                 clickCount = 0; // Reset the count if you want to allow repeated toggles
             }
         });
+
+        let sessionTime = 0;
+        let intervalId = null;
+        const apiUrl = '/api';
+
+        function updateLeaderboardDisplay(leaderboard) {
+            const leaderboardList = document.getElementById('leaderboard-list');
+            leaderboardList.innerHTML = '';
+            leaderboard.forEach((user, index) => {
+                const listItem = document.createElement('li');
+                listItem.textContent = `${index + 1}. User ID: ${user.userId} - Time Spent: ${Math.round(user.timeSpent / 1000)} seconds`;
+                leaderboardList.appendChild(listItem);
+            });
+        }
+
+        async function loadLeaderboard() {
+            try {
+                const response = await fetch(`${apiUrl}/leaderboard`);
+                const leaderboard = await response.json();
+                updateLeaderboardDisplay(leaderboard);
+            } catch (error) {
+                console.error('Failed to load leaderboard:', error);
+            }
+        }
+
+        async function recordTimeSpent(userId, timeSpent) {
+            try {
+                await fetch(`${apiUrl}/record-time`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ userId, timeSpent })
+                });
+            } catch (error) {
+                console.error('Failed to record time spent:', error);
+            }
+        }
+
+        function startSessionTimer() {
+            sessionTime = 0;
+            intervalId = setInterval(() => {
+                sessionTime += 1000; // Increment session time every second
+                if (sessionTime % (60 * 1000) === 0) { // Save every minute
+                    saveSessionTime();
+                }
+            }, 1000);
+        }
+
+        async function saveSessionTime() {
+            const user = netlifyIdentity.currentUser();
+            if (user) {
+                await recordTimeSpent(user.id, sessionTime);
+                sessionTime = 0; // Reset session time after saving
+            }
+        }
+
+        netlifyIdentity.on('login', () => {
+            startSessionTimer();
+        });
+
+        netlifyIdentity.on('logout', async () => {
+            clearInterval(intervalId);
+            await saveSessionTime(); // Save any remaining time before logout
+        });
+
+        window.addEventListener('beforeunload', async () => {
+            clearInterval(intervalId);
+            await saveSessionTime();
+        });
+
+        document.addEventListener('DOMContentLoaded', loadLeaderboard);
+
     </script>
 <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 
