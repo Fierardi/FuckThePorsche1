@@ -1,8 +1,0 @@
-[build]
-  functions = "netlify/functions"  # Location of your serverless functions
-  publish = ""               # Adjust this to the folder where your HTML files are
-
-[[redirects]]
-  from = "/api/*"
-  to = "/.netlify/functions/:splat"
-  status = 200
