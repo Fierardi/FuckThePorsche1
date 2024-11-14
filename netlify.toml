@@ -1,6 +1,6 @@
 [build]
   functions = "netlify/functions"  # Location of your serverless functions
-  publish = "MAIN"               # Adjust this to the folder where your HTML files are
+  publish = "main"               # Adjust this to the folder where your HTML files are
 
 [[redirects]]
   from = "/api/*"
