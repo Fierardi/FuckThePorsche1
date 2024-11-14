@@ -99,9 +99,6 @@
 
 
 
-        /* Styling the main game content */
-       /* Styling the main game content */
-/* Styling the main game content */
 .game-container {
     max-width: 1200px;
     width: 90%;
@@ -262,15 +259,24 @@
                 transform: translateY(0);
             }
         }
+         #game-modal,
+        #game-modal .modal-content,
+        #game-frame {
+             user-select: none; /* Prevent text selection */
+              -webkit-user-select: none;
+                -ms-user-select: none;
+            -moz-user-select: none;
+}
+
+#game-frame {
+    pointer-events: all; /* Ensure the iframe itself is still interactive */
+}
+
     </style>
 </head>
 <body>
     <div id="login-signup-screen">
     </div>
-<body>
-    <h1>Leaderboard</h1>
-    <ul id="leaderboard-list"></ul>   
- <div id="main-content">
 
     <!-- Header Box -->
     <header class="header">
@@ -279,8 +285,10 @@
             <a href="#" onclick="showHome()">Home</a>
             <a href="#" onclick="showGames()">Games</a>
             <a href="#" onclick="toggleSearch()">Search</a>
-            <a href="#" onclick="openLogin()">Login</a>
-            <a href="#" onclick="comingSoon('signup')">Sign Up</a>
+            <a href="updates.html">Updates</a>
+            <a href="#" onclick="openLogin()">Account</a>
+            
+
         </div>
     </header>
      
@@ -407,6 +415,38 @@
     <h2>Trivia Crack</h2>    
 </div>
 
+<!-- Game Card 18 -->
+<div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g2/class-627/')" data-title="Penalty Shooters 2">
+    <img src="Images/PenaltyShootersIcon.jpg" alt="Game Thumbnail 19">
+    <h2>Penalty Shooters 2</h2>    
+</div>
+
+<!-- Game Card 18 -->
+<div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g77/class-829/')" data-title="Monkey Markt">
+    <img src="Images/Monkey.webp" alt="Game Thumbnail 20">
+    <h2>Monkey Markt</h2>    
+</div>
+
+<div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g2/class-417/')" data-title="Stacktris">
+    <img src="Images/Stacktris.jpg" alt="Game Thumbnail 21">
+    <h2>Stacktris</h2>    
+</div>
+
+<div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g26/class-444/')" data-title="Subway Surfers">
+    <img src="Images/SooubwasIcon.webp" alt="Game Thumbnail 22">
+    <h2>Subway Surfers</h2>    
+</div>
+
+
+<div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g3/class-309/')" data-title="Cow Bay">
+    <img src="Images/CowBayIcon.webp" alt="Game Thumbnail 23">
+    <h2>Cow Bay</h2>    
+</div>
+
+<div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g9/class-703/')" data-title="Golf Champions">
+    <img src="Images/GChampionsIcon.jpg" alt="Game Thumbnail 24">
+    <h2>Golf Champions</h2>    
+</div>
 
 </div>
 
@@ -576,12 +616,17 @@ function openLogin() {
 
 
 let clickCount = 0;
+let clickCount2 = 0;
 const websiteNameElement = document.getElementById('home-screen');
+const footerElement = document.getElementById('.logo');
         const homeScreenElement = document.querySelector('.home-screen');
         const newBackgroundImage = "url('Images/Ali.webp')"; // Set the path to your PNG image
+        const websiteNameeElement = document.querySelector('.logo');
 
         websiteNameElement.addEventListener('click', () => {
             clickCount++;
+
+        
 
             // Check if user has clicked 5 times
             if (clickCount === 5) {
@@ -589,79 +634,27 @@ const websiteNameElement = document.getElementById('home-screen');
                 clickCount = 0; // Reset the count if you want to allow repeated toggles
             }
         });
+        websiteNameElement.addEventListener('click', () => {
+            clickCount++;
 
-        let sessionTime = 0;
-        let intervalId = null;
-        const apiUrl = '/api';
-
-        function updateLeaderboardDisplay(leaderboard) {
-            const leaderboardList = document.getElementById('leaderboard-list');
-            leaderboardList.innerHTML = '';
-            leaderboard.forEach((user, index) => {
-                const listItem = document.createElement('li');
-                listItem.textContent = `${index + 1}. User ID: ${user.userId} - Time Spent: ${Math.round(user.timeSpent / 1000)} seconds`;
-                leaderboardList.appendChild(listItem);
-            });
-        }
-
-        async function loadLeaderboard() {
-            try {
-                const response = await fetch(`${apiUrl}/leaderboard`);
-                const leaderboard = await response.json();
-                updateLeaderboardDisplay(leaderboard);
-            } catch (error) {
-                console.error('Failed to load leaderboard:', error);
+            if(clickCount === 13){
+                 websiteNameeElement.textContent = "Beşiktaş Oyunlarına hoş geldiniz"; // Replace with your desired name
+                 clickCount = 0; // Reset the count to allow repeated toggles
             }
-        }
-
-        async function recordTimeSpent(userId, timeSpent) {
-            try {
-                await fetch(`${apiUrl}/record-time`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ userId, timeSpent })
-                });
-            } catch (error) {
-                console.error('Failed to record time spent:', error);
-            }
-        }
-
-        function startSessionTimer() {
-            sessionTime = 0;
-            intervalId = setInterval(() => {
-                sessionTime += 1000; // Increment session time every second
-                if (sessionTime % (60 * 1000) === 0) { // Save every minute
-                    saveSessionTime();
-                }
-            }, 1000);
-        }
-
-        async function saveSessionTime() {
-            const user = netlifyIdentity.currentUser();
-            if (user) {
-                await recordTimeSpent(user.id, sessionTime);
-                sessionTime = 0; // Reset session time after saving
-            }
-        }
-
-        netlifyIdentity.on('login', () => {
-            startSessionTimer();
         });
 
-        netlifyIdentity.on('logout', async () => {
-            clearInterval(intervalId);
-            await saveSessionTime(); // Save any remaining time before logout
-        });
+        function saveScore(gameName, score) {
+    let scores = JSON.parse(localStorage.getItem('gameScores')) || {};
+    scores[gameName] = score;
+    localStorage.setItem('gameScores', JSON.stringify(scores));
+}
 
-        window.addEventListener('beforeunload', async () => {
-            clearInterval(intervalId);
-            await saveSessionTime();
-        });
+function getScore(gameName) {
+    let scores = JSON.parse(localStorage.getItem('gameScores')) || {};
+    return scores[gameName] || 0;
+}
 
-        document.addEventListener('DOMContentLoaded', loadLeaderboard);
-
+   
     </script>
 <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 
