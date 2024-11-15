@@ -643,20 +643,19 @@ const footerElement = document.getElementById('.logo');
             }
         });
 
-        function saveScore(gameName, score) {
-    let scores = JSON.parse(localStorage.getItem('gameScores')) || {};
-    scores[gameName] = score;
-    localStorage.setItem('gameScores', JSON.stringify(scores));
-}
 
-function getScore(gameName) {
-    let scores = JSON.parse(localStorage.getItem('gameScores')) || {};
-    return scores[gameName] || 0;
-}
 
    
     </script>
 <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+<script src="scripts/main.js"></script>
+
+<!-- Firebase App (Core) SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-app.js"></script>
+
+<!-- Firebase Firestore -->
+<script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore.js"></script>
+
 
 </body>
 </html>
