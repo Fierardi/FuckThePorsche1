@@ -13,7 +13,6 @@
             padding: 0;
             background-color: cyan;
             color: #333;
-            overflow: hidden; /* Prevent scrolling if the user is not logged in */
         }
 
         /* Header styling similar to Poki's header */
@@ -52,75 +51,78 @@
             background-color: #555; /* Light gray when hovering over links */
         }
     
-        /* Home Screen */
-        .home-screen {
-            text-align: center;
-            padding: 30px 10px;  
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            height: 60vh;  
-            background-image: url('Images/Napoli.png'); 
-            background-size: cover;
-            background-position: center;
-        }
+/* Home Screen */
+.home-screen {
+    text-align: center;
+    padding: 30px 10px;  /* Further reduced padding */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    height: 60vh;  /* Further reduced height */
+    background-image: url('Images/Napoli.png'); /* Optional: Background image */
+    background-size: cover;
+    background-position: center;
+}
 
-        .home-screen h1 {
-            font-size: 2em; 
-            font-weight: bold;
-            color: #fff;
-            margin-bottom: 10px;  
-            text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.6);
-        }
+.home-screen h1 {
+    font-size: 2em;  /* Reduced font size */
+    font-weight: bold;
+    color: #fff;
+    margin-bottom: 10px;  /* Reduced margin */
+    text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.6);
+}
 
-        .home-screen p {
-            font-size: 1em; 
-            color: #fff;
-            margin-bottom: 15px;  
-            max-width: 500px;  
-            text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.6);
-        }
+.home-screen p {
+    font-size: 1em;  /* Reduced font size */
+    color: #fff;
+    margin-bottom: 15px;  /* Reduced margin */
+    max-width: 500px;  /* Further reduced max width */
+    text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.6);
+}
 
-        .home-screen .btn {
-            background-color: #ff6347; 
-            color: #fff;
-            font-size: 1em; 
-            padding: 10px 20px; 
-            border: none;
-            border-radius: 25px; 
-            cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.3s ease;
-        }
+.home-screen .btn {
+    background-color: #ff6347; /* Tomato color */
+    color: #fff;
+    font-size: 1em;  /* Slightly smaller button text */
+    padding: 10px 20px;  /* Reduced padding */
+    border: none;
+    border-radius: 25px;  /* Slightly smaller border radius */
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
 
-        .home-screen .btn:hover {
-            background-color: #e53d34;
-            transform: scale(1.05);
-        }
+.home-screen .btn:hover {
+    background-color: #e53d34;
+    transform: scale(1.05);
+}
 
-        .game-container {
-            max-width: 1200px;
-            width: 90%;
-            margin: 20px auto;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            align-items: center;
-            gap: 20px;
-        }
 
-        /* Styling individual game cards */
-        .game-card {
-            background-color: #fff;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            margin: 10px;
-            padding: 15px;
-            width: 150px;
-            border-radius: 8px;
-            text-align: center;
-            cursor: pointer;
-            transition: transform 0.3s ease;
-        }
+
+.game-container {
+    max-width: 1200px;
+    width: 90%;
+    margin: 20px auto; /* Centers the container itself */
+    display: flex;  /* Flexbox layout */
+    flex-wrap: wrap;  /* Allows the game cards to wrap when there's not enough space */
+    justify-content: center;  /* Centers the cards horizontally */
+    align-items: center;  /* Centers the cards vertically */
+    gap: 20px;  /* Adds space between cards */
+}
+
+/* Styling individual game cards */
+.game-card {
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin: 10px;
+    padding: 15px;
+    width: 150px;
+    border-radius: 8px;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
 
         .game-card:hover {
             transform: scale(1.05);
@@ -155,10 +157,10 @@
             background-color: #fff;
             padding: 20px;
             border-radius: 8px;
-            width: 80%;  
-            height: 80%; 
-            max-width: 1000px;  
-            max-height: 800px; 
+            width: 80%;  /* Set a fixed width for the modal */
+            height: 80%; /* Set a fixed height for the modal */
+            max-width: 1000px;  /* Max width */
+            max-height: 800px; /* Max height */
             position: relative;
         }
 
@@ -178,7 +180,7 @@
         }
 
         footer {
-            text-align: center;  
+            text-align: center;  /* Centers the footer content */
             padding: 20px;
             color: white;
             margin-top: 30px;
@@ -186,7 +188,7 @@
 
         /* Search bar styling */
         .search-container {
-            display: none;
+            display: none; /* Hidden by default */
             position: fixed;
             top: 0;
             left: 0;
@@ -209,63 +211,44 @@
         }
 
         .fullscreen-button {
-            position: absolute;
-            top: 10px;
-            right: 60px;
-            background: none;
-            border: none;
-            cursor: pointer;
-        }
+    position: absolute;
+    top: 10px;
+    right: 60px;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
 
-        .fullscreen-button img {
-            width: 24px;
-            height: 24px;
-            transition: transform 0.3s ease;
-        }
+.fullscreen-button img {
+    width: 24px; /* Adjust as needed */
+    height: 24px;
+    transition: transform 0.3s ease;
+}
 
-        .fullscreen-button:hover img {
-            transform: scale(1.1);
-        }
+.fullscreen-button:hover img {
+    transform: scale(1.1); /* Slightly enlarge on hover */
+}
 
-        /* Simulated fullscreen mode styling */
-        .simulated-fullscreen #game-modal .modal-content {
-            width: 100vw;
-            height: 100vh;
-            max-width: 100vw;
-            max-height: 100vh;
-            top: 0;
-            left: 0;
-            padding: 0;
-            border-radius: 0;
-            margin: 0;
-        }
 
-        .simulated-fullscreen #game-frame {
-            width: 100%;
-            height: 100%;
-        }
+/* Simulated fullscreen mode styling */
+.simulated-fullscreen #game-modal .modal-content {
+    width: 100vw;
+    height: 100vh;
+    max-width: 100vw;
+    max-height: 100vh;
+    top: 0;
+    left: 0;
+    padding: 0;
+    border-radius: 0;
+    margin: 0;
+}
 
-        #login-signup-screen {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            background-color: white;
-            padding: 50px;
-            border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 100;
-        }
+.simulated-fullscreen #game-frame {
+    width: 100%;
+    height: 100%;
+}
 
-        /* Prevent interaction with main content if not logged in */
-        #main-content {
-            pointer-events: none;
-            opacity: 0.3;
-        }
+
 
         /* Slide-down animation */
         @keyframes slideDown {
@@ -276,33 +259,24 @@
                 transform: translateY(0);
             }
         }
-
-        #game-modal, #game-modal .modal-content, #game-frame {
-            user-select: none; 
-        }
-
+         #game-modal,
+        #game-modal .modal-content,
         #game-frame {
-            pointer-events: all; 
-        }
+             user-select: none; /* Prevent text selection */
+              -webkit-user-select: none;
+                -ms-user-select: none;
+            -moz-user-select: none;
+}
+
+#game-frame {
+    pointer-events: all; /* Ensure the iframe itself is still interactive */
+}
+
     </style>
 </head>
 <body>
-    <div id="overlay">
-        </div>
+    <div id="login-signup-screen">
     </div>
-
-    <div id="main-content">
-        <!-- Your main website content goes here -->
-        <div class="header">
-            <div class="logo">NapoliGames</div>
-            <div class="nav-links">
-                <a href="#">Home</a>
-                <a href="#">Games</a>
-                <a href="#">Leaderboard</a>
-            </div>
-        </div>
-
-
 
     <!-- Header Box -->
     <header class="header">
@@ -634,16 +608,14 @@ window.onload = function() {
                 // Check if the user is logged in
                 const user = netlifyIdentity.currentUser();
                 
-                // If no user is logged in, show the login/signup screen and block the website's content
+                // If no user is logged in, show the login/signup screen and disable the website's content
                 if (!user) {
                     console.log('User is not logged in');
                     netlifyIdentity.open(); // Automatically opens the Netlify login modal
                     document.getElementById('main-content').style.display = 'none'; // Hide main content
                     document.getElementById('login-signup-screen').style.display = 'flex'; // Show login/signup screen
-                    document.getElementById('overlay').style.display = 'flex'; // Block interactions with overlay
                 } else {
                     console.log('User is logged in:', user);
-                    document.getElementById('overlay').style.display = 'none'; // Remove overlay after login
                     document.getElementById('login-signup-screen').style.display = 'none'; // Hide login/signup screen
                     document.getElementById('main-content').style.display = 'block'; // Show main content
                     document.getElementById('main-content').style.pointerEvents = 'auto'; // Allow interaction
@@ -652,18 +624,16 @@ window.onload = function() {
                 // Listen for login events
                 netlifyIdentity.on('login', user => {
                     console.log('User logged in', user);
-                    document.getElementById('overlay').style.display = 'none'; // Remove overlay after login
-                    document.getElementById('login-signup-screen').style.display = 'none'; // Hide login/signup screen
-                    document.getElementById('main-content').style.display = 'block'; // Show main content
+                    document.getElementById('login-signup-screen').style.display = 'none';
+                    document.getElementById('main-content').style.display = 'block'; // Show main content after login
                     document.getElementById('main-content').style.pointerEvents = 'auto'; // Enable interactions
                 });
 
                 // Listen for logout events
                 netlifyIdentity.on('logout', () => {
                     console.log('User logged out');
-                    document.getElementById('overlay').style.display = 'flex'; // Show overlay when logged out
-                    document.getElementById('login-signup-screen').style.display = 'flex'; // Show login/signup screen
-                    document.getElementById('main-content').style.display = 'none'; // Hide main content
+                    document.getElementById('login-signup-screen').style.display = 'flex';
+                    document.getElementById('main-content').style.display = 'none'; // Hide main content after logout
                     document.getElementById('main-content').style.pointerEvents = 'none'; // Disable interaction
                 });
             }
