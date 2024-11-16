@@ -670,13 +670,73 @@ const footerElement = document.getElementById('.logo');
                  clickCount = 0; // Reset the count to allow repeated toggles
             }
         });
-        
+        function setGameScore(gameTitle, score) {
+    const days = 7;  // Set the cookie to expire in 7 days
+    const date = new Date();
+    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000)); // Expiry time for cookie
+    document.cookie = `${gameTitle}Score=${score};expires=${date.toUTCString()};path=/`;  // Set cookie
+}
+
+// Function to retrieve game score from a cookie
+function getGameScore(gameTitle) {
+    const cookieName = `${gameTitle}Score=`;
+    const decodedCookie = decodeURIComponent(document.cookie);
+    const cookies = decodedCookie.split(';');
+    
+    for (let i = 0; i < cookies.length; i++) {
+        let c = cookies[i];
+        while (c.charAt(0) == ' ') c = c.substring(1);
+        if (c.indexOf(cookieName) == 0) {
+            return c.substring(cookieName.length, c.length);  // Return score from cookie
+        }
+    }
+    return null;  // No score saved for the game
+}
+
+// Example to save a score of 1000 for a game
+function saveGameScoreForGame(gameTitle, score) {
+    setGameScore(gameTitle, score);
+}
+
+// Example to retrieve and display score for a game
+function displaySavedScore(gameTitle) {
+    const score = getGameScore(gameTitle);
+    if (score) {
+        console.log(`Saved score for ${gameTitle}: ${score}`);
+    } else {
+        console.log(`No saved score found for ${gameTitle}`);
+    }
+}
+
+// Example usage when the player finishes the game
+function endGame(gameTitle, score) {
+    saveGameScoreForGame(gameTitle, score);  // Save score for the specific game
+    alert(`${gameTitle} score of ${score} saved successfully!`);
+}
+
+// Example: Display the saved score for a game when the user returns
+displaySavedScore("Block Blast"); // for example, "Block Blast" as the game's title
+
+// Save multiple pieces of game progress (e.g., level reached, high score)
+function setGameProgress(gameTitle, level, highScore) {
+    const days = 7;  // Set the cookie to expire in 7 days
+    const date = new Date();
+    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000)); // Expiry time for cookie
+    document.cookie = `${gameTitle}Level=${level};expires=${date.toUTCString()};path=/`;
+    document.cookie = `${gameTitle}HighScore=${highScore};expires=${date.toUTCString()};path=/`;
+}
+
+// Retrieve game progress from cookies
+function getGameProgress(gameTitle) {
+    const level = getCookie(`${gameTitle}Level`);
+    const highScore = getCookie(`${gameTitle}HighScore`);
+    return { level, highScore };
+}
 
 
    
     </script>
 <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
-<script src="js/game-scores.js"></script>
 
 
 </body>
