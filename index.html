@@ -670,7 +670,8 @@ const footerElement = document.getElementById('.logo');
                  clickCount = 0; // Reset the count to allow repeated toggles
             }
         });
-        function setGameScore(gameTitle, score) {
+        // Function to save the game score
+function setGameScore(gameTitle, score) {
     localStorage.setItem(`${gameTitle}Score`, score);
 }
 
@@ -700,16 +701,6 @@ function endGame(gameTitle, score) {
     alert(`${gameTitle} score of ${score} saved successfully!`);
 }
 
-// Example: Display the saved score for a game when the user returns
-function displaySavedScore(gameTitle) {
-    const score = getGameScore(gameTitle);
-    if (score) {
-        console.log(`Saved score for ${gameTitle}: ${score}`);
-    } else {
-        console.log(`No saved score found for ${gameTitle}`);
-    }
-}
-
 // Save multiple pieces of game progress (e.g., level reached, high score) to localStorage
 function setGameProgress(gameTitle, level, highScore) {
     localStorage.setItem(`${gameTitle}Level`, level);
@@ -722,7 +713,6 @@ function getGameProgress(gameTitle) {
     const highScore = localStorage.getItem(`${gameTitle}HighScore`);
     return { level, highScore };
 }
-
    
     </script>
 <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
