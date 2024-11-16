@@ -232,9 +232,8 @@
 
 .simulated-fullscreen #game-modal .modal-content {
     width: 100vw;
-    height: -webkit-fill-available; /* Use available height for mobile browsers */
-    max-width: 100vw;
-    max-height: -webkit-fill-available; /* Adjust for iOS and similar browsers */
+    height: 100vh; /* Fallback */
+    max-height: 100vh;
     top: 0;
     left: 0;
     padding: 0;
@@ -244,7 +243,9 @@
 
 .simulated-fullscreen #game-frame {
     width: 100%;
-    height: 100%;}
+    height: 100%;
+}
+
 
 
 
@@ -731,6 +732,20 @@ function getGameProgress(gameTitle) {
     return { level, highScore };
 }
 
+function adjustFullscreenHeight() {
+    const modalContent = document.querySelector('.simulated-fullscreen #game-modal .modal-content');
+    const gameFrame = document.querySelector('.simulated-fullscreen #game-frame');
+
+    if (modalContent && gameFrame) {
+        const viewportHeight = window.innerHeight; // Actual visible height
+        modalContent.style.height = `${viewportHeight}px`;
+        gameFrame.style.height = `${viewportHeight}px`;
+    }
+}
+
+// Run the adjustment when entering fullscreen mode
+window.addEventListener('resize', adjustFullscreenHeight);
+document.addEventListener('DOMContentLoaded', adjustFullscreenHeight);
 
    
     </script>
