@@ -670,14 +670,44 @@ const footerElement = document.getElementById('.logo');
                  clickCount = 0; // Reset the count to allow repeated toggles
             }
         });
-// Save the game score in localStorage
+        const dbName = "GameDatabase";
+let db;
+
+const openRequest = indexedDB.open(dbName, 1);
+
+openRequest.onupgradeneeded = function(event) {
+    db = event.target.result;
+    
+    // Create object stores for game scores and progress
+    const scoreStore = db.createObjectStore("scores", { keyPath: "gameTitle" });
+    scoreStore.createIndex("score", "score", { unique: false });
+    
+    const progressStore = db.createObjectStore("progress", { keyPath: "gameTitle" });
+    progressStore.createIndex("level", "level", { unique: false });
+    progressStore.createIndex("highScore", "highScore", { unique: false });
+};
+
+openRequest.onsuccess = function(event) {
+    db = event.target.result;
+};
+
+// Function to save the game score in IndexedDB
 function setGameScore(gameTitle, score) {
-    localStorage.setItem(`${gameTitle}Score`, score);
+    const transaction = db.transaction(["scores"], "readwrite");
+    const store = transaction.objectStore("scores");
+    const scoreData = { gameTitle: gameTitle, score: score };
+    store.put(scoreData); // Save the score
 }
 
-// Retrieve the game score from localStorage
-function getGameScore(gameTitle) {
-    return localStorage.getItem(`${gameTitle}Score`);  // Return the score from localStorage
+// Function to retrieve the game score from IndexedDB
+function getGameScore(gameTitle, callback) {
+    const transaction = db.transaction(["scores"], "readonly");
+    const store = transaction.objectStore("scores");
+    const request = store.get(gameTitle);
+    
+    request.onsuccess = function() {
+        callback(request.result ? request.result.score : null); // Return score or null if not found
+    };
 }
 
 // Example to save a score of 1000 for a game
@@ -687,12 +717,13 @@ function saveGameScoreForGame(gameTitle, score) {
 
 // Example to retrieve and display score for a game
 function displaySavedScore(gameTitle) {
-    const score = getGameScore(gameTitle);
-    if (score) {
-        console.log(`Saved score for ${gameTitle}: ${score}`);
-    } else {
-        console.log(`No saved score found for ${gameTitle}`);
-    }
+    getGameScore(gameTitle, function(score) {
+        if (score) {
+            console.log(`Saved score for ${gameTitle}: ${score}`);
+        } else {
+            console.log(`No saved score found for ${gameTitle}`);
+        }
+    });
 }
 
 // Example usage when the player finishes the game
@@ -704,21 +735,24 @@ function endGame(gameTitle, score) {
 // Example: Display the saved score for a game when the user returns
 displaySavedScore("Block Blast"); // Example game title
 
-// Save multiple pieces of game progress (e.g., level reached, high score)
+// Function to save multiple pieces of game progress (e.g., level reached, high score)
 function setGameProgress(gameTitle, level, highScore) {
-    localStorage.setItem(`${gameTitle}Level`, level);  // Save level
-    localStorage.setItem(`${gameTitle}HighScore`, highScore);  // Save high score
+    const transaction = db.transaction(["progress"], "readwrite");
+    const store = transaction.objectStore("progress");
+    const progressData = { gameTitle: gameTitle, level: level, highScore: highScore };
+    store.put(progressData); // Save the progress data
 }
 
-// Retrieve game progress from localStorage
-function getGameProgress(gameTitle) {
-    const level = localStorage.getItem(`${gameTitle}Level`);
-    const highScore = localStorage.getItem(`${gameTitle}HighScore`);
-    return { level, highScore };
+// Function to retrieve game progress from IndexedDB
+function getGameProgress(gameTitle, callback) {
+    const transaction = db.transaction(["progress"], "readonly");
+    const store = transaction.objectStore("progress");
+    const request = store.get(gameTitle);
+    
+    request.onsuccess = function() {
+        callback(request.result ? { level: request.result.level, highScore: request.result.highScore } : null);
+    };
 }
-
-
-
    
     </script>
 <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
