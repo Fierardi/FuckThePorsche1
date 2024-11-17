@@ -679,7 +679,7 @@ const request = indexedDB.open('GameScoresDB', 1);
 // Handle database upgrade (create object stores)
 request.onupgradeneeded = function (event) {
     db = event.target.result;
-    // Create object store for game scores
+    // Create object store for game scores, using 'gameTitle' as the keyPath
     if (!db.objectStoreNames.contains('scores')) {
         db.createObjectStore('scores', { keyPath: 'gameTitle' });
     }
@@ -739,6 +739,7 @@ function setGameScore(gameTitle, score) {
             gameTitle: gameTitle,
             score: score
         };
+
         store.put(gameScore); // Save or update the score in IndexedDB
 
         transaction.oncomplete = function () {
@@ -753,24 +754,6 @@ function setGameScore(gameTitle, score) {
     });
 }
 
-// Example to save a score of 1000 for a game
-function saveGameScoreForGame(gameTitle, score) {
-    setGameScore(gameTitle, score);
-}
-
-// Example to retrieve and display score for a game
-function displaySavedScore(gameTitle) {
-    getGameScore(gameTitle);
-}
-
-// Example usage when the player finishes the game
-function endGame(gameTitle, score) {
-    saveGameScoreForGame(gameTitle, score);  // Save score for the specific game
-    alert(`${gameTitle} score of ${score} saved successfully!`);
-}
-
-// Example: Display the saved score for a game when the user returns
-displaySavedScore("Block Blast"); // for example, "Block Blast" as the game's title
 
    
     </script>
