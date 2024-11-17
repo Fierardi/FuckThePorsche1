@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="Images/Icon.png" type="image/png">
+    <title>NapoliGames</title>
+    <style>
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-image: url('Images/Napoli.png'); /* Background image */
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed; /* Fix the background image while scrolling */
+    color: #333;
+    padding-top: 80px; /* Add padding to the top of the body to prevent content being hidden behind the fixed header */
+}
+
+/* Header Styling */
+.header {
+    background-color: #1e1e1e; /* Dark background for the header */
+    color: white; /* White text */
+    display: flex;
+    justify-content: space-between; /* Space between logo and nav items */
+    align-items: center;
+    padding: 20px 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Optional: Box shadow for 3D effect */
+    position: fixed; /* Fixed header at the top of the page */
+    top: 0; /* Ensure it's at the very top */
+    left: 0; /* Align to the left */
+    width: 98%; /* Make the header stretch across the entire width */
+}
+
+/* Logo Styling */
+.header .logo {
+    font-size: 1.8em;
+    font-weight: bold;
+    color: #fff;
+    cursor: pointer;
+    margin-right: 30px; /* Space between the logo and nav links */
+}
+
+/* Styling for the logo link */
+.header .logo-link {
+    color: white;  /* Logo link color */
+    text-decoration: none;  /* Remove underline */
+}
+
+.header .logo-link:hover {
+    color: #47e3ff;  /* Optional: change color on hover */
+}
+
+/* Navigation Links Styling */
+.header .nav-links {
+    display: flex;
+    gap: 20px;
+}
+
+.header .nav-links a {
+    color: white;
+    text-decoration: none;
+    font-size: 1.1em;
+    padding: 10px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.header .nav-links a:hover {
+    background-color: #555; /* Light gray when hovering over links */
+}
+    
+@media (max-width: 768px) {
+    .header {
+        flex-direction: column; /* Stack the header elements on small screens */
+        padding: 15px 20px;
+    }
+
+    .header .nav-links {
+        margin-top: 10px;
+        gap: 15px;
+    }
+
+    .header .nav-links a {
+        font-size: 1em; /* Adjust font size for small screens */
+        padding: 8px 12px; /* Reduce padding on smaller screens */
+    }
+}
+
+.game-container {
+    max-width: 9000px;
+    width: 90%;
+    margin: 20px auto; /* Centers the container itself */
+    display: flex;  /* Flexbox layout */
+    flex-wrap: wrap;  /* Allows the game cards to wrap when there's not enough space */
+    justify-content: center;  /* Centers the cards horizontally */
+    align-items: center;  /* Centers the cards vertically */
+    gap: 0px;  /* Adds space between cards */
+}
+
+/* Styling individual game cards */
+.game-card {
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin: 10px;
+    padding: 12px;
+    width: 150px;
+    border-radius: 18px;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+
+        .game-card:hover {
+            transform: scale(1.05);
+        }
+
+        .game-card img {
+            width: 100%;
+            height: auto;
+            border-radius: 5px;
+        }
+
+        .game-card h2 {
+            font-size: 1em;
+            margin: 10px 0;
+        }
+
+        /* Modal styling */
+        #game-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+        }
+
+        #game-modal .modal-content {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            width: 80%;  /* Set a fixed width for the modal */
+            height: 80%; /* Set a fixed height for the modal */
+            max-width: 1000px;  /* Max width */
+            max-height: 800px; /* Max height */
+            position: relative;
+        }
+
+        #game-modal .close-button {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-size: 1.5em;
+            cursor: pointer;
+            color: #333;
+        }
+
+        #game-frame {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        footer {
+            text-align: center;  /* Centers the footer content */
+            padding: 20px;
+            color: white;
+            margin-top: 30px;
+        }
+
+        /* Search bar styling */
+        .search-container {
+            display: none; /* Hidden by default */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: gray;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            text-align: center;
+            z-index: 1000;
+            animation: slideDown 0.3s ease-in-out;
+        }
+
+        .search-container input {
+            width: 80%;
+            padding: 10px;
+            font-size: 1.2em;
+            border: 1px solid #656464;
+            border-radius: 5px;
+            outline: none;
+        }
+
+        .fullscreen-button {
+    position: absolute;
+    top: 10px;
+    right: 60px;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.fullscreen-button img {
+    width: 24px; /* Adjust as needed */
+    height: 24px;
+    transition: transform 0.3s ease;
+}
+
+.fullscreen-button:hover img {
+    transform: scale(1.1); /* Slightly enlarge on hover */
+}
+
+
+/* Simulated fullscreen mode styling */
+.simulated-fullscreen #game-modal .modal-content {
+    width: 100vw;
+    height: 100vh;
+    max-width: 100vw;
+    max-height: 90vh;
+    top: 0;
+    left: 0;
+    padding: 0;
+    border-radius: 0;
+    margin: 0;
+    z-index: 9999; 
+}
+
+.simulated-fullscreen #game-frame {
+    width: 100%;
+    height: 100%;
+    z-index: 9999; 
+}
+
+
+
+        /* Slide-down animation */
+        @keyframes slideDown {
+            from {
+                transform: translateY(-100%);
+            }
+            to {
+                transform: translateY(0);
+            }
+        }
+         #game-modal,
+        #game-modal .modal-content,
+        #game-frame {
+             user-select: none; /* Prevent text selection */
+              -webkit-user-select: none;
+                -ms-user-select: none;
+            -moz-user-select: none;
+}
+
+#game-frame {
+    pointer-events: all; /* Ensure the iframe itself is still interactive */
+}
+</style>
+</head>
+    <!-- Header Box -->
+    <header class="header">        
+        <div class="logo">
+            <a href="index.html" class="logo-link">NapoliGames</a>
+        </div>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="#" onclick="toggleSearch()">Search</a>
+            <a href="updates.html">Updates</a>
+            <a href="#" onclick="openLogin()">Account</a>
+            
+
+        </div>
+    </header>
+
+        <!-- Search Bar Container (initially hidden) -->
+        <div class="search-container" id="search-container">
+            <input type="text" id="search-input" placeholder="Search for games..." oninput="searchGames()">
+        </div>
+    
+
+    
+
+<body>
+    <div class="game-container" id="game-container">
+        <!-- Game Card 1 -->
+        <div class="game-card" onclick="openGame('https://reunbozdo.github.io/')" data-title="Block Blast">
+            <img src="Images/BlockIcon.jpg" alt="Game Thumbnail 1">
+            <h2>Block Blast</h2>
+        </div>
+    
+        <!-- Game Card 2 -->
+        <div class="game-card" onclick="openGame('https://hextris.io/')" data-title="Hextris">
+            <img src="Images/HextrisIcon.webp" alt="Game Thumbnail 2">
+            <h2>Hextris</h2>
+        </div>
+    
+        <!-- Game Card 3 -->
+        <div class="game-card" onclick="openGame('https://snake.googlemaps.com/')" data-title="Google Maps Snake">
+            <img src="Images/SnakeIcon.png" alt="Game Thumbnail 3">
+            <h2>Google Maps Snake</h2>
+        </div>
+        
+        <!-- Game Card 4 -->
+        <div class="game-card" onclick="openGame('https://specials.manoramaonline.com/Mobile/2022/2048-game/index.html')" data-title="2048">
+            <img src="Images/2048Icon.png" alt="Game Thumbnail 4">
+            <h2>2048</h2>
+        </div>
+    
+        <!-- Game Card 5 -->
+        <div class="game-card" onclick="openGame('https://games-site.github.io/projects/a-small-world-cup/index.html')" data-title="A Small World Cup">
+            <img src="Images/aSmallWorldCupIcon.png" alt="Game Thumbnail 5">
+            <h2>a small world cup</h2>
+        </div>
+    
+        <!-- Game Card 6 -->
+        <div class="game-card" onclick="openGame('https://playpager.com/blackjack-game/')" data-title="Blackjack">
+            <img src="Images/blackJackIcon.png" alt="Game Thumbnail 6">
+            <h2>Blackjack</h2>
+        </div>
+    
+        <!-- Game Card 7 -->
+        <div class="game-card" onclick="openGame('https://games-site.github.io/projects/ball-sort-puzzle/index.html')" data-title="Ball Sort Puzzle">
+            <img src="Images/BallSortIcon.jpeg" alt="Game Thumbnail 7">
+            <h2>Ball sort puzzle</h2>
+        </div>
+    
+        <!-- Game Card 8 -->
+        <div class="game-card" onclick="openGame('https://games-site.github.io/projects/stickman-hook/index.html')" data-title="Stickman Hook">
+            <img src="Images/stickMannicon.jpg" alt="Game Thumbnail 8">
+            <h2>Stickman Hook</h2>
+        </div>
+    
+        <!-- Game Card 9 -->
+        <div class="game-card" onclick="openGame('https://idle-startup-tycoon.github.io/file/')" data-title="idle-startup-tycoon ">
+            <img src="Images/idelStartUpIcon.png" alt="Game Thumbnail 9">
+            <h2>Idle Startup Tycoon </h2>
+        </div>    
+    
+        <!-- Game Card 10 -->
+        <div class="game-card" onclick="openGame('https://games-site.github.io/projects/paperio2/index.html')" data-title="paperio2">
+            <img src="Images/PaperIo2.jpg" alt="Game Thumbnail 10">
+            <h2>Paper io 2</h2>    
+        </div>
+        
+        <!-- Game Card 11 -->
+        <div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g5/class-472/')" data-title="drift boss">
+            <img src="Images/DriftBossIcon.png" alt="Game Thumbnail 11">
+            <h2>Drift Boss</h2>    
+        </div>
+    
+        <!-- Game Card 12 -->
+        <div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g22/class-376/')" data-title="James Gun">
+            <img src="Images/jamesGunIcon.jpg" alt="Game Thumbnail 12">
+            <h2>James Gun</h2>    
+        </div>
+    
+        <!-- Game Card 13 -->
+        <div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g16/class-421/')" data-title="Blumji Slime">
+            <img src="Images/blumjiSlimeIcon.png" alt="Game Thumbnail 13">
+            <h2>Blumji Slime</h2>    
+        </div>
+    
+        <!-- Game Card 14 -->
+        <div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g22/class-393/')" data-title="Trafic Rush">
+            <img src="Images/traficRushIcon.jpeg" alt="Game Thumbnail 14">
+            <h2>Trafic Rush</h2>    
+        </div>
+    
+        <!-- Game Card 15 -->
+        <div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g177/class-333/')" data-title="Basketball">
+            <img src="Images/Play Basketball icon.png" alt="Game Thumbnail 15">
+            <h2>Basketball</h2>    
+        </div>
+    
+       <!-- Game Card 16 -->
+       <div class="game-card" onclick="openGame('https://clockmantellstime.github.io/unblocked/territorial.html')" data-title="territorial.Io">
+        <img src="Images/terriTolialIcon.png" alt="Game Thumbnail 16">
+        <h2>territorial.Io</h2>    
+    </div>
+    
+    <!-- Game Card 17 -->
+    <div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g97/class-412/')" data-title="DreadHead">
+        <img src="Images/dreadHeadIcon.jpeg" alt="Game Thumbnail 17">
+        <h2>DreadHead</h2>    
+    </div>
+    
+    <!-- Game Card 18 -->
+    <div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g4/class-196/')" data-title="Trivia">
+        <img src="Images/TriviaIcon.png" alt="Game Thumbnail 18">
+        <h2>Trivia Crack</h2>    
+    </div>
+    
+    <!-- Game Card 18 -->
+    <div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g2/class-627/')" data-title="Penalty Shooters 2">
+        <img src="Images/PenaltyShootersIcon.jpg" alt="Game Thumbnail 19">
+        <h2>Penalty Shooters 2</h2>    
+    </div>
+    
+    <!-- Game Card 18 -->
+    <div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g77/class-829/')" data-title="Monkey Markt">
+        <img src="Images/Monkey.webp" alt="Game Thumbnail 20">
+        <h2>Monkey Markt</h2>    
+    </div>
+    
+    <div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g2/class-417/')" data-title="Stacktris">
+        <img src="Images/Stacktris.jpg" alt="Game Thumbnail 21">
+        <h2>Stacktris</h2>    
+    </div>
+    
+    <div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g26/class-444/')" data-title="Subway Surfers">
+        <img src="Images/SooubwasIcon.webp" alt="Game Thumbnail 22">
+        <h2>Subway Surfers</h2>    
+    </div>
+    
+    
+    <div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g3/class-309/')" data-title="Cow Bay">
+        <img src="Images/CowBayIcon.webp" alt="Game Thumbnail 23">
+        <h2>Cow Bay</h2>    
+    </div>
+    
+    <div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g9/class-777/')" data-title="Golf Champions">
+        <img src="Images/GChampionsIcon.jpg" alt="Game Thumbnail 24">
+        <h2>Golfinity</h2>    
+    </div>
+    
+    <div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g4/class-174/')" data-title="We Scate">
+        <img src="Images/weIcon.jpg" alt="Game Thumbnail 25">
+        <h2>We Skate</h2>    
+    </div>
+    
+    <div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g69/class-684')" data-title="Unicycle Hero">
+        <img src="Images/Unicycle HeroIcon.jpg" alt="Game Thumbnail 26">
+        <h2>Unicycle Hero</h2>    
+    </div>
+    
+    <div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g20/class-401')" data-title="Drive Mad">
+        <img src="Images/friveMadIcon.png" alt="Game Thumbnail 27">
+        <h2>Drive Mad</h2>    
+    </div>
+    
+    <div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g8/class-129')" data-title="Unicycle Legend">
+        <img src="Images/UnicycleLegendIcon.webp" alt="Game Thumbnail 28">
+        <h2>Unicycle Legend </h2>    
+    </div>
+    
+    <div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g16/class-419/')" data-title="Blumji Ball">
+        <img src="Images/BlumjiBall.jpg" alt="Game Thumbnail 28">
+        <h2>Blumji Ball </h2>    
+    </div>
+    
+    </div>
+    
+    
+    
+        <!-- Game Modal -->
+        <div id="game-modal" onclick="closeGame()">
+            <div class="modal-content" onclick="event.stopPropagation()">
+                <span class="close-button" onclick="closeGame()">&times;</span>
+                <iframe id="game-frame" src=""></iframe>
+                <button class="fullscreen-button" onclick="toggleSimulatedFullscreen()">
+                    <img src="Images/fullScreenIcon.jpg" alt="Fullscreen Button">
+                </button>
+                
+    
+            </div>
+        </div>
+    
+    
+    
+        <footer>
+            <p>&copy; 2024 FuckThePorsche</p>
+        </footer>
+      
+        <script>
+            // Function to open game in modal
+            function openGame(url) {
+                document.getElementById("game-frame").src = url;
+                document.getElementById("game-modal").style.display = "flex";
+                const gameTitle = document.querySelector(`[onclick="openGame('${url}')"]`).getAttribute('data-title');
+                const score = 1000; // Replace with actual score logic
+                saveGameScoreForGame(gameTitle, score);  // Save score in cookie
+            }
+    
+            // Function to close game modal
+            function closeGame() {
+                document.getElementById("game-frame").src = "";
+                document.getElementById("game-modal").style.display = "none";
+            }
+    
+            function comingSoon(action) {
+         if (action === 'signup') {
+            netlifyIdentity.open('signup'); // Opens the sign-up modal
+        }
+    }
+    
+    
+            function toggleSearch() {
+                const searchContainer = document.getElementById('search-container');
+                const searchInput = document.getElementById('search-input');
+                
+                if (searchContainer.style.display === 'none' || searchContainer.style.display === '') {
+                    searchContainer.style.display = 'block';
+                } else {
+                    searchContainer.style.display = 'none';
+                    searchInput.value = ''; // Clear the search input
+                    searchGames(); // Reset any search results
+                }
+            }
+    
+            // Hide the search bar when clicking outside
+            document.addEventListener('click', function(event) {
+                const searchContainer = document.getElementById('search-container');
+                const searchInput = document.getElementById('search-input');
+                const isClickInsideSearch = searchContainer.contains(event.target);
+                const isClickOnSearchButton = event.target.textContent === 'Search';
+                
+                if (!isClickInsideSearch && !isClickOnSearchButton) {
+                    searchContainer.style.display = 'none';
+                    searchInput.value = ''; // Clear the search input
+                    searchGames(); // Reset any search results
+                }
+            });
+    
+            // Search functionality
+            function searchGames() {
+                const searchInput = document.getElementById('search-input').value.toLowerCase();
+                const gameContainer = document.getElementById('game-container');
+                const gameCards = document.querySelectorAll('.game-card');
+                
+                // Show the games container if any matching games are found
+                let hasMatches = false;
+                gameCards.forEach(function(card) {
+                    const gameTitle = card.getAttribute('data-title').toLowerCase();
+                    if (gameTitle.includes(searchInput)) {
+                        card.style.display = 'block'; // Show the card
+                        hasMatches = true;
+                    } else {
+                        card.style.display = 'none'; // Hide the card
+                    }
+                });
+                
+                // Display the games section if there are matches, hide if not
+                gameContainer.style.display = hasMatches ? 'flex' : 'none';
+            }
+    
+            function showHome() {
+        document.getElementById('home-screen').style.display = 'flex';
+        document.getElementById('game-container').style.display = 'none';
+        hideGames();
+    }
+    
+    function showGames() {
+        document.getElementById('home-screen').style.display = 'none';
+        document.getElementById('game-container').style.display = 'flex';
+    }
+    
+    
+    function hideGames() {
+        document.getElementById('game-container').style.display = 'none';  // Hide the games section
+        document.getElementById('home-screen').style.display = 'flex';  // Show the home screen
+    }
+    
+    function toggleSimulatedFullscreen() {
+        const body = document.body;
+        const fullscreenButtonImage = document.querySelector('.fullscreen-button img');
+    
+        // Toggle simulated fullscreen mode on the body
+        body.classList.toggle('simulated-fullscreen');
+        
+        // Change the button image based on fullscreen state
+        if (body.classList.contains('simulated-fullscreen')) {
+            fullscreenButtonImage.src = "Images/exitFullScreenIcon.png";  // Change to "Exit Fullscreen" icon
+        } else {
+            fullscreenButtonImage.src = "Images/fullScreenIcon.jpg";  // Change to "Enter Fullscreen" icon
+        }
+    }
+    
+    window.onload = function() {
+                // Initialize the Netlify Identity widget
+                if (window.netlifyIdentity) {
+                    netlifyIdentity.init();
+                    
+                    // Check if the user is logged in
+                    const user = netlifyIdentity.currentUser();
+                    
+                    // If no user is logged in, show the login/signup screen and disable the website's content
+                    if (!user) {
+                        console.log('User is not logged in');
+                        netlifyIdentity.open(); // Automatically opens the Netlify login modal
+                        document.getElementById('main-content').style.display = 'none'; // Hide main content
+                        document.getElementById('login-signup-screen').style.display = 'flex'; // Show login/signup screen
+                    } else {
+                        console.log('User is logged in:', user);
+                        document.getElementById('login-signup-screen').style.display = 'none'; // Hide login/signup screen
+                        document.getElementById('main-content').style.display = 'block'; // Show main content
+                        document.getElementById('main-content').style.pointerEvents = 'auto'; // Allow interaction
+                    }
+    
+                    // Listen for login events
+                    netlifyIdentity.on('login', user => {
+                        console.log('User logged in', user);
+                        document.getElementById('login-signup-screen').style.display = 'none';
+                        document.getElementById('main-content').style.display = 'block'; // Show main content after login
+                        document.getElementById('main-content').style.pointerEvents = 'auto'; // Enable interactions
+                    });
+    
+                    // Listen for logout events
+                    netlifyIdentity.on('logout', () => {
+                        console.log('User logged out');
+                        document.getElementById('login-signup-screen').style.display = 'flex';
+                        document.getElementById('main-content').style.display = 'none'; // Hide main content after logout
+                        document.getElementById('main-content').style.pointerEvents = 'none'; // Disable interaction
+                    });
+                }
+            };
+    function openLogin() {
+        netlifyIdentity.open();  // This opens the Netlify Identity modal
+    }
+    
+    
+
+    // Declare the db variable globally
+    let db;
+    
+    // Open or create the IndexedDB database
+    const request = indexedDB.open('GameScoresDB', 1);
+    
+    // Handle database upgrade (create object stores)
+    request.onupgradeneeded = function (event) {
+        db = event.target.result;
+        // Create object store for game scores, using 'gameTitle' as the keyPath
+        if (!db.objectStoreNames.contains('scores')) {
+            db.createObjectStore('scores', { keyPath: 'gameTitle' });
+        }
+    };
+    
+    // Handle errors in opening the database
+    request.onerror = function (event) {
+        console.error('Database error:', event.target.error);
+    };
+    
+    // Ensure the database is ready before performing any operations
+    function isDatabaseReady() {
+        return new Promise((resolve, reject) => {
+            if (db) {
+                resolve(db);
+            } else {
+                request.onsuccess = function () {
+                    db = request.result;
+                    resolve(db);
+                };
+                request.onerror = function () {
+                    reject(new Error('Database initialization failed.'));
+                };
+            }
+        });
+    }
+    
+    // Get game score from IndexedDB
+    function getGameScore(gameTitle) {
+        isDatabaseReady().then((db) => {
+            const transaction = db.transaction(['scores'], 'readonly');
+            const store = transaction.objectStore('scores');
+            const request = store.get(gameTitle);
+    
+            request.onsuccess = function () {
+                if (request.result) {
+                    console.log(`Saved score for ${gameTitle}: ${request.result.score}`);
+                } else {
+                    console.log(`No saved score found for ${gameTitle}`);
+                }
+            };
+    
+            request.onerror = function () {
+                console.error('Error retrieving score:', request.error);
+            };
+        }).catch((error) => {
+            console.error('Error:', error);
+        });
+    }
+    
+    // Save the game score to IndexedDB
+    function setGameScore(gameTitle, score) {
+        isDatabaseReady().then((db) => {
+            const transaction = db.transaction(['scores'], 'readwrite');
+            const store = transaction.objectStore('scores');
+            const gameScore = {
+                gameTitle: gameTitle,
+                score: score
+            };
+    
+            store.put(gameScore); // Save or update the score in IndexedDB
+    
+            transaction.oncomplete = function () {
+                console.log(`Score for ${gameTitle} saved successfully.`);
+            };
+    
+            transaction.onerror = function () {
+                console.error('Error saving score:', transaction.error);
+            };
+        }).catch((error) => {
+            console.error('Error:', error);
+        });
+    }
+    
+    
+       
+        </script>
+        <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+</body>
+</html>
