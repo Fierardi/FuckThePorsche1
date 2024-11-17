@@ -670,58 +670,55 @@ const footerElement = document.getElementById('.logo');
                  clickCount = 0; // Reset the count to allow repeated toggles
             }
         });
-        // Function to save the game score
-        function openDatabase() {
-    return new Promise((resolve, reject) => {
-        const request = indexedDB.open("GameDataDB", 1);
-        request.onupgradeneeded = function(e) {
-            const db = e.target.result;
-            if (!db.objectStoreNames.contains("scores")) {
-                db.createObjectStore("scores", { keyPath: "gameTitle" });
-            }
-        };
-
-        request.onsuccess = function(e) {
-            resolve(e.target.result);
-        };
-
-        request.onerror = function(e) {
-            reject("Error opening database: " + e.target.errorCode);
-        };
-    });
+// Save the game score in localStorage
+function setGameScore(gameTitle, score) {
+    localStorage.setItem(`${gameTitle}Score`, score);
 }
 
-function saveGameScore(gameTitle, score) {
-    openDatabase().then(db => {
-        const transaction = db.transaction("scores", "readwrite");
-        const store = transaction.objectStore("scores");
-        store.put({ gameTitle, score });
-        transaction.oncomplete = function() {
-            console.log("Score saved successfully");
-        };
-        transaction.onerror = function(e) {
-            console.error("Error saving score:", e.target.error);
-        };
-    });
-}
-
+// Retrieve the game score from localStorage
 function getGameScore(gameTitle) {
-    openDatabase().then(db => {
-        const transaction = db.transaction("scores", "readonly");
-        const store = transaction.objectStore("scores");
-        const request = store.get(gameTitle);
-        request.onsuccess = function() {
-            if (request.result) {
-                console.log(`Score for ${gameTitle}: ${request.result.score}`);
-            } else {
-                console.log("No saved score found for", gameTitle);
-            }
-        };
-        request.onerror = function(e) {
-            console.error("Error retrieving score:", e.target.error);
-        };
-    });
+    return localStorage.getItem(`${gameTitle}Score`);  // Return the score from localStorage
 }
+
+// Example to save a score of 1000 for a game
+function saveGameScoreForGame(gameTitle, score) {
+    setGameScore(gameTitle, score);
+}
+
+// Example to retrieve and display score for a game
+function displaySavedScore(gameTitle) {
+    const score = getGameScore(gameTitle);
+    if (score) {
+        console.log(`Saved score for ${gameTitle}: ${score}`);
+    } else {
+        console.log(`No saved score found for ${gameTitle}`);
+    }
+}
+
+// Example usage when the player finishes the game
+function endGame(gameTitle, score) {
+    saveGameScoreForGame(gameTitle, score);  // Save score for the specific game
+    alert(`${gameTitle} score of ${score} saved successfully!`);
+}
+
+// Example: Display the saved score for a game when the user returns
+displaySavedScore("Block Blast"); // Example game title
+
+// Save multiple pieces of game progress (e.g., level reached, high score)
+function setGameProgress(gameTitle, level, highScore) {
+    localStorage.setItem(`${gameTitle}Level`, level);  // Save level
+    localStorage.setItem(`${gameTitle}HighScore`, highScore);  // Save high score
+}
+
+// Retrieve game progress from localStorage
+function getGameProgress(gameTitle) {
+    const level = localStorage.getItem(`${gameTitle}Level`);
+    const highScore = localStorage.getItem(`${gameTitle}HighScore`);
+    return { level, highScore };
+}
+
+
+
    
     </script>
 <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
