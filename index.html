@@ -9,92 +9,111 @@
         /* Set the background color to cyan */
         body {
             font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: cyan;
-            color: #333;
-        }
+    margin: 0;
+    padding: 0;
+    background-image: url('Images/Napoli.png'); /* Background image */
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed; /* Fix the background image while scrolling */
+    color: #333;
+}
 
-        /* Header styling similar to Poki's header */
-        .header {
-            background-color: #1e1e1e; /* Dark background for the header */
-            color: white; /* White text */
-            display: flex;
-            justify-content: space-between; /* Space between logo and nav items */
-            align-items: center;
-            padding: 20px 30px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Optional: Box shadow for 3D effect */
-        }
 
-        .header .logo {
-            font-size: 1.8em;
-            font-weight: bold;
-            color: #fff;
-            cursor: pointer;
-        }
+/* Header Styling */
+.header {
+    background-color: #1e1e1e; /* Dark background for the header */
+    color: white; /* White text */
+    display: flex;
+    justify-content: space-between; /* Space between logo and nav items */
+    align-items: center;
+    padding: 20px 30px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Optional: Box shadow for 3D effect */
+    position: fixed; /* Fixed header at the top of the page */
+    top: 0; /* Ensure it's at the very top */
+    left: 0; /* Align to the left */
+    width: 100%; /* Make the header stretch across the entire width */
+    z-index: 1000; /* Ensure it stays above other content */
+}
 
-        .header .nav-links {
-            display: flex;
-            gap: 20px;
-        }
+/* Logo Styling */
+.header .logo {
+    font-size: 1.8em;
+    font-weight: bold;
+    color: #fff;
+    cursor: pointer;
+    margin-right: 30px; /* Space between the logo and nav links */
+}
 
-        .header .nav-links a {
-            color: white;
-            text-decoration: none;
-            font-size: 1.1em;
-            padding: 10px;
-            border-radius: 5px;
-            transition: background-color 0.3s ease;
-        }
+/* Styling for the logo link */
+.header .logo-link {
+    color: white;  /* Logo link color */
+    text-decoration: none;  /* Remove underline */
+}
 
-        .header .nav-links a:hover {
-            background-color: #555; /* Light gray when hovering over links */
-        }
-    
+.header .logo-link:hover {
+    color: #ff6347;  /* Optional: change color on hover */
+}
+
+/* Navigation Links Styling */
+.header .nav-links {
+    display: flex;
+    gap: 20px;
+}
+
+.header .nav-links a {
+    color: white;
+    text-decoration: none;
+    font-size: 1.1em;
+    padding: 10px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.header .nav-links a:hover {
+    background-color: #555; /* Light gray when hovering over links */
+}
+
 /* Home Screen */
 .home-screen {
     text-align: center;
-    padding: 30px 10px;  /* Further reduced padding */
+    padding: 30px 10px;
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
-    height: 60vh;  /* Further reduced height */
-    background-image: url('Images/Napoli.png'); /* Optional: Background image */
-    background-size: cover;
-    background-position: center;
+    height: 60vh;
 }
 
 .home-screen h1 {
-    font-size: 2em;  /* Reduced font size */
+    font-size: 2em;
     font-weight: bold;
     color: #fff;
-    margin-bottom: 10px;  /* Reduced margin */
+    margin-bottom: 10px;
     text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.6);
 }
 
 .home-screen p {
-    font-size: 1em;  /* Reduced font size */
+    font-size: 1em;
     color: #fff;
-    margin-bottom: 15px;  /* Reduced margin */
-    max-width: 500px;  /* Further reduced max width */
+    margin-bottom: 15px;
+    max-width: 500px;
     text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.6);
 }
 
 .home-screen .btn {
     background-color: #ff6347; /* Tomato color */
     color: #fff;
-    font-size: 1em;  /* Slightly smaller button text */
-    padding: 10px 20px;  /* Reduced padding */
+    font-size: 1em;
+    padding: 10px 20px;
     border: none;
-    border-radius: 25px;  /* Slightly smaller border radius */
+    border-radius: 25px;
     cursor: pointer;
     transition: background-color 0.3s ease, transform 0.3s ease;
 }
 
 .home-screen .btn:hover {
-    background-color: #e53d34;
-    transform: scale(1.05);
+    background-color: #e53d34; /* Darker hover effect */
+    transform: scale(1.05); /* Slight scaling on hover */
 }
 
 
@@ -278,223 +297,38 @@
     <div id="login-signup-screen">
     </div>
 
-    <!-- Header Box -->
-    <header class="header">
-        <div class="logo">NapoliGames</div>
-        <div class="nav-links">
-            <a href="#" onclick="showHome()">Home</a>
-            <a href="#" onclick="showGames()">Games</a>
-            <a href="#" onclick="toggleSearch()">Search</a>
-            <a href="updates.html">Updates</a>
-            <a href="#" onclick="openLogin()">Account</a>
-            
-
-        </div>
-    </header>
+    
      
     <!-- Search Bar Container (initially hidden) -->
     <div class="search-container" id="search-container">
         <input type="text" id="search-input" placeholder="Search for games..." oninput="searchGames()">
     </div>
+<!-- Header Box -->
+<header class="header">
+    <div class="logo">NapoliGames</div>
+    <div class="nav-links">
+        <a href="games.html">Games</a>
+        <a href="games.html" onclick="toggleSearch()">Search</a>
+        <a href="updates.html">Updates</a>
+        <a href="#" onclick="openLogin()">Account</a>
+        
 
+    </div>
+</header>
     <!-- Home Screen -->
 <!-- Home Screen -->
 <div class="home-screen" id="home-screen">
     <h1>Welcome to NapoliGames!</h1>
     <p></p>
-    <button class="btn" onclick="showGames()">Start Exploring</button>
+    <a href="games.html">
+    <button class="btn">Start Exploring</button>
+</a>
 </div>
 
 
-<div class="game-container" id="game-container">
-    <!-- Game Card 1 -->
-    <div class="game-card" onclick="openGame('https://reunbozdo.github.io/')" data-title="Block Blast">
-        <img src="Images/BlockIcon.jpg" alt="Game Thumbnail 1">
-        <h2>Block Blast</h2>
-    </div>
-
-    <!-- Game Card 2 -->
-    <div class="game-card" onclick="openGame('https://hextris.io/')" data-title="Hextris">
-        <img src="Images/HextrisIcon.webp" alt="Game Thumbnail 2">
-        <h2>Hextris</h2>
-    </div>
-
-    <!-- Game Card 3 -->
-    <div class="game-card" onclick="openGame('https://snake.googlemaps.com/')" data-title="Google Maps Snake">
-        <img src="Images/SnakeIcon.png" alt="Game Thumbnail 3">
-        <h2>Google Maps Snake</h2>
-    </div>
-    
-    <!-- Game Card 4 -->
-    <div class="game-card" onclick="openGame('https://specials.manoramaonline.com/Mobile/2022/2048-game/index.html')" data-title="2048">
-        <img src="Images/2048Icon.png" alt="Game Thumbnail 4">
-        <h2>2048</h2>
-    </div>
-
-    <!-- Game Card 5 -->
-    <div class="game-card" onclick="openGame('https://games-site.github.io/projects/a-small-world-cup/index.html')" data-title="A Small World Cup">
-        <img src="Images/aSmallWorldCupIcon.png" alt="Game Thumbnail 5">
-        <h2>a small world cup</h2>
-    </div>
-
-    <!-- Game Card 6 -->
-    <div class="game-card" onclick="openGame('https://playpager.com/blackjack-game/')" data-title="Blackjack">
-        <img src="Images/blackJackIcon.png" alt="Game Thumbnail 6">
-        <h2>Blackjack</h2>
-    </div>
-
-    <!-- Game Card 7 -->
-    <div class="game-card" onclick="openGame('https://games-site.github.io/projects/ball-sort-puzzle/index.html')" data-title="Ball Sort Puzzle">
-        <img src="Images/BallSortIcon.jpeg" alt="Game Thumbnail 7">
-        <h2>Ball sort puzzle</h2>
-    </div>
-
-    <!-- Game Card 8 -->
-    <div class="game-card" onclick="openGame('https://games-site.github.io/projects/stickman-hook/index.html')" data-title="Stickman Hook">
-        <img src="Images/stickMannicon.jpg" alt="Game Thumbnail 8">
-        <h2>Stickman Hook</h2>
-    </div>
-
-    <!-- Game Card 9 -->
-    <div class="game-card" onclick="openGame('https://idle-startup-tycoon.github.io/file/')" data-title="idle-startup-tycoon ">
-        <img src="Images/idelStartUpIcon.png" alt="Game Thumbnail 9">
-        <h2>Idle Startup Tycoon </h2>
-    </div>    
-
-    <!-- Game Card 10 -->
-    <div class="game-card" onclick="openGame('https://games-site.github.io/projects/paperio2/index.html')" data-title="paperio2">
-        <img src="Images/PaperIo2.jpg" alt="Game Thumbnail 10">
-        <h2>Paper io 2</h2>    
-    </div>
-    
-    <!-- Game Card 11 -->
-    <div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g5/class-472/')" data-title="drift boss">
-        <img src="Images/DriftBossIcon.png" alt="Game Thumbnail 11">
-        <h2>Drift Boss</h2>    
-    </div>
-
-    <!-- Game Card 12 -->
-    <div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g22/class-376/')" data-title="James Gun">
-        <img src="Images/jamesGunIcon.jpg" alt="Game Thumbnail 12">
-        <h2>James Gun</h2>    
-    </div>
-
-    <!-- Game Card 13 -->
-    <div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g16/class-421/')" data-title="Blumji Slime">
-        <img src="Images/blumjiSlimeIcon.png" alt="Game Thumbnail 13">
-        <h2>Blumji Slime</h2>    
-    </div>
-
-    <!-- Game Card 14 -->
-    <div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g22/class-393/')" data-title="Trafic Rush">
-        <img src="Images/traficRushIcon.jpeg" alt="Game Thumbnail 14">
-        <h2>Trafic Rush</h2>    
-    </div>
-
-    <!-- Game Card 15 -->
-    <div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g177/class-333/')" data-title="Basketball">
-        <img src="Images/Play Basketball icon.png" alt="Game Thumbnail 15">
-        <h2>Basketball</h2>    
-    </div>
-
-   <!-- Game Card 16 -->
-   <div class="game-card" onclick="openGame('https://clockmantellstime.github.io/unblocked/territorial.html')" data-title="territorial.Io">
-    <img src="Images/terriTolialIcon.png" alt="Game Thumbnail 16">
-    <h2>territorial.Io</h2>    
-</div>
-
-<!-- Game Card 17 -->
-<div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g97/class-412/')" data-title="DreadHead">
-    <img src="Images/dreadHeadIcon.jpeg" alt="Game Thumbnail 17">
-    <h2>DreadHead</h2>    
-</div>
-
-<!-- Game Card 18 -->
-<div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g4/class-196/')" data-title="Trivia">
-    <img src="Images/TriviaIcon.png" alt="Game Thumbnail 18">
-    <h2>Trivia Crack</h2>    
-</div>
-
-<!-- Game Card 18 -->
-<div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g2/class-627/')" data-title="Penalty Shooters 2">
-    <img src="Images/PenaltyShootersIcon.jpg" alt="Game Thumbnail 19">
-    <h2>Penalty Shooters 2</h2>    
-</div>
-
-<!-- Game Card 18 -->
-<div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g77/class-829/')" data-title="Monkey Markt">
-    <img src="Images/Monkey.webp" alt="Game Thumbnail 20">
-    <h2>Monkey Markt</h2>    
-</div>
-
-<div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g2/class-417/')" data-title="Stacktris">
-    <img src="Images/Stacktris.jpg" alt="Game Thumbnail 21">
-    <h2>Stacktris</h2>    
-</div>
-
-<div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g26/class-444/')" data-title="Subway Surfers">
-    <img src="Images/SooubwasIcon.webp" alt="Game Thumbnail 22">
-    <h2>Subway Surfers</h2>    
-</div>
-
-
-<div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g3/class-309/')" data-title="Cow Bay">
-    <img src="Images/CowBayIcon.webp" alt="Game Thumbnail 23">
-    <h2>Cow Bay</h2>    
-</div>
-
-<div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g9/class-777/')" data-title="Golf Champions">
-    <img src="Images/GChampionsIcon.jpg" alt="Game Thumbnail 24">
-    <h2>Golfinity</h2>    
-</div>
-
-<div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g4/class-174/')" data-title="We Scate">
-    <img src="Images/weIcon.jpg" alt="Game Thumbnail 25">
-    <h2>We Skate</h2>    
-</div>
-
-<div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g69/class-684')" data-title="Unicycle Hero">
-    <img src="Images/Unicycle HeroIcon.jpg" alt="Game Thumbnail 26">
-    <h2>Unicycle Hero</h2>    
-</div>
-
-<div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g20/class-401')" data-title="Drive Mad">
-    <img src="Images/friveMadIcon.png" alt="Game Thumbnail 27">
-    <h2>Drive Mad</h2>    
-</div>
-
-<div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g8/class-129')" data-title="Unicycle Legend">
-    <img src="Images/UnicycleLegendIcon.webp" alt="Game Thumbnail 28">
-    <h2>Unicycle Legend </h2>    
-</div>
-
-<div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g16/class-419/')" data-title="Blumji Ball">
-    <img src="Images/BlumjiBall.jpg" alt="Game Thumbnail 28">
-    <h2>Blumji Ball </h2>    
-</div>
-
-</div>
-
-
-
-    <!-- Game Modal -->
-    <div id="game-modal" onclick="closeGame()">
-        <div class="modal-content" onclick="event.stopPropagation()">
-            <span class="close-button" onclick="closeGame()">&times;</span>
-            <iframe id="game-frame" src=""></iframe>
-            <button class="fullscreen-button" onclick="toggleSimulatedFullscreen()">
-                <img src="Images/fullScreenIcon.jpg" alt="Fullscreen Button">
-            </button>
-            
-
-        </div>
-    </div>
-
-
-
-    <footer>
-        <p>&copy; 2024 FuckThePorsche</p>
-    </footer>
+<footer>
+    <p>&copy; 2024 FuckThePorsche</p>
+</footer>
 
     <script>
         // Function to open game in modal
@@ -645,10 +479,9 @@ function openLogin() {
 
 let clickCount = 0;
 let clickCount2 = 0;
-const websiteNameElement = document.getElementById('home-screen');
+const websiteNameElement = document.body;
 const footerElement = document.getElementById('.logo');
-        const homeScreenElement = document.querySelector('.home-screen');
-        const newBackgroundImage = "url('Images/Ali.webp')"; // Set the path to your PNG image
+const newBackgroundImage = "url('Images/Ali.webp')";// Set the path to your PNG image
         const websiteNameeElement = document.querySelector('.logo');
 
         websiteNameElement.addEventListener('click', () => {
@@ -658,7 +491,7 @@ const footerElement = document.getElementById('.logo');
 
             // Check if user has clicked 5 times
             if (clickCount === 5) {
-                homeScreenElement.style.backgroundImage = newBackgroundImage;
+                websiteNameElement.style.backgroundImage = newBackgroundImage;
                 clickCount = 0; // Reset the count if you want to allow repeated toggles
             }
         });
