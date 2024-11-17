@@ -26,31 +26,16 @@
     display: flex;
     justify-content: space-between; /* Space between logo and nav items */
     align-items: center;
-    padding: 20px 30px;
+    padding: 20px 20px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Optional: Box shadow for 3D effect */
     position: fixed; /* Fixed header at the top of the page */
     top: 0; /* Ensure it's at the very top */
     left: 0; /* Align to the left */
-    width: 97%; /* Make the header stretch across the entire width */
-    z-index: 1000; /* Ensure it stays above other content */
+    width: 98%; /* Make the header stretch across the entire width */
+
 }
 
-@media (max-width: 768px) {
-    .header {
-        flex-direction: column; /* Stack the header elements on small screens */
-        padding: 15px 20px;
-    }
 
-    .header .nav-links {
-        margin-top: 10px;
-        gap: 15px;
-    }
-
-    .header .nav-links a {
-        font-size: 1em; /* Adjust font size for small screens */
-        padding: 8px 12px; /* Reduce padding on smaller screens */
-    }
-}
 
 /* Logo Styling */
 .header .logo {
@@ -90,6 +75,23 @@
     background-color: #555; /* Light gray when hovering over links */
 }
 
+@media (max-width: 768px) {
+    .header {
+        flex-direction: column; /* Stack the header elements on small screens */
+        padding: 15px 20px;
+    }
+
+    .header .nav-links {
+        margin-top: 10px;
+        gap: 15px;
+    }
+
+    .header .nav-links a {
+        font-size: 1em; /* Adjust font size for small screens */
+        padding: 8px 12px; /* Reduce padding on smaller screens */
+    }
+}
+
 /* Home Screen */
 .home-screen {
     text-align: center;
@@ -98,7 +100,7 @@
     justify-content: center;
     align-items: center;
     flex-direction: column;
-    height: 60vh;
+    height: 80vh;
 }
 
 .home-screen h1 {
@@ -148,6 +150,7 @@
 
 /* Styling individual game cards */
 .game-card {
+    display: none;
     background-color: #fff;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     margin: 10px;
@@ -314,24 +317,24 @@
     <div id="login-signup-screen">
     </div>
 
-    
-     
-    <!-- Search Bar Container (initially hidden) -->
-    <div class="search-container" id="search-container">
-        <input type="text" id="search-input" placeholder="Search for games..." oninput="searchGames()">
-    </div>
-<!-- Header Box -->
+    <!-- Header Box -->
 <header class="header">
     <div class="logo">NapoliGames</div>
     <div class="nav-links">
         <a href="games.html">Games</a>
-        <a href="games.html" onclick="toggleSearch()">Search</a>
+        <a href="#" onclick="toggleSearch()">Search</a>
         <a href="updates.html">Updates</a>
         <a href="#" onclick="openLogin()">Account</a>
         
 
     </div>
 </header>
+     
+    <!-- Search Bar Container (initially hidden) -->
+    <div class="search-container" id="search-container">
+        <input type="text" id="search-input" placeholder="Search for games..." oninput="searchGames()">
+    </div>
+
     <!-- Home Screen -->
 <!-- Home Screen -->
 <div class="home-screen" id="home-screen">
@@ -340,101 +343,341 @@
     <a href="games.html">
     <button class="btn">Start Exploring</button>
 </a>
+
+
+
+
+<div class="game-container" id="game-container">
+<!-- Game Card 1 -->
+<div class="game-card" onclick="openGame('https://reunbozdo.github.io/')" data-title="Block Blast">
+    <img src="Images/BlockIcon.jpg" alt="Game Thumbnail 1">
+    <h2>Block Blast</h2>
+</div>
+
+<!-- Game Card 2 -->
+<div class="game-card" onclick="openGame('https://hextris.io/')" data-title="Hextris">
+    <img src="Images/HextrisIcon.webp" alt="Game Thumbnail 2">
+    <h2>Hextris</h2>
+</div>
+
+<!-- Other Game Cards -->
+<div class="game-card" onclick="openGame('https://snake.googlemaps.com/')" data-title="Google Maps Snake">
+    <img src="Images/SnakeIcon.png" alt="Game Thumbnail 3">
+    <h2>Google Maps Snake</h2>
+</div>
+<!-- Game Card 3 -->
+<div class="game-card" onclick="openGame('https://snake.googlemaps.com/')" data-title="Google Maps Snake">
+    <img src="Images/SnakeIcon.png" alt="Game Thumbnail 3">
+    <h2>Google Maps Snake</h2>
+</div>
+
+<!-- Game Card 4 -->
+<div class="game-card" onclick="openGame('https://specials.manoramaonline.com/Mobile/2022/2048-game/index.html')" data-title="2048">
+    <img src="Images/2048Icon.png" alt="Game Thumbnail 4">
+    <h2>2048</h2>
+</div>
+
+<!-- Game Card 5 -->
+<div class="game-card" onclick="openGame('https://games-site.github.io/projects/a-small-world-cup/index.html')" data-title="A Small World Cup">
+    <img src="Images/aSmallWorldCupIcon.png" alt="Game Thumbnail 5">
+    <h2>a small world cup</h2>
+</div>
+
+<!-- Game Card 6 -->
+<div class="game-card" onclick="openGame('https://playpager.com/blackjack-game/')" data-title="Blackjack">
+    <img src="Images/blackJackIcon.png" alt="Game Thumbnail 6">
+    <h2>Blackjack</h2>
+</div>
+
+<!-- Game Card 7 -->
+<div class="game-card" onclick="openGame('https://games-site.github.io/projects/ball-sort-puzzle/index.html')" data-title="Ball Sort Puzzle">
+    <img src="Images/BallSortIcon.jpeg" alt="Game Thumbnail 7">
+    <h2>Ball sort puzzle</h2>
+</div>
+
+<!-- Game Card 8 -->
+<div class="game-card" onclick="openGame('https://games-site.github.io/projects/stickman-hook/index.html')" data-title="Stickman Hook">
+    <img src="Images/stickMannicon.jpg" alt="Game Thumbnail 8">
+    <h2>Stickman Hook</h2>
+</div>
+
+<!-- Game Card 9 -->
+<div class="game-card" onclick="openGame('https://idle-startup-tycoon.github.io/file/')" data-title="Idle Startup Tycoon">
+    <img src="Images/idelStartUpIcon.png" alt="Game Thumbnail 9">
+    <h2>Idle Startup Tycoon</h2>
+</div>
+
+<!-- Game Card 10 -->
+<div class="game-card" onclick="openGame('https://games-site.github.io/projects/paperio2/index.html')" data-title="Paperio2">
+    <img src="Images/PaperIo2.jpg" alt="Game Thumbnail 10">
+    <h2>Paper io 2</h2>
+</div>
+
+<!-- Game Card 11 -->
+<div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g5/class-472/')" data-title="Drift Boss">
+    <img src="Images/DriftBossIcon.png" alt="Game Thumbnail 11">
+    <h2>Drift Boss</h2>
+</div>
+
+<!-- Game Card 12 -->
+<div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g22/class-376/')" data-title="James Gun">
+    <img src="Images/jamesGunIcon.jpg" alt="Game Thumbnail 12">
+    <h2>James Gun</h2>
+</div>
+
+<!-- Game Card 13 -->
+<div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g16/class-421/')" data-title="Blumji Slime">
+    <img src="Images/blumjiSlimeIcon.png" alt="Game Thumbnail 13">
+    <h2>Blumji Slime</h2>
+</div>
+
+<!-- Game Card 14 -->
+<div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g22/class-393/')" data-title="Traffic Rush">
+    <img src="Images/traficRushIcon.jpeg" alt="Game Thumbnail 14">
+    <h2>Traffic Rush</h2>
+</div>
+
+<!-- Game Card 15 -->
+<div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g177/class-333/')" data-title="Basketball">
+    <img src="Images/Play Basketball icon.png" alt="Game Thumbnail 15">
+    <h2>Basketball</h2>
+</div>
+
+<!-- Game Card 16 -->
+<div class="game-card" onclick="openGame('https://clockmantellstime.github.io/unblocked/territorial.html')" data-title="Territorial.io">
+    <img src="Images/terriTolialIcon.png" alt="Game Thumbnail 16">
+    <h2>Territorial.io</h2>
+</div>
+
+<!-- Game Card 17 -->
+<div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g97/class-412/')" data-title="DreadHead">
+    <img src="Images/dreadHeadIcon.jpeg" alt="Game Thumbnail 17">
+    <h2>DreadHead</h2>
+</div>
+
+<!-- Game Card 18 -->
+<div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g4/class-196/')" data-title="Trivia Crack">
+    <img src="Images/TriviaIcon.png" alt="Game Thumbnail 18">
+    <h2>Trivia Crack</h2>
+</div>
+
+<!-- Game Card 19 -->
+<div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g2/class-627/')" data-title="Penalty Shooters 2">
+    <img src="Images/PenaltyShootersIcon.jpg" alt="Game Thumbnail 19">
+    <h2>Penalty Shooters 2</h2>
+</div>
+
+<!-- Game Card 20 -->
+<div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g77/class-829/')" data-title="Monkey Market">
+    <img src="Images/Monkey.webp" alt="Game Thumbnail 20">
+    <h2>Monkey Market</h2>
+</div>
+
+<!-- Game Card 21 -->
+<div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g2/class-417/')" data-title="Stacktris">
+    <img src="Images/Stacktris.jpg" alt="Game Thumbnail 21">
+    <h2>Stacktris</h2>
+</div>
+
+<!-- Game Card 22 -->
+<div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g26/class-444/')" data-title="Subway Surfers">
+    <img src="Images/SooubwasIcon.webp" alt="Game Thumbnail 22">
+    <h2>Subway Surfers</h2>
+</div>
+
+<!-- Game Card 23 -->
+<div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g3/class-309/')" data-title="Cow Bay">
+    <img src="Images/CowBayIcon.webp" alt="Game Thumbnail 23">
+    <h2>Cow Bay</h2>
+</div>
+
+<!-- Game Card 24 -->
+<div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g9/class-777/')" data-title="Golf Champions">
+    <img src="Images/GChampionsIcon.jpg" alt="Game Thumbnail 24">
+    <h2>Golfinity</h2>
+</div>
+
+<!-- Game Card 25 -->
+<div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g4/class-174/')" data-title="We Skate">
+    <img src="Images/weIcon.jpg" alt="Game Thumbnail 25">
+    <h2>We Skate</h2>
+</div>
+
+<!-- Game Card 26 -->
+<div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g69/class-684/')" data-title="Unicycle Hero">
+    <img src="Images/Unicycle HeroIcon.jpg" alt="Game Thumbnail 26">
+    <h2>Unicycle Hero</h2>
+</div>
+
+<!-- Game Card 27 -->
+<div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g20/class-401')" data-title="Drive Mad">
+    <img src="Images/friveMadIcon.png" alt="Game Thumbnail 27">
+    <h2>Drive Mad</h2>
+</div>
+
+<!-- Game Card 28 -->
+<div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g8/class-129')" data-title="Unicycle Legend">
+    <img src="Images/UnicycleLegendIcon.webp" alt="Game Thumbnail 28">
+    <h2>Unicycle Legend</h2>
+</div>
+
+<!-- Game Card 29 -->
+<div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g16/class-419/')" data-title="Blumji Ball">
+    <img src="Images/BlumjiBall.jpg" alt="Game Thumbnail 29">
+    <h2>Blumji Ball</h2>
 </div>
 
 
-<footer>
-    <p>&copy; 2024 FuckThePorsche</p>
-</footer>
+
+
+</div>
+
+
+
+    <!-- Game Modal -->
+    <div id="game-modal" onclick="closeGame()">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <span class="close-button" onclick="closeGame()">&times;</span>
+            <iframe id="game-frame" src=""></iframe>
+            <button class="fullscreen-button" onclick="toggleSimulatedFullscreen()">
+                <img src="Images/fullScreenIcon.jpg" alt="Fullscreen Button">
+            </button>
+            
+
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 FuckThePorsche</p>
+    </footer>
 
     <script>
-        // Function to open game in modal
-        function openGame(url) {
-            document.getElementById("game-frame").src = url;
-            document.getElementById("game-modal").style.display = "flex";
-            const gameTitle = document.querySelector(`[onclick="openGame('${url}')"]`).getAttribute('data-title');
-            const score = 1000; // Replace with actual score logic
-            saveGameScoreForGame(gameTitle, score);  // Save score in cookie
-        }
+window.addEventListener('load', function () {
+    const gameCards = document.querySelectorAll('.game-card');
+    
+    // Hide all game cards initially
+    gameCards.forEach(card => {
+        card.style.display = 'none';
+    });
 
-        // Function to close game modal
-        function closeGame() {
-            document.getElementById("game-frame").src = "";
-            document.getElementById("game-modal").style.display = "none";
+    // Select two random indexes
+    let randomIndexes = [];
+    while (randomIndexes.length < 2) {
+        let randomIndex = Math.floor(Math.random() * gameCards.length);
+        if (!randomIndexes.includes(randomIndex)) {
+            randomIndexes.push(randomIndex);
         }
-
-        function comingSoon(action) {
-     if (action === 'signup') {
-        netlifyIdentity.open('signup'); // Opens the sign-up modal
     }
-}
 
+    // Show only the selected two game cards
+    randomIndexes.forEach(index => {
+        gameCards[index].style.display = 'block'; // Ensure the card is visible
+    });
+});
 
-        function toggleSearch() {
-            const searchContainer = document.getElementById('search-container');
-            const searchInput = document.getElementById('search-input');
-            
-            if (searchContainer.style.display === 'none' || searchContainer.style.display === '') {
-                searchContainer.style.display = 'block';
-            } else {
-                searchContainer.style.display = 'none';
-                searchInput.value = ''; // Clear the search input
-                searchGames(); // Reset any search results
-            }
+    // Function to get game info for the card (mocked for demonstration)
+    function getGameInfo(index) {
+        const gameData = [
+            { title: "Game 1", description: "This is game 1 description" },
+            { title: "Game 2", description: "This is game 2 description" },
+            { title: "Game 3", description: "This is game 3 description" },
+            { title: "Game 4", description: "This is game 4 description" },
+            { title: "Game 5", description: "This is game 5 description" }
+        ];
+
+        return gameData[index]; // Return the appropriate game info based on the index
+    }
+
+    function openGame(url) {
+        // Hide all game cards before opening the game
+        const gameCards = document.querySelectorAll('.game-card');
+        gameCards.forEach(card => card.style.display = 'none');
+        
+        document.getElementById("game-frame").src = url;
+        document.getElementById("game-modal").style.display = "flex";
+        
+        // Get the game title
+        const gameTitle = document.querySelector(`[onclick="openGame('${url}')"]`).getAttribute('data-title');
+        const score = 1000; // Replace with actual score logic
+        saveGameScoreForGame(gameTitle, score);  // Save score in cookie
+    }
+
+    // Function to close game modal
+    function closeGame() {
+        document.getElementById("game-frame").src = "";
+        document.getElementById("game-modal").style.display = "none";
+        
+        // Show the game cards again after closing the modal
+        const gameCards = document.querySelectorAll('.game-card');
+        gameCards.forEach(card => card.style.display = 'block');
+    }
+
+    // Function to handle the "coming soon" action
+    function comingSoon(action) {
+        if (action === 'signup') {
+            netlifyIdentity.open('signup'); // Opens the sign-up modal
         }
+    }
 
-        // Hide the search bar when clicking outside
-        document.addEventListener('click', function(event) {
-            const searchContainer = document.getElementById('search-container');
-            const searchInput = document.getElementById('search-input');
-            const isClickInsideSearch = searchContainer.contains(event.target);
-            const isClickOnSearchButton = event.target.textContent === 'Search';
-            
-            if (!isClickInsideSearch && !isClickOnSearchButton) {
-                searchContainer.style.display = 'none';
-                searchInput.value = ''; // Clear the search input
-                searchGames(); // Reset any search results
+    // Wait for the DOM to be fully loaded
+   
+
+    // Function to toggle search visibility
+    function toggleSearch() {
+        const searchContainer = document.getElementById('search-container');
+        const searchInput = document.getElementById('search-input');
+        
+        if (searchContainer.style.display === 'none' || searchContainer.style.display === '') {
+            searchContainer.style.display = 'block';
+        } else {
+            searchContainer.style.display = 'none';
+            searchInput.value = ''; // Clear the search input
+            searchGames(); // Reset any search results
+        }
+    }
+
+    // Hide the search bar when clicking outside
+    document.addEventListener('click', function(event) {
+        const searchContainer = document.getElementById('search-container');
+        const searchInput = document.getElementById('search-input');
+        const isClickInsideSearch = searchContainer.contains(event.target);
+        const isClickOnSearchButton = event.target.textContent === 'Search';
+        
+        if (!isClickInsideSearch && !isClickOnSearchButton) {
+            searchContainer.style.display = 'none';
+            searchInput.value = ''; // Clear the search input
+            searchGames(); // Reset any search results
+        }
+    });
+
+    // Search functionality
+    function searchGames() {
+        const searchInput = document.getElementById('search-input').value.toLowerCase();
+        const gameContainer = document.getElementById('game-container');
+        const gameCards = document.querySelectorAll('.game-card');
+        
+        // Show the games container if any matching games are found
+        let hasMatches = false;
+        gameCards.forEach(function(card) {
+            const gameTitle = card.getAttribute('data-title').toLowerCase();
+            if (gameTitle.includes(searchInput)) {
+                card.style.display = 'block'; // Show the card
+                hasMatches = true;
+            } else {
+                card.style.display = 'none'; // Hide the card
             }
         });
-
-        // Search functionality
-        function searchGames() {
-            const searchInput = document.getElementById('search-input').value.toLowerCase();
-            const gameContainer = document.getElementById('game-container');
-            const gameCards = document.querySelectorAll('.game-card');
-            
-            // Show the games container if any matching games are found
-            let hasMatches = false;
-            gameCards.forEach(function(card) {
-                const gameTitle = card.getAttribute('data-title').toLowerCase();
-                if (gameTitle.includes(searchInput)) {
-                    card.style.display = 'block'; // Show the card
-                    hasMatches = true;
-                } else {
-                    card.style.display = 'none'; // Hide the card
-                }
-            });
-            
-            // Display the games section if there are matches, hide if not
-            gameContainer.style.display = hasMatches ? 'flex' : 'none';
-        }
-
+        
+        // Display the games section if there are matches, hide if not
+        gameContainer.style.display = hasMatches ? 'flex' : 'none';
+    }
         function showHome() {
     document.getElementById('home-screen').style.display = 'flex';
     document.getElementById('game-container').style.display = 'none';
     hideGames();
 }
 
-function showGames() {
-    document.getElementById('home-screen').style.display = 'none';
-    document.getElementById('game-container').style.display = 'flex';
-}
 
-
-function hideGames() {
-    document.getElementById('game-container').style.display = 'none';  // Hide the games section
-    document.getElementById('home-screen').style.display = 'flex';  // Show the home screen
-}
 
 function toggleSimulatedFullscreen() {
     const body = document.body;
