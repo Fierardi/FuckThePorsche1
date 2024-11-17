@@ -107,21 +107,55 @@
         body {
         font-family: 'Roboto', sans-serif;
     }
+
+    .header .logo {
+    font-size: 1.8em;
+    font-weight: bold;
+    color: #fff;
+    cursor: pointer;
+    margin-right: 30px; /* Space between the logo and nav links */
+}
+
+/* Styling for the logo link */
+.header .logo-link {
+    color: white;  /* Logo link color */
+    text-decoration: none;  /* Remove underline */
+}
+
+.header .logo-link:hover {
+    color: #47e3ff;  /* Optional: change color on hover */
+}
     </style>
 </head>
 <body>
     
     <!-- Header -->
     <header class="header">
-        <div class="logo">NapoliGames</div>
+        <div class="logo">
+            <a href="index.html" class="logo-link">NapoliGames</a>
+        </div>
         <div class="nav-links">
             <a href="index.html">Home</a>
+            <a href="games.html">Games</a>
         </div>
     </header>
 
     <!-- Updates Content -->
     <main class="updates-container">
         <h1>Website Updates</h1>
+
+        <div class="update-card">
+            <h2>New Feature:</h2>
+            <p class="date">Date: 2024-11-17</p>
+            <h4>Bugs fixed.</h4>
+            <h4>New Layout</h4>
+            <h3>New Games:</h3>
+            <p>Tiny Fishing</p>
+            <p>Rhomb</p>
+            <p>Arrow Pathway</p>
+            <p>Lords of Gomoku</p>
+
+        </div>
 
         <div class="update-card">
             <h2>New Feature:</h2>
@@ -162,7 +196,5 @@
 </body>
 </html>
 
-    body {
-        font-family: 'Roboto', sans-serif;
-    }
+
 
