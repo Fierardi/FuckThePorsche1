@@ -35,6 +35,23 @@
     z-index: 1000; /* Ensure it stays above other content */
 }
 
+@media (max-width: 768px) {
+    .header {
+        flex-direction: column; /* Stack the header elements on small screens */
+        padding: 15px 20px;
+    }
+
+    .header .nav-links {
+        margin-top: 10px;
+        gap: 15px;
+    }
+
+    .header .nav-links a {
+        font-size: 1em; /* Adjust font size for small screens */
+        padding: 8px 12px; /* Reduce padding on smaller screens */
+    }
+}
+
 /* Logo Styling */
 .header .logo {
     font-size: 1.8em;
