@@ -670,44 +670,87 @@ const footerElement = document.getElementById('.logo');
                  clickCount = 0; // Reset the count to allow repeated toggles
             }
         });
-        const dbName = "GameDatabase";
+// Declare the db variable globally
 let db;
 
-const openRequest = indexedDB.open(dbName, 1);
+// Open or create the IndexedDB database
+const request = indexedDB.open('GameScoresDB', 1);
 
-openRequest.onupgradeneeded = function(event) {
+// Handle database upgrade (create object stores)
+request.onupgradeneeded = function (event) {
     db = event.target.result;
-    
-    // Create object stores for game scores and progress
-    const scoreStore = db.createObjectStore("scores", { keyPath: "gameTitle" });
-    scoreStore.createIndex("score", "score", { unique: false });
-    
-    const progressStore = db.createObjectStore("progress", { keyPath: "gameTitle" });
-    progressStore.createIndex("level", "level", { unique: false });
-    progressStore.createIndex("highScore", "highScore", { unique: false });
+    // Create object store for game scores
+    if (!db.objectStoreNames.contains('scores')) {
+        db.createObjectStore('scores', { keyPath: 'gameTitle' });
+    }
 };
 
-openRequest.onsuccess = function(event) {
-    db = event.target.result;
+// Handle errors in opening the database
+request.onerror = function (event) {
+    console.error('Database error:', event.target.error);
 };
 
-// Function to save the game score in IndexedDB
-function setGameScore(gameTitle, score) {
-    const transaction = db.transaction(["scores"], "readwrite");
-    const store = transaction.objectStore("scores");
-    const scoreData = { gameTitle: gameTitle, score: score };
-    store.put(scoreData); // Save the score
+// Ensure the database is ready before performing any operations
+function isDatabaseReady() {
+    return new Promise((resolve, reject) => {
+        if (db) {
+            resolve(db);
+        } else {
+            request.onsuccess = function () {
+                db = request.result;
+                resolve(db);
+            };
+            request.onerror = function () {
+                reject(new Error('Database initialization failed.'));
+            };
+        }
+    });
 }
 
-// Function to retrieve the game score from IndexedDB
-function getGameScore(gameTitle, callback) {
-    const transaction = db.transaction(["scores"], "readonly");
-    const store = transaction.objectStore("scores");
-    const request = store.get(gameTitle);
-    
-    request.onsuccess = function() {
-        callback(request.result ? request.result.score : null); // Return score or null if not found
-    };
+// Get game score from IndexedDB
+function getGameScore(gameTitle) {
+    isDatabaseReady().then((db) => {
+        const transaction = db.transaction(['scores'], 'readonly');
+        const store = transaction.objectStore('scores');
+        const request = store.get(gameTitle);
+
+        request.onsuccess = function () {
+            if (request.result) {
+                console.log(`Saved score for ${gameTitle}: ${request.result.score}`);
+            } else {
+                console.log(`No saved score found for ${gameTitle}`);
+            }
+        };
+
+        request.onerror = function () {
+            console.error('Error retrieving score:', request.error);
+        };
+    }).catch((error) => {
+        console.error('Error:', error);
+    });
+}
+
+// Save the game score to IndexedDB
+function setGameScore(gameTitle, score) {
+    isDatabaseReady().then((db) => {
+        const transaction = db.transaction(['scores'], 'readwrite');
+        const store = transaction.objectStore('scores');
+        const gameScore = {
+            gameTitle: gameTitle,
+            score: score
+        };
+        store.put(gameScore); // Save or update the score in IndexedDB
+
+        transaction.oncomplete = function () {
+            console.log(`Score for ${gameTitle} saved successfully.`);
+        };
+
+        transaction.onerror = function () {
+            console.error('Error saving score:', transaction.error);
+        };
+    }).catch((error) => {
+        console.error('Error:', error);
+    });
 }
 
 // Example to save a score of 1000 for a game
@@ -717,13 +760,7 @@ function saveGameScoreForGame(gameTitle, score) {
 
 // Example to retrieve and display score for a game
 function displaySavedScore(gameTitle) {
-    getGameScore(gameTitle, function(score) {
-        if (score) {
-            console.log(`Saved score for ${gameTitle}: ${score}`);
-        } else {
-            console.log(`No saved score found for ${gameTitle}`);
-        }
-    });
+    getGameScore(gameTitle);
 }
 
 // Example usage when the player finishes the game
@@ -733,26 +770,8 @@ function endGame(gameTitle, score) {
 }
 
 // Example: Display the saved score for a game when the user returns
-displaySavedScore("Block Blast"); // Example game title
+displaySavedScore("Block Blast"); // for example, "Block Blast" as the game's title
 
-// Function to save multiple pieces of game progress (e.g., level reached, high score)
-function setGameProgress(gameTitle, level, highScore) {
-    const transaction = db.transaction(["progress"], "readwrite");
-    const store = transaction.objectStore("progress");
-    const progressData = { gameTitle: gameTitle, level: level, highScore: highScore };
-    store.put(progressData); // Save the progress data
-}
-
-// Function to retrieve game progress from IndexedDB
-function getGameProgress(gameTitle, callback) {
-    const transaction = db.transaction(["progress"], "readonly");
-    const store = transaction.objectStore("progress");
-    const request = store.get(gameTitle);
-    
-    request.onsuccess = function() {
-        callback(request.result ? { level: request.result.level, highScore: request.result.highScore } : null);
-    };
-}
    
     </script>
 <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
