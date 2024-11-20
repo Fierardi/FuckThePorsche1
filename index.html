@@ -239,29 +239,31 @@ body::before {
             margin-top: 30px;
         }
 
-        /* Search bar styling */
         .search-container {
-            display: none; /* Hidden by default */
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            background-color: gray;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            padding: 15px;
-            text-align: center;
-            z-index: 1000;
-            animation: slideDown 0.3s ease-in-out;
-        }
+    display: none; /* Hidden by default */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: linear-gradient(90deg, #0595ce, #0595ce); /* Modern gradient background */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4); /* Enhanced shadow for depth */
+    padding: 20px;
+    text-align: center;
+    z-index: 1000;
+    animation: slideDown 0.4s ease-in-out; /* Smooth slide-down effect */
+}
 
-        .search-container input {
-            width: 80%;
-            padding: 10px;
-            font-size: 1.2em;
-            border: 1px solid #656464;
-            border-radius: 5px;
-            outline: none;
-        }
+/* Input field styling */
+.search-container input {
+    width: 70%; /* Adjusted width for aesthetics */
+    padding: 12px 15px; /* Improved padding for a cleaner look */
+    font-size: 1.1em; /* Font size for better readability */
+    border: 1px solid #555; /* Subtle border */
+    border-radius: 25px; /* Rounded edges for a modern look */
+    outline: none; /* Remove focus outline */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
+    transition: all 0.3s ease; /* Smooth transition on focus/hover */
+}
 
         .fullscreen-button {
     position: absolute;

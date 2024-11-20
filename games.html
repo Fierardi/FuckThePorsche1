@@ -172,29 +172,32 @@ body {
             margin-top: 30px;
         }
 
-        /* Search bar styling */
         .search-container {
-            display: none; /* Hidden by default */
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            background-color: gray;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            padding: 15px;
-            text-align: center;
-            z-index: 1000;
-            animation: slideDown 0.3s ease-in-out;
-        }
+    display: none; /* Hidden by default */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: linear-gradient(90deg, #0595ce, #0595ce); /* Modern gradient background */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4); /* Enhanced shadow for depth */
+    padding: 20px;
+    text-align: center;
+    z-index: 1000;
+    animation: slideDown 0.4s ease-in-out; /* Smooth slide-down effect */
+}
 
-        .search-container input {
-            width: 80%;
-            padding: 10px;
-            font-size: 1.2em;
-            border: 1px solid #656464;
-            border-radius: 5px;
-            outline: none;
-        }
+/* Input field styling */
+.search-container input {
+    width: 70%; /* Adjusted width for aesthetics */
+    padding: 12px 15px; /* Improved padding for a cleaner look */
+    font-size: 1.1em; /* Font size for better readability */
+    border: 1px solid #555; /* Subtle border */
+    border-radius: 25px; /* Rounded edges for a modern look */
+    outline: none; /* Remove focus outline */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
+    transition: all 0.3s ease; /* Smooth transition on focus/hover */
+}
+
 
         .fullscreen-button {
     position: absolute;
@@ -468,10 +471,43 @@ body {
         <h2>Lords of Gomoku</h2>    
     </div>
 
-    <div class="game-card" onclick="openGame('https://coinfactory.dk/')" data-title="Coin Factory">
-        <img src="Images/CoinIcon.png" alt="Game Thumbnail 24">
-        <h2>Coin Factory</h2>    
+
+    <div class="game-card" onclick="openGame('https://openguessr.com//')" data-title="Open Guessr">
+        <img src="Images/openGuessrIcon.png" alt="Game Thumbnail 24">
+        <h2>Open Guessr</h2>    
     </div>
+
+    <div class="game-card" onclick="openGame('https://www.playgeography.com/')" data-title="playGeography">
+        <img src="Images/map.png" alt="Game Thumbnail 24">
+        <h2>playGeography</h2>    
+    </div>
+
+    <div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g16/class-427')" data-title="Blumji Castle">
+        <img src="Images/blumjiCastleIcon.webp" alt="Game Thumbnail 24">
+        <h2>Blumgi Castle</h2>    
+    </div>
+
+    <div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g16/class-413')" data-title="Blumgi Rocket">
+        <img src="Images/blumgiRocketIcon.jpg" alt="Game Thumbnail 24">
+        <h2>Blumgi Rocket</h2>    
+    </div>
+
+    <div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g69/class-636')" data-title="Swingo">
+        <img src="Images/swingoIcon.png" alt="Game Thumbnail 24">
+        <h2>Swingo</h2>    
+    </div>
+
+    <div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g72/class-622')" data-title="Idle Miner">
+        <img src="Images/idleMinerIcon.png" alt="Game Thumbnail 24">
+        <h2>Idle Miner Tycoon</h2>    
+    </div>
+
+    <div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g22/class-355')" data-title="Retro Highway">
+        <img src="Images/retroHighwayIcon.jpg" alt="Game Thumbnail 24">
+        <h2>Retro Highway</h2>    
+    </div>
+
+    
     
     </div>
     
