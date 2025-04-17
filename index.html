@@ -920,6 +920,57 @@
             // Placeholder for login functionality
             alert('Login feature coming soon!');
         }
+
+        function getRandomGame() {
+    // Get all game cards
+    const gameCards = document.querySelectorAll('.game-card');
+    
+    // Select a random game card
+    const randomIndex = Math.floor(Math.random() * gameCards.length);
+    const randomGame = gameCards[randomIndex];
+    
+    // Extract game information
+    const gameTitle = randomGame.querySelector('h2').textContent.trim();
+    const gameImage = randomGame.querySelector('img').src;
+    const gameUrl = randomGame.getAttribute('onclick').match(/'([^']+)'/)[1];
+    
+    return {
+        title: gameTitle,
+        image: gameImage,
+        url: gameUrl
+    };
+}
+
+// Function to update the featured game section
+function updateFeaturedGame() {
+    const game = getRandomGame();
+    
+    // Update featured game content
+    document.querySelector('.featured-image img').src = game.image;
+    document.querySelector('.featured-title').textContent = `Featured: ${game.title}`;
+    
+    // Create descriptions based on game title or use default
+    const descriptions = {
+        "Block Blast": "Block Blast combines strategy and quick thinking in an addictive puzzle experience. Clear blocks, create powerful combos, and challenge yourself with increasingly difficult levels.",
+        "Hextris": "Hextris is a fast-paced puzzle game where you rotate a hexagon to prevent blocks from stacking up to the top. Test your reflexes and strategic thinking!",
+        "Google Maps Snake": "Navigate your snake around a map to collect passengers and items in this Google Maps version of the classic Snake game.",
+        "2048": "Join the numbers and get to the 2048 tile! This addictive puzzle game challenges you to combine matching numbers.",
+        "Subway Surfers": "Dash through the subway tracks, avoid obstacles, and escape the inspector in this thrilling endless runner.",
+        "Basketball": "Test your shooting skills in this basketball game where precision and timing are key to scoring points.",
+        "Drift Boss": "Drive your car along winding roads, maintaining control as you drift around sharp corners to achieve high scores."
+    };
+    
+    // Set description (use custom if available, otherwise use a generic one)
+    const description = descriptions[game.title] || `${game.title} offers exciting gameplay that will keep you entertained for hours. Test your skills and see why it's one of our featured games!`;
+    document.querySelector('.featured-desc').textContent = description;
+    
+    // Update play button
+    document.querySelector('.featured-button').setAttribute('onclick', `openGame('${game.url}')`);
+}
+
+// Run the update function when the page loads
+document.addEventListener('DOMContentLoaded', updateFeaturedGame);
+
     </script>
 </body>
 </html
