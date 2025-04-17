@@ -6,192 +6,344 @@
     <link rel="icon" href="Images/Icon.png" type="image/png">
     <title>NapoliGames</title>
     <style>
-        /* Set the background color to cyan */
-        body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-image: url('Images/Napoli.png'); /* Background image */
-    background-size: cover;
-    background-position: center;
-    color: #333;
-
-    /* Disable background-attachment for better mobile support */
-    background-attachment: scroll;
-}
-
-body::before {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-image: inherit;
-    background-size: inherit;
-    background-position: inherit;
-    z-index: -1; /* Keep it behind all content */
-}
-
-
-/* Header Styling */
-.header {
-    background-color: #1e1e1e; /* Dark background for the header */
-    color: white; /* White text */
-    display: flex;
-    justify-content: space-between; /* Space between logo and nav items */
-    align-items: center;
-    padding: 20px 20px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Optional: Box shadow for 3D effect */
-    position: fixed; /* Fixed header at the top of the page */
-    top: 0; /* Ensure it's at the very top */
-    left: 0; /* Align to the left */
-    width: 98%; /* Make the header stretch across the entire width */
-
-}
-
-
-
-/* Logo Styling */
-.header .logo {
-    font-size: 1.8em;
-    font-weight: bold;
-    color: #fff;
-    cursor: pointer;
-    margin-right: 30px; /* Space between the logo and nav links */
-}
-
-/* Styling for the logo link */
-.header .logo-link {
-    color: white;  /* Logo link color */
-    text-decoration: none;  /* Remove underline */
-}
-
-.header .logo-link:hover {
-    color: #ff6347;  /* Optional: change color on hover */
-}
-
-/* Navigation Links Styling */
-.header .nav-links {
-    display: flex;
-    gap: 20px;
-}
-
-.header .nav-links a {
-    color: white;
-    text-decoration: none;
-    font-size: 1.1em;
-    padding: 10px;
-    border-radius: 5px;
-    transition: background-color 0.3s ease;
-}
-
-.header .nav-links a:hover {
-    background-color: #555; /* Light gray when hovering over links */
-}
-
-@media (max-width: 768px) {
-    .header {
-        flex-direction: column; /* Stack the header elements on small screens */
-        padding: 15px 20px;
-    }
-
-    .header .nav-links {
-        margin-top: 10px;
-        gap: 15px;
-    }
-
-    .header .nav-links a {
-        font-size: 1em; /* Adjust font size for small screens */
-        padding: 8px 12px; /* Reduce padding on smaller screens */
-    }
-}
-
-/* Home Screen */
-.home-screen {
-    text-align: center;
-    padding: 30px 10px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    height: 100vh;
-}
-
-.home-screen h1 {
-    font-size: 2em;
-    font-weight: bold;
-    color: #fff;
-    margin-bottom: 10px;
-    text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.6);
-}
-
-.home-screen p {
-    font-size: 1em;
-    color: #fff;
-    margin-bottom: 15px;
-    max-width: 500px;
-    text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.6);
-}
-
-.home-screen .btn {
-    background-color: #ff6347; /* Tomato color */
-    color: #fff;
-    font-size: 1em;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 25px;
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.3s ease;
-}
-
-.home-screen .btn:hover {
-    background-color: #e53d34; /* Darker hover effect */
-    transform: scale(1.05); /* Slight scaling on hover */
-}
-
-
-
-.game-container {
-    max-width: 1200px;
-    width: 90%;
-    margin: 20px auto; /* Centers the container itself */
-    display: flex;  /* Flexbox layout */
-    flex-wrap: wrap;  /* Allows the game cards to wrap when there's not enough space */
-    justify-content: center;  /* Centers the cards horizontally */
-    align-items: center;  /* Centers the cards vertically */
-    gap: 20px;  /* Adds space between cards */
-}
-
-/* Styling individual game cards */
-.game-card {
-    background-color: #fff;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    margin: 10px;
-    padding: 15px;
-    width: 150px;
-    border-radius: 8px;
-    text-align: center;
-    cursor: pointer;
-    transition: transform 0.3s ease;
-}
-
-
-        .game-card:hover {
-            transform: scale(1.05);
+        /* Apple-inspired CSS */
+        @import url('https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;500;600&display=swap');
+        
+        :root {
+            --apple-black: #1d1d1f;
+            --apple-white: #f5f5f7;
+            --apple-gray: #86868b;
+            --apple-blue: #0071e3;
+            --apple-light-gray: #f5f5f7;
+            --primary-font: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
         }
-
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: var(--primary-font);
+            background-color: var(--apple-white);
+            color: var(--apple-black);
+            padding-top: 44px;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        /* Header Styling */
+        .header {
+            background-color: rgba(255, 255, 255, 0.8);
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 22px;
+            height: 44px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .header .logo {
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
+        
+        .header .logo-link {
+            color: var(--apple-black);
+            text-decoration: none;
+        }
+        
+        .header .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+        
+        .header .nav-links a {
+            color: var(--apple-black);
+            text-decoration: none;
+            font-size: 0.8rem;
+            opacity: 0.8;
+            transition: opacity 0.3s ease;
+        }
+        
+        .header .nav-links a:hover {
+            opacity: 1;
+        }
+        
+        /* Hero Section */
+        .hero {
+            height: 80vh;
+            background: linear-gradient(to bottom, #000, #333);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('Images/Napoli.png');
+            background-size: cover;
+            background-position: center;
+            opacity: 0.4;
+            z-index: 0;
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+            padding: 0 20px;
+        }
+        
+        .hero h1 {
+            font-size: 56px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            letter-spacing: -0.5px;
+        }
+        
+        .hero p {
+            font-size: 24px;
+            font-weight: 400;
+            margin-bottom: 30px;
+            max-width: 600px;
+            opacity: 0.9;
+        }
+        
+        .hero-button {
+            background-color: var(--apple-blue);
+            color: white;
+            border: none;
+            padding: 12px 22px;
+            border-radius: 980px;
+            font-size: 17px;
+            font-weight: 400;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .hero-button:hover {
+            background-color: #2284f5;
+        }
+        
+        /* Search Bar Container */
+        .search-container {
+            display: none;
+            position: fixed;
+            top: 44px;
+            left: 0;
+            width: 100%;
+            background-color: rgba(255, 255, 255, 0.98);
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            padding: 15px 0;
+            text-align: center;
+            z-index: 999;
+            animation: slideDown 0.3s ease-in-out;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .search-container input {
+            width: 60%;
+            max-width: 680px;
+            padding: 12px 20px;
+            font-size: 17px;
+            border: none;
+            border-radius: 8px;
+            background-color: #f2f2f2;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+        
+        .search-container input:focus {
+            background-color: #e8e8e8;
+        }
+        
+        /* Game Gallery */
+        .games-section {
+            padding: 80px 0 40px;
+            text-align: center;
+            background-color: white;
+        }
+        
+        .section-title {
+            font-size: 40px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            letter-spacing: -0.5px;
+        }
+        
+        .section-subtitle {
+            font-size: 21px;
+            font-weight: 400;
+            color: var(--apple-gray);
+            margin-bottom: 50px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .game-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 30px;
+            padding: 0 20px;
+        }
+        
+        .game-card {
+            background-color: #fff;
+            border-radius: 18px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            cursor: pointer;
+        }
+        
+        .game-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
+        }
+        
         .game-card img {
             width: 100%;
-            height: auto;
-            border-radius: 5px;
+            aspect-ratio: 1 / 1;
+            object-fit: cover;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
         }
-
+        
         .game-card h2 {
-            font-size: 1em;
-            margin: 10px 0;
+            font-size: 17px;
+            font-weight: 500;
+            padding: 16px;
+            color: var(--apple-black);
         }
-
+        
+        /* Categories Section */
+        .categories-section {
+            background-color: #f5f5f7;
+            padding: 100px 0;
+            text-align: center;
+        }
+        
+        .categories-container {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            margin-top: 40px;
+            flex-wrap: wrap;
+            padding: 0 20px;
+        }
+        
+        .category-card {
+            background-color: white;
+            border-radius: 16px;
+            padding: 30px;
+            width: 280px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+        
+        .category-card:hover {
+            transform: scale(1.02);
+        }
+        
+        .category-icon {
+            font-size: 32px;
+            margin-bottom: 20px;
+        }
+        
+        .category-title {
+            font-size: 21px;
+            font-weight: 500;
+            margin-bottom: 10px;
+        }
+        
+        .category-desc {
+            font-size: 15px;
+            color: var(--apple-gray);
+        }
+        
+        /* Featured Game Section */
+        .featured-section {
+            padding: 120px 0;
+            background-color: white;
+            overflow: hidden;
+        }
+        
+        .featured-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 60px;
+            padding: 0 20px;
+        }
+        
+        .featured-image {
+            flex: 1;
+            text-align: center;
+        }
+        
+        .featured-image img {
+            max-width: 100%;
+            border-radius: 12px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+        }
+        
+        .featured-content {
+            flex: 1;
+        }
+        
+        .featured-title {
+            font-size: 38px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            letter-spacing: -0.5px;
+        }
+        
+        .featured-desc {
+            font-size: 19px;
+            color: var(--apple-gray);
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+        
+        .featured-button {
+            background-color: var(--apple-blue);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 980px;
+            font-size: 17px;
+            font-weight: 400;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .featured-button:hover {
+            background-color: #2284f5;
+        }
+        
         /* Modal styling */
         #game-modal {
             display: none;
@@ -200,112 +352,202 @@ body::before {
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
+            background-color: rgba(0, 0, 0, 0.85);
             justify-content: center;
             align-items: center;
-            z-index: 10;
+            z-index: 2000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
-
+        
+        #game-modal.active {
+            opacity: 1;
+        }
+        
         #game-modal .modal-content {
             background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            width: 80%;  /* Set a fixed width for the modal */
-            height: 80%; /* Set a fixed height for the modal */
-            max-width: 1000px;  /* Max width */
-            max-height: 800px; /* Max height */
+            border-radius: 12px;
+            width: 90%;
+            height: 90%;
+            max-width: 1200px;
+            max-height: 800px;
             position: relative;
+            overflow: hidden;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.25);
+            transform: scale(0.95);
+            transition: transform 0.3s ease;
         }
-
+        
+        #game-modal.active .modal-content {
+            transform: scale(1);
+        }
+        
         #game-modal .close-button {
             position: absolute;
-            top: 10px;
+            top: 20px;
             right: 20px;
-            font-size: 1.5em;
+            width: 30px;
+            height: 30px;
+            background-color: rgba(0, 0, 0, 0.6);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             cursor: pointer;
-            color: #333;
+            z-index: 2001;
+            color: white;
+            font-size: 18px;
+            transition: background-color 0.3s ease;
         }
-
+        
+        #game-modal .close-button:hover {
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+        
         #game-frame {
             width: 100%;
             height: 100%;
             border: none;
         }
-
-        footer {
-            text-align: center;  /* Centers the footer content */
-            padding: 20px;
-            color: white;
-            margin-top: 30px;
-        }
-
-        .search-container {
-    display: none; /* Hidden by default */
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    background: linear-gradient(90deg, #0595ce, #0595ce); /* Modern gradient background */
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4); /* Enhanced shadow for depth */
-    padding: 20px;
-    text-align: center;
-    z-index: 1000;
-    animation: slideDown 0.4s ease-in-out; /* Smooth slide-down effect */
-}
-
-/* Input field styling */
-.search-container input {
-    width: 70%; /* Adjusted width for aesthetics */
-    padding: 12px 15px; /* Improved padding for a cleaner look */
-    font-size: 1.1em; /* Font size for better readability */
-    border: 1px solid #555; /* Subtle border */
-    border-radius: 25px; /* Rounded edges for a modern look */
-    outline: none; /* Remove focus outline */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
-    transition: all 0.3s ease; /* Smooth transition on focus/hover */
-}
-
+        
         .fullscreen-button {
-    position: absolute;
-    top: 10px;
-    right: 60px;
-    background: none;
-    border: none;
-    cursor: pointer;
-}
-
-.fullscreen-button img {
-    width: 24px; /* Adjust as needed */
-    height: 24px;
-    transition: transform 0.3s ease;
-}
-
-.fullscreen-button:hover img {
-    transform: scale(1.1); /* Slightly enlarge on hover */
-}
-
-
-/* Simulated fullscreen mode styling */
-.simulated-fullscreen #game-modal .modal-content {
-    width: 100vw;
-    height: 90vh;
-    max-width: 100vw;
-    max-height: 90vh;
-    top: 0;
-    left: 0;
-    padding: 0;
-    border-radius: 0;
-    margin: 0;
-}
-
-.simulated-fullscreen #game-frame {
-    width: 100%;
-    height: 100%;
-}
-
-
-
-        /* Slide-down animation */
+            position: absolute;
+            top: 20px;
+            right: 60px;
+            width: 30px;
+            height: 30px;
+            background-color: rgba(0, 0, 0, 0.6);
+            border: none;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            z-index: 2001;
+            transition: background-color 0.3s ease;
+        }
+        
+        .fullscreen-button:hover {
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+        
+        .fullscreen-button img {
+            width: 16px;
+            height: 16px;
+            transition: transform 0.3s ease;
+        }
+        
+        /* Footer */
+        footer {
+            background-color: #f5f5f7;
+            padding: 40px 0;
+            text-align: center;
+            color: var(--apple-gray);
+            font-size: 12px;
+        }
+        
+        footer p {
+            margin-bottom: 8px;
+        }
+        
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .footer-links a {
+            color: var(--apple-gray);
+            text-decoration: none;
+        }
+        
+        .footer-links a:hover {
+            text-decoration: underline;
+        }
+        
+        /* Responsive Styles */
+        @media (max-width: 1024px) {
+            .featured-container {
+                flex-direction: column;
+                gap: 40px;
+            }
+            
+            .hero h1 {
+                font-size: 48px;
+            }
+            
+            .hero p {
+                font-size: 21px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 40px;
+            }
+            
+            .hero p {
+                font-size: 18px;
+            }
+            
+            .section-title {
+                font-size: 32px;
+            }
+            
+            .section-subtitle {
+                font-size: 18px;
+            }
+            
+            .categories-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .category-card {
+                width: 100%;
+                max-width: 320px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .header {
+                padding: 0 15px;
+            }
+            
+            .header .nav-links {
+                gap: 15px;
+            }
+            
+            .hero h1 {
+                font-size: 32px;
+            }
+            
+            .hero p {
+                font-size: 16px;
+            }
+            
+            .hero-button {
+                font-size: 15px;
+                padding: 10px 20px;
+            }
+            
+            .game-container {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                gap: 15px;
+            }
+        }
+        
+        /* Simulated fullscreen mode styling */
+        .simulated-fullscreen #game-modal .modal-content {
+            width: 100vw;
+            height: 100vh;
+            max-width: 100vw;
+            max-height: 100vh;
+            border-radius: 0;
+        }
+        
+        /* Animation keyframes */
         @keyframes slideDown {
             from {
                 transform: translateY(-100%);
@@ -314,118 +556,274 @@ body::before {
                 transform: translateY(0);
             }
         }
-         #game-modal,
-        #game-modal .modal-content,
-        #game-frame {
-             user-select: none; /* Prevent text selection */
-              -webkit-user-select: none;
-                -ms-user-select: none;
-            -moz-user-select: none;
-}
 
-#game-frame {
-    pointer-events: all; /* Ensure the iframe itself is still interactive */
-}
+     /*     .games-section {
+    background-image: url('Images/napoli.png'); /* Path to your image */
+ /*     background-size: cover; /* Make the image cover the entire section */
+ /*     background-position: center; /* Center the image */
+  /*    padding: 40px 0; /* Add some padding for spacing */
+  /*    color: white; /* Adjust text color for contrast */
+   /*   width: 100%; /* Ensure the section takes up the full width */
+   /*   margin: 0; /* Remove any default margin */
+   /*   box-sizing: border-box; /* Ensure padding doesn't cause overflow */
+/*  }
+
+@media (max-width: 768px) {
+    .games-section {
+        background-size: cover; /* On small screens, make sure the background covers the section */
+   /*   }*/
+/*}    */
+
 
     </style>
 </head>
 <body>
-    <div id="login-signup-screen">
-    </div>
-    <!-- Header Box -->
-<header class="header">
-    <div class="logo">NapoliGames</div>
-    <div class="nav-links">
-        <a href="games.html">Games</a>
-        <a href="#" onclick="toggleSearch()">Search</a>
-        <a href="updates.html">Updates</a>
-        <a href="#" onclick="openLogin()">Account</a>
-        
+    <!-- Header -->
+    <header class="header">
+        <div class="logo">
+            <a href="index.html" class="logo-link">NapoliGames</a>
+        </div> 
+        <div class="nav-links">
+            <a href="games.html">Games</a>
+            <a href="#" onclick="toggleSearch()">Search</a>
+            <a href="updates.html">Updates</a>
+            <a href="#" onclick="openLogin()">Account</a>
+        </div>
+    </header>
 
-    </div>
-</header>
-     
     <!-- Search Bar Container (initially hidden) -->
     <div class="search-container" id="search-container">
         <input type="text" id="search-input" placeholder="Search for games..." oninput="searchGames()">
     </div>
 
-    <!-- Home Screen -->
-<!-- Home Screen -->
-<div class="home-screen" id="home-screen">
-    <h1>Welcome to NapoliGames!</h1>
- 
-    
-<div class="game-container" id="game-container">
-
-    <div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g4/class-186/')" data-title="Lines to FIll">
-        <img src="Images/lines.png" alt="Game Thumbnail 24">
-        <h2>Lines to Fill</h2>    
-    </div>
-    
-    <div class="game-card" onclick="openGame('https://d2drhksbtcqozo.cloudfront.net/casino/games-mt/roulettenouveau/index.html?gameid=roulettenouveau&jurisdiction=MT&channel=web&moneymode=fun')" data-title="Roulette">
-        <img src="Images/roulette.png" alt="Game Thumbnail 24">
-        <h2>Roulette</h2> 
-    </div>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Play Without Limits</h1>
+            <p>Discover a curated collection of the most engaging games, designed for your entertainment.</p>
+            <button class="hero-button" onclick="window.location.href='games.html'">Explore Games</button>
 
 
-</div>
+        </div>
+    </section>
 
-<a href="games.html">
-    <button class="btn">Start Exploring</button>
-</a>
-
-  <!-- Game Modal -->
-  <div id="game-modal" onclick="closeGame()">
-    <div class="modal-content" onclick="event.stopPropagation()">
-        <span class="close-button" onclick="closeGame()">&times;</span>
-        <iframe id="game-frame" src=""></iframe>
-        <button class="fullscreen-button" onclick="toggleSimulatedFullscreen()">
-            <img src="Images/fullScreenIcon.jpg" alt="Fullscreen Button">
-        </button>
+    <!-- Games Section -->
+    <section class="games-section" id="games-section">
+        <h2 class="section-title">
+            <a href="games.html" style="color: inherit; text-decoration: none;">All Games</a>
+        </h2>
+        
+        <div class="game-container" id="game-container">
+            <!-- Game Card 1 -->
+            <div class="game-card" onclick="openGame('https://blockblast-unblocked.github.io/')" data-title="Block Blast">
+                <img src="Images/BlockIcon.jpg" alt="Block Blast">
+                <h2>Block Blast</h2>
+            </div>
+        
+            <!-- Game Card 2 -->
+            <div class="game-card" onclick="openGame('https://hextris.io/')" data-title="Hextris">
+                <img src="Images/HextrisIcon.webp" alt="Hextris">
+                <h2>Hextris</h2>
+            </div>
+        
         
 
-    </div>
+
+
+<div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g4/class-176')" data-title="Arrow Pathway">
+<img src="Images/arrowPathIcon.jpg" alt="Game Thumbnail 28">
+<h2>Arrow Pathway </h2>    
 </div>
 
-<footer>
-    <p>&copy; 2024 FuckThePorsche</p>
-</footer>
+<div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g4/class-225/')" data-title="Lords of Gomoku">
+<img src="Images/LOGIcon.jpg" alt="Game Thumbnail 24">
+<h2>Lords of Gomoku</h2>    
+</div>
+
+
+<div class="game-card" onclick="openGame('https://openguessr.com//')" data-title="Open Guessr">
+<img src="Images/openGuessrIcon.png" alt="Game Thumbnail 24">
+<h2>Open Guessr</h2>    
+</div>
+
+<div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g6/class-150')" data-title="flags maniac">
+<img src="Images/map.png" alt="Game Thumbnail 24">
+<h2>Flags Maniac</h2>    
+</div>
+
+
+
+<div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g69/class-636')" data-title="Swingo">
+<img src="Images/swingoIcon.png" alt="Game Thumbnail 24">
+<h2>Swingo</h2>    
+</div>
+
+<div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g72/class-622')" data-title="Idle Miner">
+<img src="Images/idleMinerIcon.png" alt="Game Thumbnail 24">
+<h2>Idle Miner Tycoon</h2>    
+</div>
+
+
+
+
+
+</div>
+    </section>
+    
+<!-- Categories Section -->
+<section class="categories-section">
+    <h2 class="section-title">Game Categories</h2>
+    <p class="section-subtitle">Find games that match your interests and playing style.</p>
+    
+    <div class="categories-container">
+        <!-- Arcade Category -->
+        <a href="comingSoon.html" class="category-card">
+            <div class="category-icon">🎮</div>
+            <h3 class="category-title">Arcade</h3>
+            <p class="category-desc">Classic gameplay with simple controls and increasing difficulty levels.</p>
+        </a>
+        
+        <!-- Puzzle Category -->
+        <a href="comingSoon.html" class="category-card">
+            <div class="category-icon">🧩</div>
+            <h3 class="category-title">Puzzle</h3>
+            <p class="category-desc">Challenge your mind with brain teasers and logic puzzles.</p>
+        </a>
+        
+        <!-- Sports Category -->
+        <a href="comingSoon.html" class="category-card">
+            <div class="category-icon">⚽</div>
+            <h3 class="category-title">Sports</h3>
+            <p class="category-desc">Competitive games based on real-world sports and activities.</p>
+        </a>
+        
+        <!-- Racing Category -->
+        <a href="comingSoon.html" class="category-card">
+            <div class="category-icon">🏎️</div>
+            <h3 class="category-title">Racing</h3>
+            <p class="category-desc">Test your reflexes with fast-paced racing games.</p>
+        </a>
+    </div>
+</section>
+
+    
+    <!-- Featured Game Section -->
+    <section class="featured-section">
+        <div class="featured-container">
+            <div class="featured-image">
+                <img src="Images/BlockIcon.jpg" alt="Featured Game">
+            </div>
+            
+            <div class="featured-content">
+                <h2 class="featured-title">Featured: Block Blast</h2>
+                <p class="featured-desc">Block Blast combines strategy and quick thinking in an addictive puzzle experience. Clear blocks, create powerful combos, and challenge yourself with increasingly difficult levels.</p>
+                <button class="featured-button" onclick="openGame('https://blockblast-unblocked.github.io/')">Play Now</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Game Modal -->
+    <div id="game-modal" onclick="closeGame()">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="close-button" onclick="closeGame()">&times;</div>
+            <iframe id="game-frame" src=""></iframe>
+            <button class="fullscreen-button" onclick="toggleSimulatedFullscreen()">
+                <img src="Images/fullScreenIcon.jpg" alt="Fullscreen">
+            </button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-links">
+            <a href="#">Privacy Policy</a>
+            <a href="#">Terms of Service</a>
+            <a href="#">Contact Us</a>
+            <a href="#">About</a>
+        </div>
+        <p>Copyright &copy; 2025 NapoliGames. All rights reserved.</p>
+    </footer>
 
     <script>
         // Function to open game in modal
         function openGame(url) {
             document.getElementById("game-frame").src = url;
-            document.getElementById("game-modal").style.display = "flex";
+            const modal = document.getElementById("game-modal");
+            modal.style.display = "flex";
+            setTimeout(() => {
+                modal.classList.add('active');
+            }, 10);
+            
             const gameTitle = document.querySelector(`[onclick="openGame('${url}')"]`).getAttribute('data-title');
             const score = 1000; // Replace with actual score logic
-            saveGameScoreForGame(gameTitle, score);  // Save score in cookie
+            setGameScore(gameTitle, score);
         }
 
         // Function to close game modal
         function closeGame() {
-            document.getElementById("game-frame").src = "";
-            document.getElementById("game-modal").style.display = "none";
+            const modal = document.getElementById("game-modal");
+            modal.classList.remove('active');
+            
+            setTimeout(() => {
+                document.getElementById("game-frame").src = "";
+                modal.style.display = "none";
+            }, 300);
         }
 
-        function comingSoon(action) {
-     if (action === 'signup') {
-        netlifyIdentity.open('signup'); // Opens the sign-up modal
-    }
-}
-
-
+        // Function to toggle search bar
         function toggleSearch() {
             const searchContainer = document.getElementById('search-container');
             const searchInput = document.getElementById('search-input');
             
             if (searchContainer.style.display === 'none' || searchContainer.style.display === '') {
                 searchContainer.style.display = 'block';
+                searchInput.focus();
             } else {
                 searchContainer.style.display = 'none';
-                searchInput.value = ''; // Clear the search input
-                searchGames(); // Reset any search results
+                searchInput.value = '';
+                searchGames();
             }
+        }
+
+        // Function to search games
+        function searchGames() {
+            const searchInput = document.getElementById('search-input').value.toLowerCase();
+            const gameContainer = document.getElementById('game-container');
+            const gameCards = document.querySelectorAll('.game-card');
+            
+            let hasMatches = false;
+            gameCards.forEach(function(card) {
+                const gameTitle = card.getAttribute('data-title').toLowerCase();
+                if (gameTitle.includes(searchInput)) {
+                    card.style.display = 'block';
+                    hasMatches = true;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+            
+            gameContainer.style.display = hasMatches ? 'grid' : 'none';
+        }
+
+        // Function to toggle fullscreen mode
+        function toggleSimulatedFullscreen() {
+            const body = document.body;
+            const fullscreenButtonImage = document.querySelector('.fullscreen-button img');
+            
+            body.classList.toggle('simulated-fullscreen');
+            
+            if (body.classList.contains('simulated-fullscreen')) {
+                fullscreenButtonImage.src = "Images/exitFullScreenIcon.png";
+            } else {
+                fullscreenButtonImage.src = "Images/fullScreenIcon.jpg";
+            }
+        }
+
+        // Function to scroll to games section
+        function scrollToGames() {
+            document.getElementById('games-section').scrollIntoView({ 
+                behavior: 'smooth' 
+            });
         }
 
         // Hide the search bar when clicking outside
@@ -437,225 +835,91 @@ body::before {
             
             if (!isClickInsideSearch && !isClickOnSearchButton) {
                 searchContainer.style.display = 'none';
-                searchInput.value = ''; // Clear the search input
-                searchGames(); // Reset any search results
+                searchInput.value = '';
+                searchGames();
             }
         });
 
-        // Search functionality
-        function searchGames() {
-            const searchInput = document.getElementById('search-input').value.toLowerCase();
-            const gameContainer = document.getElementById('game-container');
-            const gameCards = document.querySelectorAll('.game-card');
-            
-            // Show the games container if any matching games are found
-            let hasMatches = false;
-            gameCards.forEach(function(card) {
-                const gameTitle = card.getAttribute('data-title').toLowerCase();
-                if (gameTitle.includes(searchInput)) {
-                    card.style.display = 'block'; // Show the card
-                    hasMatches = true;
+        // IndexedDB setup and functions
+        let db;
+        const request = indexedDB.open('GameScoresDB', 1);
+        
+        request.onupgradeneeded = function(event) {
+            db = event.target.result;
+            if (!db.objectStoreNames.contains('scores')) {
+                db.createObjectStore('scores', { keyPath: 'gameTitle' });
+            }
+        };
+        
+        request.onerror = function(event) {
+            console.error('Database error:', event.target.error);
+        };
+        
+        function isDatabaseReady() {
+            return new Promise((resolve, reject) => {
+                if (db) {
+                    resolve(db);
                 } else {
-                    card.style.display = 'none'; // Hide the card
+                    request.onsuccess = function() {
+                        db = request.result;
+                        resolve(db);
+                    };
+                    request.onerror = function() {
+                        reject(new Error('Database initialization failed.'));
+                    };
                 }
             });
-            
-            // Display the games section if there are matches, hide if not
-            gameContainer.style.display = hasMatches ? 'flex' : 'none';
         }
-
-        function showHome() {
-    document.getElementById('home-screen').style.display = 'flex';
-    document.getElementById('game-container').style.display = 'none';
-    hideGames();
-}
-
-function showGames() {
-    document.getElementById('home-screen').style.display = 'none';
-    document.getElementById('game-container').style.display = 'flex';
-}
-
-
-function hideGames() {
-    document.getElementById('game-container').style.display = 'none';  // Hide the games section
-    document.getElementById('home-screen').style.display = 'flex';  // Show the home screen
-}
-
-function toggleSimulatedFullscreen() {
-    const body = document.body;
-    const fullscreenButtonImage = document.querySelector('.fullscreen-button img');
-
-    // Toggle simulated fullscreen mode on the body
-    body.classList.toggle('simulated-fullscreen');
-    
-    // Change the button image based on fullscreen state
-    if (body.classList.contains('simulated-fullscreen')) {
-        fullscreenButtonImage.src = "Images/exitFullScreenIcon.png";  // Change to "Exit Fullscreen" icon
-    } else {
-        fullscreenButtonImage.src = "Images/fullScreenIcon.jpg";  // Change to "Enter Fullscreen" icon
-    }
-}
-
-window.onload = function() {
-            // Initialize the Netlify Identity widget
-            if (window.netlifyIdentity) {
-                netlifyIdentity.init();
-                
-                // Check if the user is logged in
-                const user = netlifyIdentity.currentUser();
-                
-                // If no user is logged in, show the login/signup screen and disable the website's content
-                if (!user) {
-                    console.log('User is not logged in');
-                    netlifyIdentity.open(); // Automatically opens the Netlify login modal
-                    document.getElementById('main-content').style.display = 'none'; // Hide main content
-                    document.getElementById('login-signup-screen').style.display = 'flex'; // Show login/signup screen
-                } else {
-                    console.log('User is logged in:', user);
-                    document.getElementById('login-signup-screen').style.display = 'none'; // Hide login/signup screen
-                    document.getElementById('main-content').style.display = 'block'; // Show main content
-                    document.getElementById('main-content').style.pointerEvents = 'auto'; // Allow interaction
-                }
-
-                // Listen for login events
-                netlifyIdentity.on('login', user => {
-                    console.log('User logged in', user);
-                    document.getElementById('login-signup-screen').style.display = 'none';
-                    document.getElementById('main-content').style.display = 'block'; // Show main content after login
-                    document.getElementById('main-content').style.pointerEvents = 'auto'; // Enable interactions
-                });
-
-                // Listen for logout events
-                netlifyIdentity.on('logout', () => {
-                    console.log('User logged out');
-                    document.getElementById('login-signup-screen').style.display = 'flex';
-                    document.getElementById('main-content').style.display = 'none'; // Hide main content after logout
-                    document.getElementById('main-content').style.pointerEvents = 'none'; // Disable interaction
-                });
-            }
-        };
-function openLogin() {
-    netlifyIdentity.open();  // This opens the Netlify Identity modal
-}
-
-
-let clickCount = 0;
-let clickCount2 = 0;
-const websiteNameElement = document.body;
-const footerElement = document.getElementById('.logo');
-const newBackgroundImage = "url('Images/Ali.webp')";// Set the path to your PNG image
-        const websiteNameeElement = document.querySelector('.logo');
-
-        websiteNameElement.addEventListener('click', () => {
-            clickCount++;
-
         
-
-            // Check if user has clicked 5 times
-            if (clickCount === 5) {
-                websiteNameElement.style.backgroundImage = newBackgroundImage;
-                clickCount = 0; // Reset the count if you want to allow repeated toggles
-            }
-        });
-        websiteNameElement.addEventListener('click', () => {
-            clickCount++;
-
-            if(clickCount === 13){
-                 websiteNameeElement.textContent = "Beşiktaş Oyunlarına hoş geldiniz"; // Replace with your desired name
-                 clickCount = 0; // Reset the count to allow repeated toggles
-            }
-        });
-// Declare the db variable globally
-let db;
-
-// Open or create the IndexedDB database
-const request = indexedDB.open('GameScoresDB', 1);
-
-// Handle database upgrade (create object stores)
-request.onupgradeneeded = function (event) {
-    db = event.target.result;
-    // Create object store for game scores, using 'gameTitle' as the keyPath
-    if (!db.objectStoreNames.contains('scores')) {
-        db.createObjectStore('scores', { keyPath: 'gameTitle' });
-    }
-};
-
-// Handle errors in opening the database
-request.onerror = function (event) {
-    console.error('Database error:', event.target.error);
-};
-
-// Ensure the database is ready before performing any operations
-function isDatabaseReady() {
-    return new Promise((resolve, reject) => {
-        if (db) {
-            resolve(db);
-        } else {
-            request.onsuccess = function () {
-                db = request.result;
-                resolve(db);
-            };
-            request.onerror = function () {
-                reject(new Error('Database initialization failed.'));
-            };
+        function getGameScore(gameTitle) {
+            isDatabaseReady().then((db) => {
+                const transaction = db.transaction(['scores'], 'readonly');
+                const store = transaction.objectStore('scores');
+                const request = store.get(gameTitle);
+                
+                request.onsuccess = function() {
+                    if (request.result) {
+                        console.log(`Saved score for ${gameTitle}: ${request.result.score}`);
+                    } else {
+                        console.log(`No saved score found for ${gameTitle}`);
+                    }
+                };
+                
+                request.onerror = function() {
+                    console.error('Error retrieving score:', request.error);
+                };
+            }).catch((error) => {
+                console.error('Error:', error);
+            });
         }
-    });
-}
-
-// Get game score from IndexedDB
-function getGameScore(gameTitle) {
-    isDatabaseReady().then((db) => {
-        const transaction = db.transaction(['scores'], 'readonly');
-        const store = transaction.objectStore('scores');
-        const request = store.get(gameTitle);
-
-        request.onsuccess = function () {
-            if (request.result) {
-                console.log(`Saved score for ${gameTitle}: ${request.result.score}`);
-            } else {
-                console.log(`No saved score found for ${gameTitle}`);
-            }
-        };
-
-        request.onerror = function () {
-            console.error('Error retrieving score:', request.error);
-        };
-    }).catch((error) => {
-        console.error('Error:', error);
-    });
-}
-
-// Save the game score to IndexedDB
-function setGameScore(gameTitle, score) {
-    isDatabaseReady().then((db) => {
-        const transaction = db.transaction(['scores'], 'readwrite');
-        const store = transaction.objectStore('scores');
-        const gameScore = {
-            gameTitle: gameTitle,
-            score: score
-        };
-
-        store.put(gameScore); // Save or update the score in IndexedDB
-
-        transaction.oncomplete = function () {
-            console.log(`Score for ${gameTitle} saved successfully.`);
-        };
-
-        transaction.onerror = function () {
-            console.error('Error saving score:', transaction.error);
-        };
-    }).catch((error) => {
-        console.error('Error:', error);
-    });
-}
-   (adsbygoogle = window.adsbygoogle || []).push({});
-
-   
+        
+        function setGameScore(gameTitle, score) {
+            isDatabaseReady().then((db) => {
+                const transaction = db.transaction(['scores'], 'readwrite');
+                const store = transaction.objectStore('scores');
+                const gameScore = {
+                    gameTitle: gameTitle,
+                    score: score
+                };
+                
+                store.put(gameScore);
+                
+                transaction.oncomplete = function() {
+                    console.log(`Score for ${gameTitle} saved successfully.`);
+                };
+                
+                transaction.onerror = function() {
+                    console.error('Error saving score:', transaction.error);
+                };
+            }).catch((error) => {
+                console.error('Error:', error);
+            });
+        }
+        
+        function openLogin() {
+            // Placeholder for login functionality
+            alert('Login feature coming soon!');
+        }
     </script>
-<script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5554807374935306"
-     crossorigin="anonymous"></script>
-
-
 </body>
-</html>
+</html

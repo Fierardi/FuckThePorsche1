@@ -3,6 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arcade Games</title>
+
+    <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="Images/Icon.png" type="image/png">
     <title>NapoliGames</title>
     <style>
@@ -587,7 +594,7 @@
             <a href="index.html" class="logo-link">NapoliGames</a>
         </div> 
         <div class="nav-links">
-            <a href="index.html">Home</a>
+            <a href="games.html">Games</a>
             <a href="#" onclick="toggleSearch()">Search</a>
             <a href="updates.html">Updates</a>
             <a href="#" onclick="openLogin()">Account</a>
@@ -599,336 +606,30 @@
         <input type="text" id="search-input" placeholder="Search for games..." oninput="searchGames()">
     </div>
 
-    <!-- Games Section -->
+</head>
+<body>
     <section class="games-section" id="games-section">
-        <h2 class="section-title">All Games</h2>
-
-        
+        <h2 class="section-title">Racing Games</h2>
         <div class="game-container" id="game-container">
-            <!-- Game Card 1 -->
-            <div class="game-card" onclick="openGame('https://blockblast-unblocked.github.io/')" data-title="Block Blast">
-                <img src="Images/BlockIcon.jpg" alt="Block Blast">
-                <h2>Block Blast</h2>
+            <!-- Racing Game Cards -->
+            <div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g89/class-899')" data-title="Cow Bay">
+                <img src="Images/CowBayIcon.jpg" alt="Cow Bay">
+                <h2>Cow Bay</h2>
             </div>
-        
-            <!-- Game Card 2 -->
-            <div class="game-card" onclick="openGame('https://hextris.io/')" data-title="Hextris">
-                <img src="Images/HextrisIcon.webp" alt="Hextris">
-                <h2>Hextris</h2>
+
+            <div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g77/class-667')" data-title="We Skate">
+                <img src="Images/WeSkateIcon.jpg" alt="We Skate">
+                <h2>We Skate</h2>
             </div>
-        
-            <!-- Game Card 3 -->
-            <div class="game-card" onclick="openGame('https://snake.googlemaps.com/')" data-title="Google Maps Snake">
-                <img src="Images/SnakeIcon.png" alt="Google Maps Snake">
-                <h2>Google Maps Snake</h2>
+
+            <div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g58/class-212/')" data-title="Moto X3M Winter">
+                <img src="Images/MotoX3MIcon.jpg" alt="Moto X3M Winter">
+                <h2>Moto X3M Winter</h2>
             </div>
-            
-            <!-- Game Card 4 -->
-            <div class="game-card" onclick="openGame('https://specials.manoramaonline.com/Mobile/2022/2048-game/index.html')" data-title="2048">
-                <img src="Images/2048Icon.png" alt="2048">
-                <h2>2048</h2>
-            </div>
-        
-            <!-- Game Card 5 -->
-            <div class="game-card" onclick="openGame('https://games-site.github.io/projects/a-small-world-cup/index.html')" data-title="A Small World Cup">
-                <img src="Images/aSmallWorldCupIcon.png" alt="A Small World Cup">
-                <h2>A Small World Cup</h2>
-            </div>
-        
-            <!-- Game Card 6 -->
-            <div class="game-card" onclick="openGame('https://playpager.com/blackjack-game/')" data-title="Blackjack">
-                <img src="Images/blackJackIcon.png" alt="Blackjack">
-                <h2>Blackjack</h2>
-            </div>
-            
-            <!-- Displaying the first 12 games for demo - more can be loaded with a button -->
-            <div class="game-card" onclick="openGame('https://games-site.github.io/projects/ball-sort-puzzle/index.html')" data-title="Ball Sort Puzzle">
-                <img src="Images/BallSortIcon.jpeg" alt="Ball Sort Puzzle">
-                <h2>Ball Sort Puzzle</h2>
-            </div>
-        
-            <div class="game-card" onclick="openGame('https://games-site.github.io/projects/stickman-hook/index.html')" data-title="Stickman Hook">
-                <img src="Images/stickMannicon.jpg" alt="Stickman Hook">
-                <h2>Stickman Hook</h2>
-            </div>
-        
-            <div class="game-card" onclick="openGame('https://idle-startup-tycoon.github.io/file/')" data-title="idle-startup-tycoon">
-                <img src="Images/idelStartUpIcon.png" alt="Idle Startup Tycoon">
-                <h2>Idle Startup Tycoon</h2>
-            </div>    
-        
-            <div class="game-card" onclick="openGame('https://games-site.github.io/projects/paperio2/index.html')" data-title="paperio2">
-                <img src="Images/PaperIo2.jpg" alt="Paper io 2">
-                <h2>Paper io 2</h2>    
-            </div>
-            
-            <div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g5/class-472/')" data-title="drift boss">
-                <img src="Images/DriftBossIcon.png" alt="Drift Boss">
-                <h2>Drift Boss</h2>    
-            </div>
-        
-            <div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g22/class-376/')" data-title="James Gun">
-                <img src="Images/jamesGunIcon.jpg" alt="James Gun">
-                <h2>James Gun</h2>    
-            </div>
-  <!-- Game Card 13 -->
-  <div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g16/class-421/')" data-title="Blumji Slime">
-    <img src="Images/blumjiSlimeIcon.png" alt="Game Thumbnail 13">
-    <h2>Blumji Slime</h2>    
-</div>
 
-<!-- Game Card 14 -->
-<div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g22/class-393/')" data-title="Trafic Rush">
-    <img src="Images/traficRushIcon.jpeg" alt="Game Thumbnail 14">
-    <h2>Trafic Rush</h2>    
-</div>
-
-<!-- Game Card 15 -->
-<div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g177/class-333/')" data-title="Basketball">
-    <img src="Images/Play Basketball icon.png" alt="Game Thumbnail 15">
-    <h2>Basketball</h2>    
-</div>
-
-<!-- Game Card 16 -->
-<div class="game-card" onclick="openGame('https://clockmantellstime.github.io/unblocked/territorial.html')" data-title="territorial.Io">
-<img src="Images/terriTolialIcon.png" alt="Game Thumbnail 16">
-<h2>territorial.Io</h2>    
-</div>
-
-<!-- Game Card 17 -->
-<div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g97/class-412/')" data-title="DreadHead">
-<img src="Images/dreadHeadIcon.jpeg" alt="Game Thumbnail 17">
-<h2>DreadHead</h2>    
-</div>
-
-<!-- Game Card 18 -->
-<div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g4/class-196/')" data-title="Trivia">
-<img src="Images/TriviaIcon.png" alt="Game Thumbnail 18">
-<h2>Trivia Crack</h2>    
-</div>
-
-<!-- Game Card 18 -->
-<div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g2/class-627/')" data-title="Penalty Shooters 2">
-<img src="Images/PenaltyShootersIcon.jpg" alt="Game Thumbnail 19">
-<h2>Penalty Shooters 2</h2>    
-</div>
-
-<!-- Game Card 18 -->
-<div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g77/class-829/')" data-title="Monkey Markt">
-<img src="Images/Monkey.webp" alt="Game Thumbnail 20">
-<h2>Monkey Markt</h2>    
-</div>
-
-<div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g2/class-417/')" data-title="Stacktris">
-<img src="Images/Stacktris.jpg" alt="Game Thumbnail 21">
-<h2>Stacktris</h2>    
-</div>
-
-<div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g26/class-444/')" data-title="Subway Surfers">
-<img src="Images/SooubwasIcon.webp" alt="Game Thumbnail 22">
-<h2>Subway Surfers</h2>    
-</div>
-
-
-<div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g3/class-309/')" data-title="Cow Bay">
-<img src="Images/CowBayIcon.webp" alt="Game Thumbnail 23">
-<h2>Cow Bay</h2>    
-</div>
-
-
-<div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g4/class-174/')" data-title="We Scate">
-<img src="Images/weIcon.jpg" alt="Game Thumbnail 25">
-<h2>We Skate</h2>    
-</div>
-
-<div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g69/class-684')" data-title="Unicycle Hero">
-<img src="Images/Unicycle HeroIcon.jpg" alt="Game Thumbnail 26">
-<h2>Unicycle Hero</h2>    
-</div>
-
-<div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g20/class-401')" data-title="Drive Mad">
-<img src="Images/friveMadIcon.png" alt="Game Thumbnail 27">
-<h2>Drive Mad</h2>    
-</div>
-
-<div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g8/class-129')" data-title="Unicycle Legend">
-<img src="Images/UnicycleLegendIcon.webp" alt="Game Thumbnail 28">
-<h2>Unicycle Legend </h2>    
-</div>
-
-<div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g16/class-419/')" data-title="Blumji Ball">
-<img src="Images/BlumjiBall.jpg" alt="Game Thumbnail 28">
-<h2>Blumji Ball </h2>    
-</div>
-
-<div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g5/class-451')" data-title="Tiny Fishing">
-<img src="Images/TFIcon.jpeg" alt="Game Thumbnail 28">
-<h2>Tiny Fishing </h2>    
-</div>
-
-<div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g4/class-187/')" data-title="Rhomb">
-<img src="Images/Rhomb.png" alt="Game Thumbnail 28">
-<h2>Rhomb</h2>    
-</div>
-
-<div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g4/class-176')" data-title="Arrow Pathway">
-<img src="Images/arrowPathIcon.jpg" alt="Game Thumbnail 28">
-<h2>Arrow Pathway </h2>    
-</div>
-
-<div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g4/class-225/')" data-title="Lords of Gomoku">
-<img src="Images/LOGIcon.jpg" alt="Game Thumbnail 24">
-<h2>Lords of Gomoku</h2>    
-</div>
-
-
-<div class="game-card" onclick="openGame('https://openguessr.com//')" data-title="Open Guessr">
-<img src="Images/openGuessrIcon.png" alt="Game Thumbnail 24">
-<h2>Open Guessr</h2>    
-</div>
-
-<div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g6/class-150')" data-title="flags maniac">
-<img src="Images/map.png" alt="Game Thumbnail 24">
-<h2>Flags Maniac</h2>    
-</div>
-
-<div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g16/class-427')" data-title="Blumji Castle">
-<img src="Images/blumjiCastleIcon.webp" alt="Game Thumbnail 24">
-<h2>Blumgi Castle</h2>    
-</div>
-
-<div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g16/class-413')" data-title="Blumgi Rocket">
-<img src="Images/blumgiRocketIcon.jpg" alt="Game Thumbnail 24">
-<h2>Blumgi Rocket</h2>    
-</div>
-
-<div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g69/class-636')" data-title="Swingo">
-<img src="Images/swingoIcon.png" alt="Game Thumbnail 24">
-<h2>Swingo</h2>    
-</div>
-
-<div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g72/class-622')" data-title="Idle Miner">
-<img src="Images/idleMinerIcon.png" alt="Game Thumbnail 24">
-<h2>Idle Miner Tycoon</h2>    
-</div>
-
-<div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g4/class-198/')" data-title="UnpuzzleR">
-<img src="Images/retroHighwayIcon.jpg" alt="Game Thumbnail 24">
-<h2>UnpuzzleR</h2>    
-</div>
-
-<div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g77/class-49/')" data-title="Super Fowlst 2">
-<img src="Images/superFowelst2.png" alt="Game Thumbnail 24">
-<h2>Super Fowlst 2</h2>    
-</div>
-
-<div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g69/class-628/')" data-title="Super Liquid Soccer">
-<img src="Images/superLiquidSoccerIcon.png" alt="Game Thumbnail 24">
-<h2>Super Liquid Soccer</h2>    
-</div>
-
-<div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g22/class-398')" data-title="HYPERSNAKE">
-<img src="Images/hyperSnakeIcon.png" alt="Game Thumbnail 24">
-<h2>HYPERSNAKE</h2>    
-</div>
-
-<div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g2/class-415')" data-title="Sausage Flip">
-<img src="Images/sausageIcon.webp" alt="Game Thumbnail 24">
-<h2>Sausage Flip</h2>    
-</div>
-
-<div class="game-card" onclick="openGame('https://guesswhereyouare.com/')" data-title="guesswhereyouare">
-<img src="Images/guessIcon.png" alt="Game Thumbnail 24">
-<h2>guesswhereyouare</h2>    
-</div>
-
-<div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g7/class-94/')" data-title="cats love cake 2">
-<img src="Images/catIcon.png" alt="Game Thumbnail 24">
-<h2>cats love cake 2</h2>    
-</div>
-
-<div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g2/class-629/')" data-title="Stick Fighter">
-<img src="Images/stickIcon.png" alt="Game Thumbnail 24">
-<h2>Stick Fighter</h2>    
-</div>
-
-<div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g5/class-460/')" data-title="Moto X3M Winter">
-<img src="Images/Moto X3M Winter.png" alt="Game Thumbnail 24">
-<h2>Moto X3M Winter</h2>    
-</div>
-
-<div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g22/class-364/')" data-title="TAG">
-<img src="Images/TAG.png" alt="Game Thumbnail 24">
-<h2>TAG</h2>    
-</div>
-
-<div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g72/class-764/')" data-title="Panda: Bubble Shooter">
-<img src="Images/Panda.jpg" alt="Game Thumbnail 24">
-<h2>Panda: Bubble Shooter</h2>    
-</div>
-
-<div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g4/class-186/')" data-title="Lines to FIll">
-<img src="Images/lines.png" alt="Game Thumbnail 24">
-<h2>Lines to Fill</h2>    
-</div>
-
-<div class="game-card" onclick="openGame('https://d2drhksbtcqozo.cloudfront.net/casino/games-mt/roulettenouveau/index.html?gameid=roulettenouveau&jurisdiction=MT&channel=web&moneymode=fun')" data-title="Roulette">
-<img src="Images/roulette.png" alt="Game Thumbnail 24">
-<h2>Roulette</h2>    
-</div>
-
-
-
-</div>
-    </section>
-    
-<!-- Categories Section -->
-<section class="categories-section">
-    <h2 class="section-title">Game Categories</h2>
-    <p class="section-subtitle">Find games that match your interests and playing style.</p>
-    
-    <div class="categories-container">
-        <!-- Arcade Category -->
-        <a href="comingSoon.html" class="category-card">
-            <div class="category-icon">🎮</div>
-            <h3 class="category-title">Arcade</h3>
-            <p class="category-desc">Classic gameplay with simple controls and increasing difficulty levels.</p>
-        </a>
-        
-        <!-- Puzzle Category -->
-        <a href="comingSoon.html" class="category-card">
-            <div class="category-icon">🧩</div>
-            <h3 class="category-title">Puzzle</h3>
-            <p class="category-desc">Challenge your mind with brain teasers and logic puzzles.</p>
-        </a>
-        
-        <!-- Sports Category -->
-        <a href="comingSoon.html" class="category-card">
-            <div class="category-icon">⚽</div>
-            <h3 class="category-title">Sports</h3>
-            <p class="category-desc">Competitive games based on real-world sports and activities.</p>
-        </a>
-        
-        <!-- Racing Category -->
-        <a href="comingSoon.html" class="category-card">
-            <div class="category-icon">🏎️</div>
-            <h3 class="category-title">Racing</h3>
-            <p class="category-desc">Test your reflexes with fast-paced racing games.</p>
-        </a>
-    </div>
-</section>
-    
-    <!-- Featured Game Section -->
-    <section class="featured-section">
-        <div class="featured-container">
-            <div class="featured-image">
-                <img src="Images/BlockIcon.jpg" alt="Featured Game">
-            </div>
-            
-            <div class="featured-content">
-                <h2 class="featured-title">Featured: Block Blast</h2>
-                <p class="featured-desc">Block Blast combines strategy and quick thinking in an addictive puzzle experience. Clear blocks, create powerful combos, and challenge yourself with increasingly difficult levels.</p>
-                <button class="featured-button" onclick="openGame('https://blockblast-unblocked.github.io/')">Play Now</button>
+            <div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g72/class-350/')" data-title="Unicycle Legend">
+                <img src="Images/UnicycleLegendIcon.webp" alt="Unicycle Legend">
+                <h2>Unicycle Legend</h2>
             </div>
         </div>
     </section>
@@ -954,7 +655,7 @@
         </div>
         <p>Copyright &copy; 2025 NapoliGames. All rights reserved.</p>
     </footer>
-
+    
     <script>
         // Function to open game in modal
         function openGame(url) {
@@ -1134,3 +835,6 @@
     </script>
 </body>
 </html
+
+
+
