@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
     <link rel="icon" href="Images/Icon.png" type="image/png">
     <title>NapoliGames</title>
 
@@ -603,7 +604,7 @@
             <a href="chat.html">Chat</a>
             <a href="#" onclick="toggleSearch()">Search</a>
             <a href="updates.html">Updates</a>
-            <a href="#" onclick="openLogin()">Account</a>
+            <a href="#" id="login-btn">Account</a>
         </div>
     </header>
 
@@ -1202,6 +1203,27 @@ function updateFeaturedGame() {
 
 // Run the update function when the page loads
 document.addEventListener('DOMContentLoaded', updateFeaturedGame);
+
+ if (window.netlifyIdentity) {
+        window.netlifyIdentity.on('init', user => {
+            console.log('Netlify Identity initialized:', user);
+        });
+
+        window.netlifyIdentity.on('login', user => {
+            console.log('User logged in:', user);
+            window.netlifyIdentity.close();
+        });
+
+        window.netlifyIdentity.on('logout', () => {
+            console.log('User logged out');
+        });
+
+        window.netlifyIdentity.init();
+    }
+
+    document.getElementById('login-btn').addEventListener('click', () => {
+        window.netlifyIdentity.open();
+    });
 
     </script>
 </body>

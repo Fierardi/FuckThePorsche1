@@ -6,6 +6,7 @@
   <link rel="icon" href="Images/Icon.png" type="image/png">
   <title>NapoliGames</title>
   <script src="https://cdn.ably.io/lib/ably.min-1.js"></script>
+  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@400;600&display=swap" rel="stylesheet" />
     
   <!-- Google tag (gtag.js) -->
@@ -18,8 +19,6 @@
   gtag('config', 'G-WGE5P95VRW');
 </script>
 
-
-    
     <style>
     :root {
       --primary-font: 'SF Pro Display', sans-serif;
@@ -29,16 +28,23 @@
     }
 
     * { box-sizing: border-box; }
+    
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+    
     body {
       font-family: var(--primary-font);
-      margin: 0;
       padding-top: 44px;
       line-height: 1.5;
       -webkit-font-smoothing: antialiased;
       color: var(--apple-black);
       position: relative;
+      display: flex;
+      flex-direction: column;
       min-height: 100vh;
-      /* Remove background-image here */
     }
 
     /* Add a full screen background container */
@@ -167,6 +173,29 @@
     .username input:focus {
       outline-color: #007aff;
     }
+    .logged-in-name {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(0, 122, 255, 0.1); /* subtle Apple blue tint */
+  color: var(--apple-blue);
+  font-weight: 600;
+  font-size: 1rem;
+  padding: 6px 14px;
+  border-radius: 18px;
+  box-shadow: 0 2px 8px rgba(0, 122, 255, 0.3);
+  user-select: none;
+  cursor: default;
+  transition: box-shadow 0.3s ease;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.logged-in-name:hover {
+  box-shadow: 0 4px 16px rgba(0, 122, 255, 0.5);
+}
+
     footer {
       background: #f2f2f7;
       padding: 1rem;
@@ -175,6 +204,7 @@
       color: #666;
       border-top: 1px solid #d1d1d6;
       user-select: none;
+      margin-top: auto;
     }
 
         /* Header Styling */
@@ -581,19 +611,7 @@
             transition: transform 0.3s ease;
         }
         
-        /* Footer */
-        footer {
-            background-color: #f5f5f7;
-            padding: 40px 0;
-            text-align: center;
-            color: var(--apple-gray);
-            font-size: 12px;
-        }
-        
-        footer p {
-            margin-bottom: 8px;
-        }
-        
+        /* Footer Links */
         .footer-links {
             display: flex;
             justify-content: center;
@@ -713,7 +731,7 @@
             <a href="index.html">Home</a>
             <a href="games.html">Games</a>
             <a href="updates.html">Updates</a>
-            <a href="#" onclick="openLogin()">Account</a>
+            <a href="#" id="login-btn">Account</a>
         </div>
     </header>
 
@@ -721,14 +739,15 @@
     <h1>Napoli-Chat</h1>
 
     <div class="username">
-      <input type="text" id="username" placeholder="Your name" />
-    </div>
+    <input type="text" id="username" placeholder="Your name" />
+    <div id="user-display" style="margin-top: 8px; font-style: italic; color: #ffffff;"></div>
+  </div>
 
     <div id="chat-container">
       <div id="chat"></div>
       <div class="input-row">
-        <input type="text" id="messageInput" placeholder="Type a message..." />
-        <button onclick="sendMessage()">Send</button>
+        <input type="text" id="msg" placeholder="Type a message..." />
+        <button id="send">Send</button>
       </div>
     </div>
     
@@ -745,52 +764,129 @@
     </footer>
 
   <script>
-    // Your Ably API key
-    const ABLY_API_KEY = 'CEyfHA.dkxISQ:yvY2NL7LOBe9f8Oti9Jcf6FucvSxxrkkegWSB1R-BJQ';
+  const ably = new Ably.Realtime('pAtgVw.EXDaZQ:wd-xVxcDaSS_l_u-Y8fRZsPsxcpWzH8PvsZPKzRkbDY');
+  const channel = ably.channels.get('napoligames-chat');
+  const usernameInput = document.getElementById('username');
+  const userDisplay = document.getElementById('user-display');
+  const chatDiv = document.getElementById('chat');
+  const input = document.getElementById('msg');
+  const sendBtn = document.getElementById('send');
 
-    // Initialize Ably Realtime client
-    const ably = new Ably.Realtime(ABLY_API_KEY);
-    const channel = ably.channels.get('public-chat');
+  // Funktion: Netlify Benutzername holen (full_name bevorzugt)
+  function getUserName() {
+    const user = window.netlifyIdentity.currentUser();
+    if (!user) return null;
 
-    // Display a message in chat box
-    function displayMessage(username, text) {
-      const chat = document.getElementById('chat');
-      const currentUser = document.getElementById('username').value.trim();
-
-      const p = document.createElement('p');
-      p.textContent = `${username}: ${text}`;
-      if (username === currentUser) p.classList.add('self');
-
-      chat.appendChild(p);
-      chat.scrollTop = chat.scrollHeight;
+    if (user.user_metadata && user.user_metadata.full_name && user.user_metadata.full_name.trim() !== '') {
+      return user.user_metadata.full_name.trim();
     }
 
-    // Send message function
-    function sendMessage() {
-      const usernameInput = document.getElementById('username');
-      const messageInput = document.getElementById('messageInput');
-
-      const username = usernameInput.value.trim() || 'Anonymous';
-      const text = messageInput.value.trim();
-
-      if (!text) return;
-
-      const message = { username, text };
-
-      // Publish message to Ably channel
-      channel.publish('chat-message', message);
-
-      messageInput.value = '';
-      messageInput.focus();
+    if (user.email) {
+      return user.email;
     }
 
-    // Subscribe to messages from Ably channel
-    channel.subscribe('chat-message', msg => {
-      const { username, text } = msg.data;
-      displayMessage(username, text);
+    return null;
+  }
+
+  // UI aktualisieren je nach Login-Status
+  function updateUserDisplay() {
+    const username = getUserName();
+    if (username) {
+      usernameInput.style.display = 'none';
+      userDisplay.textContent = `Logged in as ${username}`;
+    } else {
+      usernameInput.style.display = 'inline-block';
+      userDisplay.textContent = '';
+    }
+  }
+
+  // Netlify Identity initialisieren
+  if (window.netlifyIdentity) {
+    window.netlifyIdentity.on('init', user => {
+      updateUserDisplay();
     });
-    
-  </script>
+    window.netlifyIdentity.init();
+  }
+
+  // Login Widget öffnen
+  document.getElementById('login-btn').addEventListener('click', () => {
+    window.netlifyIdentity.open();
+  });
+
+  // Login Event
+  window.netlifyIdentity.on('login', user => {
+    updateUserDisplay();
+    window.netlifyIdentity.close();
+  });
+
+  // Logout Event
+  window.netlifyIdentity.on('logout', () => {
+    updateUserDisplay();
+  });
+
+  // Username aus localStorage laden
+  window.addEventListener('load', () => {
+    const savedUsername = localStorage.getItem('napoligamesUsername');
+    if (savedUsername && !getUserName()) {
+      usernameInput.value = savedUsername;
+    }
+  });
+
+  // Username in localStorage speichern
+  usernameInput.addEventListener('change', () => {
+    const username = usernameInput.value.trim();
+    if (username) {
+      localStorage.setItem('napoligamesUsername', username);
+    }
+  });
+
+  // Nachricht anzeigen
+  function displayMessage(username, text) {
+    const currentUserName = getUserName();
+
+    const p = document.createElement('p');
+    p.innerText = `${username}: ${text}`;
+
+    if (username === currentUserName) {
+      p.classList.add('self'); // CSS-Klasse für eigene Nachrichten
+    }
+
+    chatDiv.appendChild(p);
+    chatDiv.scrollTop = chatDiv.scrollHeight;
+  }
+
+  // Chat-Historie laden
+  channel.history((err, resultPage) => {
+    if (err) {
+      console.error('Error loading history:', err);
+      return;
+    }
+    resultPage.items.reverse().forEach(msg => {
+      displayMessage(msg.name, msg.data);
+    });
+  });
+
+  // Neue Nachrichten abonnieren
+  channel.subscribe(msg => {
+    displayMessage(msg.name, msg.data);
+  });
+
+  // Nachricht senden
+  sendBtn.addEventListener('click', () => {
+    const text = input.value.trim();
+    if (!text) return;
+
+    const name = getUserName() || usernameInput.value.trim() || 'User';
+
+    channel.publish(name, text);
+    input.value = '';
+  });
+
+  // Enter-Taste sendet Nachricht
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter') sendBtn.click();
+  });
+</script>
 
 </body>
 </html>

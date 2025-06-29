@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
     <link rel="icon" href="Images/Icon.png" type="image/png">
     <title>NapoliGames</title>
 
@@ -592,19 +593,21 @@
 
 
 <body>
-    <!-- Header -->
-    <header class="header">
-        <div class="logo">
-            <a href="index.html" class="logo-link">NapoliGames</a>
-        </div> 
-        <div class="nav-links">
-            <a href="games.html">Games</a>
-            <a href="chat.html">Chat</a>
-            <a href="#" onclick="toggleSearch()">Search</a>
-            <a href="updates.html">Updates</a>
-            <a href="#" onclick="openLogin()">Account</a>
-        </div>
-    </header>
+  <!-- Header -->
+  <header class="header">
+    <div class="logo">
+      <a href="index.html" class="logo-link">NapoliGames</a>
+    </div>
+    <div class="nav-links">
+      <a href="games.html">Games</a>
+      <a href="chat.html">Chat</a>
+      <a href="#" onclick="toggleSearch()">Search</a>
+      <a href="updates.html">Updates</a>
+      <a href="#" id="login-btn">Account</a>
+    </div>
+  </header>
+
+
 
     <!-- Search Bar Container (initially hidden) -->
     <div class="search-container" id="search-container">
@@ -757,7 +760,37 @@
     </footer>
 
     <script>
-        // Function to open game in modal
+
+ document.addEventListener('DOMContentLoaded', () => {
+    if (!window.netlifyIdentity) {
+      console.error('Netlify Identity widget not loaded');
+      return;
+    }
+
+    window.netlifyIdentity.init();
+
+    // Wait a bit to ensure user status is checked
+    setTimeout(() => {
+      const user = window.netlifyIdentity.currentUser();
+      console.log('Current user after init:', user);
+
+      if (!user) {
+        console.log('No user logged in, opening login widget...');
+        window.netlifyIdentity.open('login');
+      } else {
+        console.log('User is already logged in, not opening login widget.');
+      }
+    }, 100); // small delay to let Netlify Identity finish init
+
+    const loginBtn = document.getElementById('login-btn');
+    if (loginBtn) {
+      loginBtn.addEventListener('click', e => {
+        e.preventDefault();
+        window.netlifyIdentity.open('login');
+      });
+    }
+  });
+
         function openGame(url) {
             document.getElementById("game-frame").src = url;
             const modal = document.getElementById("game-modal");
@@ -983,6 +1016,10 @@ function updateFeaturedGame() {
 // Run the update function when the page loads
 document.addEventListener('DOMContentLoaded', updateFeaturedGame);
 
+
+
+
+
     </script>
 </body>
-</html
+</html>
