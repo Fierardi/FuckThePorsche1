@@ -6,11 +6,17 @@
   "background_color": "#000000",
   "theme_color": "#000000",
   "icons": [
-    {
-      "src": "/CoinIcon.png",
+     {
+      "src": "icon-512-any.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ]
 }
