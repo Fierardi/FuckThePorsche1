@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<link rel="manifest" href="/manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="theme-color" content="#000000">
+<link rel="apple-touch-icon" href="/icon-512.png">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MoneyFactory - Main Menu</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 50%, #16213e 100%);
+      color: white;
+      font-family: 'Orbitron', monospace;
+      flex-direction: column;
+      gap: 40px;
+      overflow: hidden;
+      position: relative;
+    }
+    
+    /* Animated background particles */
+    .bg-particles {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+    
+    .particle {
+      position: absolute;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      animation: float 8s ease-in-out infinite;
+    }
+    
+    @keyframes float {
+      0%, 100% { 
+        transform: translateY(0px) rotate(0deg) scale(1); 
+        opacity: 0.1; 
+      }
+      33% { 
+        transform: translateY(-30px) rotate(120deg) scale(1.2); 
+        opacity: 0.3; 
+      }
+      66% { 
+        transform: translateY(-15px) rotate(240deg) scale(0.8); 
+        opacity: 0.2; 
+      }
+    }
+    
+    /* Factory icons floating in background */
+    .bg-factory-icons {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+      opacity: 0.05;
+    }
+    
+    .bg-icon {
+      position: absolute;
+      font-size: 4rem;
+      animation: floatIcon 12s ease-in-out infinite;
+    }
+    
+    @keyframes floatIcon {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-40px) rotate(180deg); }
+    }
+    
+    /* Main content container */
+    .menu-container {
+      z-index: 10;
+      text-align: center;
+      position: relative;
+    }
+    
+    /* Title styling */
+    h1 {
+      font-size: 5rem;
+      font-weight: 900;
+      margin-bottom: 20px;
+      background: linear-gradient(45deg, #00d4ff, #ff6b00, #ffdd00, #00ff7f);
+      background-size: 400% 400%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: gradientShift 4s ease-in-out infinite;
+      text-shadow: 0 0 50px rgba(255, 255, 255, 0.3);
+      position: relative;
+    }
+    
+    h1::before {
+      content: '💰';
+      position: absolute;
+      left: -80px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 3rem;
+      animation: bounce 2s ease-in-out infinite;
+    }
+    
+    h1::after {
+      content: '🏭';
+      position: absolute;
+      right: -80px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 3rem;
+      animation: bounce 2s ease-in-out infinite 1s;
+    }
+    
+    @keyframes gradientShift {
+      0%, 100% { background-position: 0% 50%; }
+      25% { background-position: 100% 50%; }
+      50% { background-position: 100% 100%; }
+      75% { background-position: 0% 100%; }
+    }
+    
+    @keyframes bounce {
+      0%, 100% { transform: translateY(-50%) scale(1); }
+      50% { transform: translateY(-60%) scale(1.2); }
+    }
+    
+    /* Subtitle */
+    .subtitle {
+      font-size: 1.2rem;
+      color: #00d4ff;
+      margin-bottom: 40px;
+      opacity: 0.8;
+      font-weight: 400;
+      letter-spacing: 2px;
+      animation: pulse 3s ease-in-out infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 0.8; }
+      50% { opacity: 1; }
+    }
+    
+    /* Menu buttons container */
+    .menu-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      align-items: center;
+    }
+    
+    /* Button styling */
+    .menu-btn {
+      padding: 18px 50px;
+      font-size: 1.4rem;
+      font-family: 'Orbitron', monospace;
+      font-weight: 700;
+      background: linear-gradient(135deg, #00d4ff, #0099cc);
+      border: none;
+      border-radius: 50px;
+      color: white;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0, 212, 255, 0.3);
+      letter-spacing: 1px;
+      min-width: 250px;
+    }
+    
+    .menu-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+      transition: left 0.5s ease;
+    }
+    
+    .menu-btn:hover::before {
+      left: 100%;
+    }
+    
+    .menu-btn:hover {
+      transform: translateY(-3px) scale(1.05);
+      box-shadow: 0 15px 40px rgba(0, 212, 255, 0.5);
+      background: linear-gradient(135deg, #00f0ff, #00b8e6);
+    }
+    
+    .menu-btn:active {
+      transform: translateY(-1px) scale(1.02);
+    }
+    
+    .menu-btn.secondary {
+      background: linear-gradient(135deg, #ff6b00, #e55a00);
+      box-shadow: 0 10px 30px rgba(255, 107, 0, 0.3);
+    }
+    
+    .menu-btn.secondary:hover {
+      background: linear-gradient(135deg, #ff8533, #ff6b00);
+      box-shadow: 0 15px 40px rgba(255, 107, 0, 0.5);
+    }
+    
+    .menu-btn.tertiary {
+      background: linear-gradient(135deg, #28a745, #20893a);
+      box-shadow: 0 10px 30px rgba(40, 167, 69, 0.3);
+    }
+    
+    .menu-btn.tertiary:hover {
+      background: linear-gradient(135deg, #34ce57, #28a745);
+      box-shadow: 0 15px 40px rgba(40, 167, 69, 0.5);
+    }
+    
+    /* Game info section */
+    .game-info {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+      z-index: 10;
+      opacity: 0.7;
+    }
+    
+    .game-info p {
+      margin: 5px 0;
+      font-size: 0.9rem;
+      color: #888;
+    }
+    
+    /* Loading animation */
+    .loading {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 1000;
+      background: rgba(0, 0, 0, 0.8);
+      padding: 40px;
+      border-radius: 20px;
+      text-align: center;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .spinner {
+      width: 50px;
+      height: 50px;
+      border: 4px solid rgba(0, 212, 255, 0.3);
+      border-top: 4px solid #00d4ff;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 20px;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    /* Responsive design */
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 3rem;
+      }
+      
+      h1::before,
+      h1::after {
+        font-size: 2rem;
+        left: -60px;
+        right: -60px;
+      }
+      
+      .menu-btn {
+        font-size: 1.2rem;
+        padding: 15px 40px;
+        min-width: 200px;
+      }
+      
+      .subtitle {
+        font-size: 1rem;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      h1 {
+        font-size: 2.5rem;
+      }
+      
+      h1::before,
+      h1::after {
+        display: none;
+      }
+      
+      .menu-btn {
+        font-size: 1.1rem;
+        padding: 12px 30px;
+        min-width: 180px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-particles" id="particles"></div>
+  <div class="bg-factory-icons" id="factory-icons"></div>
+  
+  <div class="menu-container">
+    <h1>MoneyFactory</h1>
+    <div class="subtitle">Build • Automate • Profit</div>
+    
+    <div class="menu-buttons">
+      <button class="menu-btn" id="startGameBtn">
+        🚀 Start Game
+      </button>
+      <button class="menu-btn secondary" id="tutorialBtn">
+        📚 How to Play
+      </button>
+      <button class="menu-btn tertiary" id="settingsBtn">
+        ⚙️ Settings
+      </button>
+    </div>
+  </div>
+  
+  <div class="game-info">
+    <p>💰 Build factories and create automated money streams</p>
+    <p>🏭 Connect paths to transport coins to the collection point</p>
+    <p>⚡ Upgrade to more powerful factories for bigger profits</p>
+  </div>
+  
+  <div class="loading" id="loading">
+    <div class="spinner"></div>
+    <p>Loading MoneyFactory...</p>
+  </div>
+
+  <script>
+    // Create animated background particles
+    function createParticles() {
+      const particlesContainer = document.getElementById('particles');
+      for (let i = 0; i < 80; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        particle.style.left = Math.random() * 100 + '%';
+        particle.style.top = Math.random() * 100 + '%';
+        particle.style.width = Math.random() * 6 + 2 + 'px';
+        particle.style.height = particle.style.width;
+        particle.style.animationDelay = Math.random() * 8 + 's';
+        particle.style.animationDuration = (Math.random() * 6 + 6) + 's';
+        particlesContainer.appendChild(particle);
+      }
+    }
+    
+    // Create floating factory icons in background
+    function createFactoryIcons() {
+      const iconsContainer = document.getElementById('factory-icons');
+      const icons = ['🏭', '⚡', '💰', '🔧', '⚙️', '📈'];
+      
+      for (let i = 0; i < 15; i++) {
+        const icon = document.createElement('div');
+        icon.className = 'bg-icon';
+        icon.textContent = icons[Math.floor(Math.random() * icons.length)];
+        icon.style.left = Math.random() * 100 + '%';
+        icon.style.top = Math.random() * 100 + '%';
+        icon.style.animationDelay = Math.random() * 12 + 's';
+        icon.style.animationDuration = (Math.random() * 8 + 10) + 's';
+        iconsContainer.appendChild(icon);
+      }
+    }
+    
+    // Show loading animation
+    function showLoading() {
+      document.getElementById('loading').style.display = 'block';
+    }
+    
+    // Add click sound effect (optional)
+    function playClickSound() {
+      // You can add audio here if desired
+      // const audio = new Audio('click.mp3');
+      // audio.play();
+    }
+    
+    // Button event listeners
+    document.getElementById('startGameBtn').addEventListener('click', () => {
+      playClickSound();
+      showLoading();
+      
+      // Simulate loading time for dramatic effect
+      setTimeout(() => {
+        // Replace 'money-factory.html' with your actual game file
+        window.location.href = 'money-factory.html';
+      }, 1500);
+    });
+    
+    document.getElementById('tutorialBtn').addEventListener('click', () => {
+      playClickSound();
+      
+      // Show tutorial modal or redirect to tutorial page
+      alert(`🎮 HOW TO PLAY MoneyFactory 🎮
+
+🏭 FACTORIES:
+• Drag factories from the right panel onto the grid
+• Normal factories (🏭) produce 1 coin, first one is free!
+• Central factories (⚡) produce 5 coins but cost more
+
+📍 PATHS:
+• Click and drag from factories to draw paths
+• Coins will follow these paths to the collection point (green box)
+• Paths can merge and connect to create complex networks
+
+💰 STRATEGY:
+• Start with free normal factories
+• Build paths to the collection point (top-right corner)
+• Earn points to buy more expensive but profitable factories
+• Create efficient networks to maximize your profits!
+
+Good luck building your money empire! 🚀`);
+    });
+    
+    document.getElementById('settingsBtn').addEventListener('click', () => {
+      playClickSound();
+      
+      // Show settings modal or redirect to settings page
+      alert(`Settings panel coming soon!`);
+    });
+    
+    // Initialize animations
+    createParticles();
+    createFactoryIcons();
+    
+    // Add some interactive hover sounds (optional)
+    document.querySelectorAll('.menu-btn').forEach(btn => {
+      btn.addEventListener('mouseenter', () => {
+        // Optional hover sound effect
+      });
+    });
+    
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        document.getElementById('startGameBtn').click();
+      }
+    });
+  </script>
+</body>
+</html>
