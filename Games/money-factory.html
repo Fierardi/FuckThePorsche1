@@ -300,7 +300,8 @@
 
 
 <script>
-// Create animated background particles
+
+  // Create animated background particles
 function createParticles() {
   const particlesContainer = document.getElementById('particles');
   for (let i = 0; i < 50; i++) {
@@ -354,6 +355,12 @@ let draggingFactoryType = null;
 let isDrawing = false;
 let currentFactoryId = null;
 let currentPath = null;
+
+// Touch/drag state
+let isDragging = false;
+let dragElement = null;
+let dragStartX = 0;
+let dragStartY = 0;
 
 // Factory cost state
 let normalFactoriesCount = 0;
@@ -420,6 +427,100 @@ function showCoinEarnEffect(points, x, y) {
   }, 1000);
 }
 
+// Touch event handlers for factory icons
+function handleTouchStart(e, factoryType) {
+  e.preventDefault();
+  const touch = e.touches[0];
+  isDragging = true;
+  dragElement = e.target;
+  draggingFactoryType = factoryType;
+  dragStartX = touch.clientX;
+  dragStartY = touch.clientY;
+  
+  // Visual feedback
+  dragElement.style.transform = 'scale(1.1)';
+  dragElement.style.opacity = '0.8';
+}
+
+function handleTouchMove(e) {
+  if (!isDragging) return;
+  e.preventDefault();
+  
+  const touch = e.touches[0];
+  // You can add visual drag feedback here if needed
+}
+
+function handleTouchEnd(e) {
+  if (!isDragging) return;
+  e.preventDefault();
+  
+  const touch = e.changedTouches[0];
+  
+  // Reset visual state
+  if (dragElement) {
+    dragElement.style.transform = '';
+    dragElement.style.opacity = '';
+  }
+  
+  // Check if dropped over canvas
+  const canvasRect = canvas.getBoundingClientRect();
+  if (touch.clientX >= canvasRect.left && touch.clientX <= canvasRect.right &&
+      touch.clientY >= canvasRect.top && touch.clientY <= canvasRect.bottom) {
+    
+    const mouseX = touch.clientX - canvasRect.left;
+    const mouseY = touch.clientY - canvasRect.top;
+    const gridX = Math.floor(mouseX / tileSize);
+    const gridY = Math.floor(mouseY / tileSize);
+
+    if (gridX >= 0 && gridX < gridSize && gridY >= 0 && gridY < gridSize &&
+        grid[gridY][gridX] === COMPONENTS.EMPTY) {
+      
+      let cost = 0;
+      if (draggingFactoryType === 'normal') {
+        cost = getNormalFactoryCost();
+      } else if (draggingFactoryType === 'central') {
+        cost = getCentralFactoryCost();
+      }
+
+      // Check if player can buy
+      if (playerPoints >= cost || (draggingFactoryType === 'normal' && normalFactoriesCount === 0)) {
+        let compType;
+        if (draggingFactoryType === 'normal') {
+          compType = COMPONENTS.FACTORY_NORMAL;
+          normalFactoriesCount++;
+          if (cost > 0) playerPoints -= cost;
+        } else {
+          compType = COMPONENTS.FACTORY_CENTRAL;
+          centralFactoriesCount++;
+          playerPoints -= cost;
+        }
+        grid[gridY][gridX] = compType;
+        const id = factoryIdCounter++;
+        factories.push({ id, x: gridX, y: gridY, type: draggingFactoryType });
+        paths[id] = [];
+        updateInfo();
+        updateCostsDisplay();
+      } else {
+        showNotification(`Not enough points! You need ${cost} points to buy a ${draggingFactoryType} factory.`);
+      }
+    }
+  }
+  
+  isDragging = false;
+  dragElement = null;
+  draggingFactoryType = null;
+}
+
+// Add touch event listeners for factory icons
+normalFactoryIcon.addEventListener('touchstart', (e) => handleTouchStart(e, 'normal'), { passive: false });
+normalFactoryIcon.addEventListener('touchmove', handleTouchMove, { passive: false });
+normalFactoryIcon.addEventListener('touchend', handleTouchEnd, { passive: false });
+
+centralFactoryIcon.addEventListener('touchstart', (e) => handleTouchStart(e, 'central'), { passive: false });
+centralFactoryIcon.addEventListener('touchmove', handleTouchMove, { passive: false });
+centralFactoryIcon.addEventListener('touchend', handleTouchEnd, { passive: false });
+
+// Keep existing drag and drop for desktop
 normalFactoryIcon.addEventListener('dragstart', (e) => {
   draggingFactoryType = 'normal';
 });
@@ -480,12 +581,27 @@ canvas.addEventListener('drop', (e) => {
   }
 });
 
-canvas.addEventListener('mousedown', (e) => {
+// Enhanced touch support for path drawing
+function getEventPos(e) {
   const rect = canvas.getBoundingClientRect();
-  const mouseX = e.clientX - rect.left;
-  const mouseY = e.clientY - rect.top;
-  const gridX = Math.floor(mouseX / tileSize);
-  const gridY = Math.floor(mouseY / tileSize);
+  if (e.touches) {
+    return {
+      x: e.touches[0].clientX - rect.left,
+      y: e.touches[0].clientY - rect.top
+    };
+  } else {
+    return {
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top
+    };
+  }
+}
+
+function startDrawing(e) {
+  e.preventDefault();
+  const pos = getEventPos(e);
+  const gridX = Math.floor(pos.x / tileSize);
+  const gridY = Math.floor(pos.y / tileSize);
 
   if (gridX < 0 || gridX >= gridSize || gridY < 0 || gridY >= gridSize) return;
 
@@ -497,26 +613,26 @@ canvas.addEventListener('mousedown', (e) => {
     paths[currentFactoryId] = currentPath;
     currentPath.push({ x: gridX, y: gridY });
   }
-});
+}
 
-canvas.addEventListener('mousemove', (e) => {
+function continueDrawing(e) {
   if (!isDrawing) return;
+  e.preventDefault();
 
-  const rect = canvas.getBoundingClientRect();
-  const mouseX = e.clientX - rect.left;
-  const mouseY = e.clientY - rect.top;
-  const gridX = Math.floor(mouseX / tileSize);
-  const gridY = Math.floor(mouseY / tileSize);
+  const pos = getEventPos(e);
+  const gridX = Math.floor(pos.x / tileSize);
+  const gridY = Math.floor(pos.y / tileSize);
 
   if (gridX < 0 || gridX >= gridSize || gridY < 0 || gridY >= gridSize) return;
 
   if (!currentPath.find(p => p.x === gridX && p.y === gridY)) {
     currentPath.push({ x: gridX, y: gridY });
   }
-});
+}
 
-canvas.addEventListener('mouseup', (e) => {
+function stopDrawing(e) {
   if (!isDrawing) return;
+  e.preventDefault();
   isDrawing = false;
 
   if (!currentFactoryId || !currentPath) return;
@@ -552,7 +668,16 @@ canvas.addEventListener('mouseup', (e) => {
 
   currentFactoryId = null;
   currentPath = null;
-});
+}
+
+// Add both mouse and touch event listeners for path drawing
+canvas.addEventListener('mousedown', startDrawing);
+canvas.addEventListener('mousemove', continueDrawing);
+canvas.addEventListener('mouseup', stopDrawing);
+
+canvas.addEventListener('touchstart', startDrawing, { passive: false });
+canvas.addEventListener('touchmove', continueDrawing, { passive: false });
+canvas.addEventListener('touchend', stopDrawing, { passive: false });
 
 class Coin {
   constructor(factoryId) {
