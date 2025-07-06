@@ -1,9 +1,10 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>MoneyFactory - Polished Edition</title>
+<title>MoneyFactory</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
   
@@ -175,6 +176,15 @@
   .iconBox[data-type="central"]:hover {
     box-shadow: 0 8px 25px rgba(231, 76, 60, 0.5);
   }
+
+  .iconBox[data-type="collection"] {
+    background: linear-gradient(135deg, #00ff6a, #0d9747);
+    box-shadow: 0 5px 15px #1d7040;
+  }
+  
+  .iconBox[data-type="collection"]:hover {
+    box-shadow: 0 8px 25px #1d7040;
+  }
   
   .factoryCost {
     font-size: 1.1rem;
@@ -184,6 +194,24 @@
     text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
   }
   
+  .factory-upgrade {
+    font-size: 0.9rem;
+    color: #f7df5c;
+    text-align: center;
+    margin-top: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .factory-upgrade:hover {
+    color: #ffb347;
+    text-shadow: 0 0 10px rgba(255, 179, 71, 0.5);
+  }
+  
+  .factory-hidden{
+    display: none;
+  }
+
   .insufficient-funds {
     color: #ff4757 !important;
     animation: pulse 1s ease-in-out infinite;
@@ -271,6 +299,7 @@
       height: 400px;
     }
   }
+  
 </style>
 </head>
 <body>
@@ -285,23 +314,28 @@
   <canvas id="factory"width="500" height="500"></canvas>
 
   <div id="factoryIconWrapper">
+
+    <div class="factory-section">
+      <div id="collectionBox" class="iconBox" draggable="true" data-type="collection"></div>
+      <div id="factoryCost" class="factoryCost">Cost: 0 </div>
+    </div>
+
     <div class="factory-section">
       <div id="normalFactory" class="iconBox" draggable="true" data-type="normal">🏭</div>
       <div id="normalCost" class="factoryCost">Cost: 0 </div>
+      <div id="normalUpgrade" class="factory-upgrade">Upgrade (Lvl 1)</div>
     </div>
 
     <div class="factory-section">
       <div id="centralFactory" class="iconBox" draggable="true" data-type="central">⚡</div>
       <div id="centralCost" class="factoryCost">Cost: 120</div>
+      <div id="centralUpgrade" class="factory-upgrade">Upgrade (Lvl 1)</div>
     </div>
   </div>
 </div>
 
-
-
 <script>
-
-  // Create animated background particles
+// Create animated background particles
 function createParticles() {
   const particlesContainer = document.getElementById('particles');
   for (let i = 0; i < 50; i++) {
@@ -322,8 +356,8 @@ createParticles();
 const canvas = document.getElementById('factory');
 const ctx = canvas.getContext('2d');
 
-const gridSize = 10;
-const tileSize = 50;
+const gridSize = 7;
+const tileSize = 71;
 
 const COMPONENTS = {
   EMPTY: 0,
@@ -333,25 +367,33 @@ const COMPONENTS = {
 };
 
 const grid = Array(gridSize).fill(null).map(() => Array(gridSize).fill(COMPONENTS.EMPTY));
-grid[0][9] = COMPONENTS.COLLECTION; // Collection box top-right
 
 let factories = [];
 let factoryIdCounter = 0;
-
 let playerPoints = 0;
-
 let paths = {};
 let coins = [];
+
+// Factory upgrade levels and multipliers
+let normalFactoryLevel = 1;
+let centralFactoryLevel = 1;
+let normalFactoryMultiplier = 1;
+let centralFactoryMultiplier = 1;
 
 const info = document.getElementById('info');
 const normalCostElem = document.getElementById('normalCost');
 const centralCostElem = document.getElementById('centralCost');
+const normalUpgradeElem = document.getElementById('normalUpgrade');
+const centralUpgradeElem = document.getElementById('centralUpgrade');
 
 const normalFactoryIcon = document.getElementById('normalFactory');
 const centralFactoryIcon = document.getElementById('centralFactory');
+const collectionIcon = document.getElementById('collectionBox');
+
+const normalFactoryContainer = normalFactoryIcon.parentElement;
+const centralFactoryContainer = centralFactoryIcon.parentElement;
 
 let draggingFactoryType = null;
-
 let isDrawing = false;
 let currentFactoryId = null;
 let currentPath = null;
@@ -362,7 +404,9 @@ let dragElement = null;
 let dragStartX = 0;
 let dragStartY = 0;
 
-// Factory cost state
+// Game state
+let collectionPlaced = false;
+let normalFactoryPlaced = false;
 let normalFactoriesCount = 0;
 let centralFactoriesCount = 0;
 
@@ -370,8 +414,18 @@ let centralFactoriesCount = 0;
 function getNormalFactoryCost() {
   return normalFactoriesCount === 0 ? 0 : 10 * (2 ** (normalFactoriesCount - 1));
 }
+
 function getCentralFactoryCost() {
   return 120 * (2 ** centralFactoriesCount);
+}
+
+// Calculate upgrade costs
+function getNormalUpgradeCost() {
+  return 50 * normalFactoryLevel;
+}
+
+function getCentralUpgradeCost() {
+  return 200 * centralFactoryLevel;
 }
 
 function updateCostsDisplay() {
@@ -380,6 +434,10 @@ function updateCostsDisplay() {
   
   normalCostElem.textContent = `Cost: ${normalCost}`;
   centralCostElem.textContent = `Cost: ${centralCost}`;
+  
+  // Update upgrade buttons
+  normalUpgradeElem.textContent = `Upgrade (Lvl ${normalFactoryLevel}) - ${getNormalUpgradeCost()}`;
+  centralUpgradeElem.textContent = `Upgrade (Lvl ${centralFactoryLevel}) - ${getCentralUpgradeCost()}`;
   
   // Add visual feedback for insufficient funds
   if (playerPoints < normalCost && normalCost > 0) {
@@ -393,10 +451,28 @@ function updateCostsDisplay() {
   } else {
     centralCostElem.classList.remove('insufficient-funds');
   }
+
+  if (playerPoints < getNormalUpgradeCost()) {
+    normalUpgradeElem.classList.add('insufficient-funds');
+  } else {
+    normalUpgradeElem.classList.remove('insufficient-funds');
+  }
+
+  if (playerPoints < getCentralUpgradeCost()) {
+    centralUpgradeElem.classList.add('insufficient-funds');
+  } else {
+    centralUpgradeElem.classList.remove('insufficient-funds');
+  }
 }
 
 function updateInfo() {
-  info.textContent = ` $: ${playerPoints}`;
+  if (!collectionPlaced) {
+    info.textContent = "📦 Place Collection Box First!";
+    info.style.color = '#ff6b00';
+  } else {
+    info.textContent = ` $: ${playerPoints}`;
+    info.style.color = '#00d4ff';
+  }
 }
 
 function showNotification(message) {
@@ -426,6 +502,39 @@ function showCoinEarnEffect(points, x, y) {
     }
   }, 1000);
 }
+
+// Upgrade functions
+function upgradeNormalFactory() {
+  const cost = getNormalUpgradeCost();
+  if (playerPoints >= cost) {
+    playerPoints -= cost;
+    normalFactoryLevel++;
+    normalFactoryMultiplier *= 1.3; // 30% increase
+    updateCostsDisplay();
+    updateInfo();
+    showNotification(`Normal Factory upgraded to Level ${normalFactoryLevel}! (${Math.round(normalFactoryMultiplier * 100)}% output)`);
+  } else {
+    showNotification(`Not enough points! You need ${cost} points to upgrade.`);
+  }
+}
+
+function upgradeCentralFactory() {
+  const cost = getCentralUpgradeCost();
+  if (playerPoints >= cost) {
+    playerPoints -= cost;
+    centralFactoryLevel++;
+    centralFactoryMultiplier *= 1.3; // 30% increase
+    updateCostsDisplay();
+    updateInfo();
+    showNotification(`Central Factory upgraded to Level ${centralFactoryLevel}! (${Math.round(centralFactoryMultiplier * 100)}% output)`);
+  } else {
+    showNotification(`Not enough points! You need ${cost} points to upgrade.`);
+  }
+}
+
+// Add event listeners for upgrades
+normalUpgradeElem.addEventListener('click', upgradeNormalFactory);
+centralUpgradeElem.addEventListener('click', upgradeCentralFactory);
 
 // Touch event handlers for factory icons
 function handleTouchStart(e, factoryType) {
@@ -475,9 +584,33 @@ function handleTouchEnd(e) {
     if (gridX >= 0 && gridX < gridSize && gridY >= 0 && gridY < gridSize &&
         grid[gridY][gridX] === COMPONENTS.EMPTY) {
       
+      // Handle collection box placement
+      if (draggingFactoryType === 'collection') {
+        if (!collectionPlaced) {
+          grid[gridY][gridX] = COMPONENTS.COLLECTION;
+          collectionPlaced = true;
+          hideCollectionIcon();
+          updateInfo();
+          showNotification("Collection box placed! Now you can build factories.");
+        } else {
+          showNotification("Collection box already placed!");
+        }
+        return;
+      }
+      
+      // Prevent factory placement if collection box not placed
+      if (!collectionPlaced) {
+        showNotification("Place the collection box first!");
+        return;
+      }
+      
       let cost = 0;
       if (draggingFactoryType === 'normal') {
         cost = getNormalFactoryCost();
+        if (!normalFactoryPlaced){
+          normalFactoryPlaced = true;
+          showCentralFactory();
+        }
       } else if (draggingFactoryType === 'central') {
         cost = getCentralFactoryCost();
       }
@@ -520,6 +653,10 @@ centralFactoryIcon.addEventListener('touchstart', (e) => handleTouchStart(e, 'ce
 centralFactoryIcon.addEventListener('touchmove', handleTouchMove, { passive: false });
 centralFactoryIcon.addEventListener('touchend', handleTouchEnd, { passive: false });
 
+collectionIcon.addEventListener('touchstart', (e) => handleTouchStart(e, 'collection'), { passive: false });
+collectionIcon.addEventListener('touchmove', handleTouchMove, { passive: false });
+collectionIcon.addEventListener('touchend', handleTouchEnd, { passive: false });
+
 // Keep existing drag and drop for desktop
 normalFactoryIcon.addEventListener('dragstart', (e) => {
   draggingFactoryType = 'normal';
@@ -532,6 +669,13 @@ centralFactoryIcon.addEventListener('dragstart', (e) => {
   draggingFactoryType = 'central';
 });
 centralFactoryIcon.addEventListener('dragend', (e) => {
+  draggingFactoryType = null;
+});
+
+collectionIcon.addEventListener('dragstart', (e) => {
+  draggingFactoryType = 'collection';
+});
+collectionIcon.addEventListener('dragend', (e) => {
   draggingFactoryType = null;
 });
 
@@ -551,9 +695,33 @@ canvas.addEventListener('drop', (e) => {
   if (gridX < 0 || gridX >= gridSize || gridY < 0 || gridY >= gridSize) return;
   if (grid[gridY][gridX] !== COMPONENTS.EMPTY) return;
 
+  // Handle collection box placement
+  if (draggingFactoryType === 'collection') {
+    if (!collectionPlaced) {
+      grid[gridY][gridX] = COMPONENTS.COLLECTION;
+      collectionPlaced = true;
+      hideCollectionIcon();
+      updateInfo();
+      showNotification("Collection box placed! Now you can build factories.");
+    } else {
+      showNotification("Collection box already placed!");
+    }
+    return;
+  }
+  
+  // Prevent factory placement if collection box not placed
+  if (!collectionPlaced) {
+    showNotification("Place the collection box first!");
+    return;
+  }
+
   let cost = 0;
   if (draggingFactoryType === 'normal') {
     cost = getNormalFactoryCost();
+    if (!normalFactoryPlaced){
+      normalFactoryPlaced = true;
+      showCentralFactory();
+    }
   } else if (draggingFactoryType === 'central') {
     cost = getCentralFactoryCost();
   }
@@ -598,6 +766,12 @@ function getEventPos(e) {
 }
 
 function startDrawing(e) {
+  // Prevent path drawing if collection box not placed
+  if (!collectionPlaced) {
+    showNotification("Place the collection box first!");
+    return;
+  }
+  
   e.preventDefault();
   const pos = getEventPos(e);
   const gridX = Math.floor(pos.x / tileSize);
@@ -625,6 +799,12 @@ function continueDrawing(e) {
 
   if (gridX < 0 || gridX >= gridSize || gridY < 0 || gridY >= gridSize) return;
 
+  // Check if the current tile is blocked by a factory (but allow collection boxes)
+  const currentTile = grid[gridY][gridX];
+  if (currentTile === COMPONENTS.FACTORY_NORMAL || currentTile === COMPONENTS.FACTORY_CENTRAL) {
+    return; // Cannot draw path through factories
+  }
+
   if (!currentPath.find(p => p.x === gridX && p.y === gridY)) {
     currentPath.push({ x: gridX, y: gridY });
   }
@@ -637,7 +817,29 @@ function stopDrawing(e) {
 
   if (!currentFactoryId || !currentPath) return;
 
-  // Check for path merging
+  // Validate the entire path - remove any segments that go through factories
+  const validatedPath = [];
+  for (let i = 0; i < currentPath.length; i++) {
+    const tile = currentPath[i];
+    const tileType = grid[tile.y][tile.x];
+    
+    // Allow the starting factory, collection boxes, and empty tiles
+    if (i === 0 || 
+        tileType === COMPONENTS.EMPTY || 
+        tileType === COMPONENTS.COLLECTION) {
+      validatedPath.push(tile);
+    }
+    // If we hit a factory (other than the starting one), stop the path here
+    else if (tileType === COMPONENTS.FACTORY_NORMAL || tileType === COMPONENTS.FACTORY_CENTRAL) {
+      break;
+    }
+  }
+
+  // Update the path with the validated version
+  currentPath = validatedPath;
+  paths[currentFactoryId] = currentPath;
+
+  // Check for path merging with the validated path
   for (const f of factories) {
     if (f.id === currentFactoryId) continue;
     const otherPath = paths[f.id];
@@ -697,9 +899,15 @@ class Coin {
       const last = path[path.length - 1];
       if (grid[last.y][last.x] === COMPONENTS.COLLECTION) {
         this.active = false;
-        // Award points: 5 for central factory, 1 for normal
+        // Award points with multiplier applied
         const factory = factories.find(f => f.id === this.factoryId);
-        const points = factory.type === 'central' ? 5 : 1;
+        let points = 1;
+        if (factory.type === 'central') {
+          points = 5 * centralFactoryMultiplier;
+        } else {
+          points = 1 * normalFactoryMultiplier;
+        }
+        points = Math.round(points);
         playerPoints += points;
         
         // Show coin earn effect
@@ -841,6 +1049,15 @@ function drawGrid() {
   }
 }
 
+function hideCollectionIcon(){
+  collectionIcon.parentElement.style.display = 'none';
+  normalFactoryContainer.classList.remove('factory-hidden');
+}
+
+function showCentralFactory(){
+  centralFactoryContainer.classList.remove('factory-hidden');
+}
+
 function drawCoins() {
   coins.forEach(coin => {
     if (!coin.active) return;
@@ -917,6 +1134,8 @@ function gameLoop() {
 }
 
 // Initialize game
+normalFactoryContainer.classList.add('factory-hidden');
+centralFactoryContainer.classList.add('factory-hidden');
 updateCostsDisplay();
 updateInfo();
 gameLoop();
