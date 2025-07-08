@@ -344,7 +344,6 @@
 </div>
 
 <script>
-
 // Create animated background particles
 function createParticles() {
   const particlesContainer = document.getElementById('particles');
@@ -390,10 +389,6 @@ let centralFactoryLevel = 1;
 let normalFactoryMultiplier = 1;
 let centralFactoryMultiplier = 1;
 let coinSpeedMultiplier = 1;
-
-// Touch control variables
-let lastTapTime = 0;
-let tapTimeout = null;
 
 const info = document.getElementById('info');
 const normalCostElem = document.getElementById('normalCost');
@@ -490,7 +485,7 @@ function updateInfo() {
     if (playerPoints >= 1000000000) {
       displayPoints = (playerPoints / 1000000000).toFixed(1) + 'b';
     } else if (playerPoints >= 1000000) {
-      displayPoints = (playerPoints / 1000000).toFixed(1) + 'm';
+      displayPoints = (playerPoints / 1000000000).toFixed(1) + 'm';
     } else if (playerPoints >= 1000) {
       displayPoints = (playerPoints / 1000).toFixed(1) + 'k';
     } else {
@@ -578,17 +573,18 @@ normalUpgradeElem.addEventListener('click', upgradeNormalFactory);
 centralUpgradeElem.addEventListener('click', upgradeCentralFactory);
 
 // Factory management functions
-function showFactoryMenu(x, y) {
+function showFactoryMenu(factory) {
   // Remove any existing menu
   const existingMenu = document.getElementById('factory-menu');
   if (existingMenu) existingMenu.remove();
 
-  // Create menu with larger touch targets
+  // Create menu on the left side
   const menu = document.createElement('div');
   menu.id = 'factory-menu';
   menu.style.position = 'fixed';
-  menu.style.left = `${x}px`;
-  menu.style.top = `${y}px`;
+  menu.style.left = '20px';
+  menu.style.top = '50%';
+  menu.style.transform = 'translateY(-50%)';
   menu.style.background = 'rgba(0, 0, 0, 0.9)';
   menu.style.border = '2px solid #00d4ff';
   menu.style.borderRadius = '15px';
@@ -625,7 +621,7 @@ function showFactoryMenu(x, y) {
   removeBtn.style.cursor = 'pointer';
   removeBtn.style.fontSize = '1rem';
   removeBtn.addEventListener('click', () => {
-    removeFactory(selectedFactory.x, selectedFactory.y);
+    removeFactory(factory.x, factory.y);
     menu.remove();
   });
 
@@ -648,18 +644,6 @@ function showFactoryMenu(x, y) {
   menu.appendChild(cancelBtn);
 
   document.body.appendChild(menu);
-
-  // Close menu when clicking outside
-  setTimeout(() => {
-    const clickOutsideHandler = (e) => {
-      if (!menu.contains(e.target)) {
-        menu.remove();
-        selectedFactory = null;
-        document.removeEventListener('click', clickOutsideHandler);
-      }
-    };
-    document.addEventListener('click', clickOutsideHandler);
-  }, 0);
 }
 
 function removeFactory(gridX, gridY) {
@@ -946,57 +930,26 @@ function handleFactoryClick(e) {
 
   if (gridX < 0 || gridX >= gridSize || gridY < 0 || gridY >= gridSize) return;
 
-  // Double-tap detection for touch devices
-  const currentTime = new Date().getTime();
-  const tapLength = currentTime - lastTapTime;
-  
-  if (tapLength < 300 && tapLength > 0) {
-    // Double-tap detected - handle factory selection
-    clearTimeout(tapTimeout);
-    
-    // Check if we're in moving mode
-    if (isMovingFactory && selectedFactory) {
-      if (grid[gridY][gridX] === COMPONENTS.EMPTY) {
-        if (moveFactory(selectedFactory.x, selectedFactory.y, gridX, gridY)) {
-          isMovingFactory = false;
-          selectedFactory = null;
-        }
+  // Check if we're in moving mode
+  if (isMovingFactory && selectedFactory) {
+    if (grid[gridY][gridX] === COMPONENTS.EMPTY) {
+      if (moveFactory(selectedFactory.x, selectedFactory.y, gridX, gridY)) {
+        isMovingFactory = false;
+        selectedFactory = null;
       }
-      return;
     }
-
-    // Check if tapped on a factory
-    const factory = factories.find(f => f.x === gridX && f.y === gridY);
-    if (factory) {
-      selectedFactory = factory;
-      const rect = canvas.getBoundingClientRect();
-      const menuX = rect.left + gridX * tileSize;
-      const menuY = rect.top + gridY * tileSize;
-      showFactoryMenu(menuX, menuY);
-    }
-  } else {
-    // Single tap - set timeout to wait for possible double tap
-    tapTimeout = setTimeout(() => {
-      // If we get here, it was a single tap - handle path drawing
-      if (!isMovingFactory && !selectedFactory) {
-        startDrawing(e);
-      }
-    }, 300);
+    return;
   }
-  
-  lastTapTime = currentTime;
+
+  // Check if clicked on a factory
+  const factory = factories.find(f => f.x === gridX && f.y === gridY);
+  if (factory) {
+    selectedFactory = factory;
+    showFactoryMenu(factory);
+  }
 }
 
 function startDrawing(e) {
-  // If we're in moving mode or have a selected factory, don't start drawing
-  if (isMovingFactory || selectedFactory) return;
-  
-  // Prevent path drawing if collection box not placed
-  if (!collectionPlaced) {
-    showNotification("Place the collection box first!");
-    return;
-  }
-  
   e.preventDefault();
   const pos = getEventPos(e);
   const gridX = Math.floor(pos.x / tileSize);
@@ -1004,13 +957,22 @@ function startDrawing(e) {
 
   if (gridX < 0 || gridX >= gridSize || gridY < 0 || gridY >= gridSize) return;
 
+  // Prevent path drawing if collection box not placed
+  if (!collectionPlaced) {
+    showNotification("Place the collection box first!");
+    return;
+  }
+
   const factory = factories.find(f => f.x === gridX && f.y === gridY);
-  if (factory) {
+  if (factory && !selectedFactory) {
     isDrawing = true;
     currentFactoryId = factory.id;
     currentPath = [];
     paths[currentFactoryId] = currentPath;
     currentPath.push({ x: gridX, y: gridY });
+  } else if (!factory) {
+    // Allow path drawing even if menu is open
+    isDrawing = true;
   }
 }
 
@@ -1031,7 +993,7 @@ function continueDrawing(e) {
   }
 
   // Only allow adjacent tiles (no skipping blocks)
-  if (currentPath.length > 0) {
+  if (currentPath && currentPath.length > 0) {
     const last = currentPath[currentPath.length - 1];
     const dx = Math.abs(last.x - gridX);
     const dy = Math.abs(last.y - gridY);
@@ -1042,8 +1004,9 @@ function continueDrawing(e) {
         currentPath.push({ x: gridX, y: gridY });
       }
     }
-  } else {
+  } else if (currentFactoryId) {
     // Starting point (factory position is already added)
+    currentPath = paths[currentFactoryId] || [];
     currentPath.push({ x: gridX, y: gridY });
   }
 }
@@ -1119,13 +1082,7 @@ canvas.addEventListener('mousedown', startDrawing);
 canvas.addEventListener('mousemove', continueDrawing);
 canvas.addEventListener('mouseup', stopDrawing);
 
-canvas.addEventListener('touchstart', (e) => {
-  // Only start drawing if we're not in a menu or moving mode
-  if (!isMovingFactory && !selectedFactory) {
-    startDrawing(e);
-  }
-}, { passive: false });
-
+canvas.addEventListener('touchstart', startDrawing, { passive: false });
 canvas.addEventListener('touchmove', continueDrawing, { passive: false });
 canvas.addEventListener('touchend', stopDrawing, { passive: false });
 
