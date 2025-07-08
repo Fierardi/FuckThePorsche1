@@ -344,6 +344,7 @@
 </div>
 
 <script>
+
 // Create animated background particles
 function createParticles() {
   const particlesContainer = document.getElementById('particles');
@@ -389,6 +390,10 @@ let centralFactoryLevel = 1;
 let normalFactoryMultiplier = 1;
 let centralFactoryMultiplier = 1;
 let coinSpeedMultiplier = 1;
+
+// Touch control variables
+let lastTapTime = 0;
+let tapTimeout = null;
 
 const info = document.getElementById('info');
 const normalCostElem = document.getElementById('normalCost');
@@ -578,30 +583,32 @@ function showFactoryMenu(x, y) {
   const existingMenu = document.getElementById('factory-menu');
   if (existingMenu) existingMenu.remove();
 
-  // Create menu
+  // Create menu with larger touch targets
   const menu = document.createElement('div');
   menu.id = 'factory-menu';
-  menu.style.position = 'absolute';
+  menu.style.position = 'fixed';
   menu.style.left = `${x}px`;
   menu.style.top = `${y}px`;
-  menu.style.background = 'rgba(0, 0, 0, 0.8)';
-  menu.style.border = '1px solid #00d4ff';
-  menu.style.borderRadius = '10px';
-  menu.style.padding = '10px';
+  menu.style.background = 'rgba(0, 0, 0, 0.9)';
+  menu.style.border = '2px solid #00d4ff';
+  menu.style.borderRadius = '15px';
+  menu.style.padding = '15px';
   menu.style.zIndex = '1000';
   menu.style.display = 'flex';
   menu.style.flexDirection = 'column';
-  menu.style.gap = '5px';
+  menu.style.gap = '10px';
+  menu.style.minWidth = '150px';
 
-  // Add buttons
+  // Add buttons with larger touch areas
   const moveBtn = document.createElement('button');
   moveBtn.textContent = 'Move Factory';
-  moveBtn.style.padding = '5px 10px';
+  moveBtn.style.padding = '12px 20px';
   moveBtn.style.background = 'linear-gradient(135deg, #00d4ff, #0088ff)';
   moveBtn.style.border = 'none';
-  moveBtn.style.borderRadius = '5px';
+  moveBtn.style.borderRadius = '10px';
   moveBtn.style.color = 'white';
   moveBtn.style.cursor = 'pointer';
+  moveBtn.style.fontSize = '1rem';
   moveBtn.addEventListener('click', () => {
     isMovingFactory = true;
     menu.remove();
@@ -610,12 +617,13 @@ function showFactoryMenu(x, y) {
 
   const removeBtn = document.createElement('button');
   removeBtn.textContent = 'Remove Factory';
-  removeBtn.style.padding = '5px 10px';
+  removeBtn.style.padding = '12px 20px';
   removeBtn.style.background = 'linear-gradient(135deg, #ff4757, #cc0000)';
   removeBtn.style.border = 'none';
-  removeBtn.style.borderRadius = '5px';
+  removeBtn.style.borderRadius = '10px';
   removeBtn.style.color = 'white';
   removeBtn.style.cursor = 'pointer';
+  removeBtn.style.fontSize = '1rem';
   removeBtn.addEventListener('click', () => {
     removeFactory(selectedFactory.x, selectedFactory.y);
     menu.remove();
@@ -623,12 +631,13 @@ function showFactoryMenu(x, y) {
 
   const cancelBtn = document.createElement('button');
   cancelBtn.textContent = 'Cancel';
-  cancelBtn.style.padding = '5px 10px';
+  cancelBtn.style.padding = '12px 20px';
   cancelBtn.style.background = 'linear-gradient(135deg, #666666, #333333)';
   cancelBtn.style.border = 'none';
-  cancelBtn.style.borderRadius = '5px';
+  cancelBtn.style.borderRadius = '10px';
   cancelBtn.style.color = 'white';
   cancelBtn.style.cursor = 'pointer';
+  cancelBtn.style.fontSize = '1rem';
   cancelBtn.addEventListener('click', () => {
     menu.remove();
     selectedFactory = null;
@@ -937,26 +946,45 @@ function handleFactoryClick(e) {
 
   if (gridX < 0 || gridX >= gridSize || gridY < 0 || gridY >= gridSize) return;
 
-  // Check if we're in moving mode
-  if (isMovingFactory && selectedFactory) {
-    if (grid[gridY][gridX] === COMPONENTS.EMPTY) {
-      if (moveFactory(selectedFactory.x, selectedFactory.y, gridX, gridY)) {
-        isMovingFactory = false;
-        selectedFactory = null;
+  // Double-tap detection for touch devices
+  const currentTime = new Date().getTime();
+  const tapLength = currentTime - lastTapTime;
+  
+  if (tapLength < 300 && tapLength > 0) {
+    // Double-tap detected - handle factory selection
+    clearTimeout(tapTimeout);
+    
+    // Check if we're in moving mode
+    if (isMovingFactory && selectedFactory) {
+      if (grid[gridY][gridX] === COMPONENTS.EMPTY) {
+        if (moveFactory(selectedFactory.x, selectedFactory.y, gridX, gridY)) {
+          isMovingFactory = false;
+          selectedFactory = null;
+        }
       }
+      return;
     }
-    return;
-  }
 
-  // Check if clicked on a factory
-  const factory = factories.find(f => f.x === gridX && f.y === gridY);
-  if (factory) {
-    selectedFactory = factory;
-    const rect = canvas.getBoundingClientRect();
-    const menuX = rect.left + gridX * tileSize;
-    const menuY = rect.top + gridY * tileSize;
-    showFactoryMenu(menuX, menuY);
+    // Check if tapped on a factory
+    const factory = factories.find(f => f.x === gridX && f.y === gridY);
+    if (factory) {
+      selectedFactory = factory;
+      const rect = canvas.getBoundingClientRect();
+      const menuX = rect.left + gridX * tileSize;
+      const menuY = rect.top + gridY * tileSize;
+      showFactoryMenu(menuX, menuY);
+    }
+  } else {
+    // Single tap - set timeout to wait for possible double tap
+    tapTimeout = setTimeout(() => {
+      // If we get here, it was a single tap - handle path drawing
+      if (!isMovingFactory && !selectedFactory) {
+        startDrawing(e);
+      }
+    }, 300);
   }
+  
+  lastTapTime = currentTime;
 }
 
 function startDrawing(e) {
@@ -1084,19 +1112,20 @@ function stopDrawing(e) {
 
 // Add both mouse and touch event listeners for factory interaction
 canvas.addEventListener('click', handleFactoryClick);
-canvas.addEventListener('touchstart', (e) => {
-  // Only handle if not drawing
-  if (!isDrawing) {
-    handleFactoryClick(e);
-  }
-}, { passive: false });
+canvas.addEventListener('touchend', handleFactoryClick, { passive: false });
 
 // Add both mouse and touch event listeners for path drawing
 canvas.addEventListener('mousedown', startDrawing);
 canvas.addEventListener('mousemove', continueDrawing);
 canvas.addEventListener('mouseup', stopDrawing);
 
-canvas.addEventListener('touchstart', startDrawing, { passive: false });
+canvas.addEventListener('touchstart', (e) => {
+  // Only start drawing if we're not in a menu or moving mode
+  if (!isMovingFactory && !selectedFactory) {
+    startDrawing(e);
+  }
+}, { passive: false });
+
 canvas.addEventListener('touchmove', continueDrawing, { passive: false });
 canvas.addEventListener('touchend', stopDrawing, { passive: false });
 
@@ -1365,6 +1394,7 @@ updateInfo();
 gameLoop();
 spawnCoins();
 setInterval(spawnCoins, 1250); // spawn coins periodically
+
 
 
 </script>
