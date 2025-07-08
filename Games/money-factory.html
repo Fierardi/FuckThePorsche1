@@ -299,6 +299,14 @@
       height: 400px;
     }
   }
+
+  .factory-production {
+    font-size: 0.8rem;
+    color: #f7df5c;
+    text-align: center;
+    margin-top: 5px;
+    text-shadow: 0 0 5px rgba(247, 223, 92, 0.5);
+  }
   
 </style>
 </head>
@@ -311,31 +319,31 @@
 <div id="info">💎 Points: 0</div>
 
 <div id="gameArea">
-  <canvas id="factory"width="500" height="500"></canvas>
+  <canvas id="factory" width="500" height="500"></canvas>
 
   <div id="factoryIconWrapper">
-
     <div class="factory-section">
       <div id="collectionBox" class="iconBox" draggable="true" data-type="collection"></div>
-      <div id="factoryCost" class="factoryCost">Cost: 0 </div>
+      <div id="factoryCost" class="factoryCost">Cost: 0</div>
     </div>
 
     <div class="factory-section">
       <div id="normalFactory" class="iconBox" draggable="true" data-type="normal">🏭</div>
-      <div id="normalCost" class="factoryCost">Cost: 0 </div>
+      <div id="normalCost" class="factoryCost">Cost: 0</div>
       <div id="normalUpgrade" class="factory-upgrade">Upgrade (Lvl 1)</div>
+      <div id="normalProduction" class="factory-production"></div>
     </div>
 
     <div class="factory-section">
       <div id="centralFactory" class="iconBox" draggable="true" data-type="central">⚡</div>
       <div id="centralCost" class="factoryCost">Cost: 120</div>
       <div id="centralUpgrade" class="factory-upgrade">Upgrade (Lvl 1)</div>
+      <div id="centralProduction" class="factory-production"></div>
     </div>
   </div>
 </div>
 
 <script>
-
 // Create animated background particles
 function createParticles() {
   const particlesContainer = document.getElementById('particles');
@@ -380,12 +388,15 @@ let normalFactoryLevel = 1;
 let centralFactoryLevel = 1;
 let normalFactoryMultiplier = 1;
 let centralFactoryMultiplier = 1;
+let coinSpeedMultiplier = 1;
 
 const info = document.getElementById('info');
 const normalCostElem = document.getElementById('normalCost');
 const centralCostElem = document.getElementById('centralCost');
 const normalUpgradeElem = document.getElementById('normalUpgrade');
 const centralUpgradeElem = document.getElementById('centralUpgrade');
+const normalProductionElem = document.getElementById('normalProduction');
+const centralProductionElem = document.getElementById('centralProduction');
 
 const normalFactoryIcon = document.getElementById('normalFactory');
 const centralFactoryIcon = document.getElementById('centralFactory');
@@ -399,15 +410,9 @@ let isDrawing = false;
 let currentFactoryId = null;
 let currentPath = null;
 
-// Touch/drag state
-let isDragging = false;
-let dragElement = null;
-let dragStartX = 0;
-let dragStartY = 0;
-
-// Long press state
-let longPressTimer;
-let longPressTarget = null;
+// Factory management state
+let selectedFactory = null;
+let isMovingFactory = false;
 
 // Game state
 let collectionPlaced = false;
@@ -475,7 +480,19 @@ function updateInfo() {
     info.textContent = "📦 Place Collection Box First!";
     info.style.color = '#ff6b00';
   } else {
-    info.textContent = ` $: ${playerPoints}`;
+    // Format the points display
+    let displayPoints;
+    if (playerPoints >= 1000000000) {
+      displayPoints = (playerPoints / 1000000000).toFixed(1) + 'b';
+    } else if (playerPoints >= 1000000) {
+      displayPoints = (playerPoints / 1000000).toFixed(1) + 'm';
+    } else if (playerPoints >= 1000) {
+      displayPoints = (playerPoints / 1000).toFixed(1) + 'k';
+    } else {
+      displayPoints = playerPoints.toString();
+    }
+    
+    info.textContent = ` $: ${displayPoints}`;
     info.style.color = '#00d4ff';
   }
 }
@@ -515,9 +532,11 @@ function upgradeNormalFactory() {
     playerPoints -= cost;
     normalFactoryLevel++;
     normalFactoryMultiplier *= 1.3; // 30% increase
+    coinSpeedMultiplier *= 1.1; // 10% speed increase
     updateCostsDisplay();
     updateInfo();
-    showNotification(`Normal Factory upgraded to Level ${normalFactoryLevel}! (${Math.round(normalFactoryMultiplier * 100)}% output)`);
+    updateProductionRates();
+    showNotification(`Normal Factory upgraded to Level ${normalFactoryLevel}! (${Math.round(normalFactoryMultiplier * 100)}% output, ${Math.round(coinSpeedMultiplier * 100)}% speed)`);
   } else {
     showNotification(`Not enough points! You need ${cost} points to upgrade.`);
   }
@@ -529,19 +548,111 @@ function upgradeCentralFactory() {
     playerPoints -= cost;
     centralFactoryLevel++;
     centralFactoryMultiplier *= 1.3; // 30% increase
+    coinSpeedMultiplier *= 1.1; // 10% speed increase
     updateCostsDisplay();
     updateInfo();
-    showNotification(`Central Factory upgraded to Level ${centralFactoryLevel}! (${Math.round(centralFactoryMultiplier * 100)}% output)`);
+    updateProductionRates();
+    showNotification(`Central Factory upgraded to Level ${centralFactoryLevel}! (${Math.round(centralFactoryMultiplier * 100)}% output, ${Math.round(coinSpeedMultiplier * 100)}% speed)`);
   } else {
     showNotification(`Not enough points! You need ${cost} points to upgrade.`);
   }
+}
+
+function updateProductionRates() {
+  // Calculate production per second for normal factories
+  const normalProduction = normalFactoriesCount * normalFactoryMultiplier * (1 / coinSpeedMultiplier);
+  normalProductionElem.textContent = `Produces: ${normalProduction.toFixed(1)}/s`;
+  
+  // Calculate production per second for central factories
+  const centralProduction = centralFactoriesCount * centralFactoryMultiplier * (5 / coinSpeedMultiplier);
+  centralProductionElem.textContent = `Produces: ${centralProduction.toFixed(1)}/s`;
 }
 
 // Add event listeners for upgrades
 normalUpgradeElem.addEventListener('click', upgradeNormalFactory);
 centralUpgradeElem.addEventListener('click', upgradeCentralFactory);
 
-// Factory removal function
+// Factory management functions
+function showFactoryMenu(x, y) {
+  // Remove any existing menu
+  const existingMenu = document.getElementById('factory-menu');
+  if (existingMenu) existingMenu.remove();
+
+  // Create menu
+  const menu = document.createElement('div');
+  menu.id = 'factory-menu';
+  menu.style.position = 'absolute';
+  menu.style.left = `${x}px`;
+  menu.style.top = `${y}px`;
+  menu.style.background = 'rgba(0, 0, 0, 0.8)';
+  menu.style.border = '1px solid #00d4ff';
+  menu.style.borderRadius = '10px';
+  menu.style.padding = '10px';
+  menu.style.zIndex = '1000';
+  menu.style.display = 'flex';
+  menu.style.flexDirection = 'column';
+  menu.style.gap = '5px';
+
+  // Add buttons
+  const moveBtn = document.createElement('button');
+  moveBtn.textContent = 'Move Factory';
+  moveBtn.style.padding = '5px 10px';
+  moveBtn.style.background = 'linear-gradient(135deg, #00d4ff, #0088ff)';
+  moveBtn.style.border = 'none';
+  moveBtn.style.borderRadius = '5px';
+  moveBtn.style.color = 'white';
+  moveBtn.style.cursor = 'pointer';
+  moveBtn.addEventListener('click', () => {
+    isMovingFactory = true;
+    menu.remove();
+    showNotification('Select new location for factory');
+  });
+
+  const removeBtn = document.createElement('button');
+  removeBtn.textContent = 'Remove Factory';
+  removeBtn.style.padding = '5px 10px';
+  removeBtn.style.background = 'linear-gradient(135deg, #ff4757, #cc0000)';
+  removeBtn.style.border = 'none';
+  removeBtn.style.borderRadius = '5px';
+  removeBtn.style.color = 'white';
+  removeBtn.style.cursor = 'pointer';
+  removeBtn.addEventListener('click', () => {
+    removeFactory(selectedFactory.x, selectedFactory.y);
+    menu.remove();
+  });
+
+  const cancelBtn = document.createElement('button');
+  cancelBtn.textContent = 'Cancel';
+  cancelBtn.style.padding = '5px 10px';
+  cancelBtn.style.background = 'linear-gradient(135deg, #666666, #333333)';
+  cancelBtn.style.border = 'none';
+  cancelBtn.style.borderRadius = '5px';
+  cancelBtn.style.color = 'white';
+  cancelBtn.style.cursor = 'pointer';
+  cancelBtn.addEventListener('click', () => {
+    menu.remove();
+    selectedFactory = null;
+  });
+
+  menu.appendChild(moveBtn);
+  menu.appendChild(removeBtn);
+  menu.appendChild(cancelBtn);
+
+  document.body.appendChild(menu);
+
+  // Close menu when clicking outside
+  setTimeout(() => {
+    const clickOutsideHandler = (e) => {
+      if (!menu.contains(e.target)) {
+        menu.remove();
+        selectedFactory = null;
+        document.removeEventListener('click', clickOutsideHandler);
+      }
+    };
+    document.addEventListener('click', clickOutsideHandler);
+  }, 0);
+}
+
 function removeFactory(gridX, gridY) {
   const tileType = grid[gridY][gridX];
   if (tileType === COMPONENTS.FACTORY_NORMAL || tileType === COMPONENTS.FACTORY_CENTRAL) {
@@ -578,11 +689,12 @@ function removeFactory(gridX, gridY) {
       showNotification(`Factory removed! Refunded ${refund} points`);
       updateInfo();
       updateCostsDisplay();
+      updateProductionRates();
     }
   }
+  selectedFactory = null;
 }
 
-// Factory movement function
 function moveFactory(fromX, fromY, toX, toY) {
   if (grid[toY][toX] !== COMPONENTS.EMPTY) return false;
   
@@ -602,68 +714,34 @@ function moveFactory(fromX, fromY, toX, toY) {
     paths[factory.id][0] = { x: toX, y: toY };
   }
   
+  showNotification("Factory moved successfully!");
+  updateProductionRates();
   return true;
 }
 
 // Touch event handlers for factory icons
 function handleTouchStart(e, factoryType) {
   e.preventDefault();
-  const touch = e.touches[0];
-  isDragging = true;
-  dragElement = e.target;
   draggingFactoryType = factoryType;
-  dragStartX = touch.clientX;
-  dragStartY = touch.clientY;
   
   // Visual feedback
-  dragElement.style.transform = 'scale(1.1)';
-  dragElement.style.opacity = '0.8';
-  
-  // Start long press timer for removal
-  longPressTarget = e.target;
-  longPressTimer = setTimeout(() => {
-    if (isDragging && longPressTarget) {
-      const rect = canvas.getBoundingClientRect();
-      const mouseX = touch.clientX - rect.left;
-      const mouseY = touch.clientY - rect.top;
-      const gridX = Math.floor(mouseX / tileSize);
-      const gridY = Math.floor(mouseY / tileSize);
-      
-      if (gridX >= 0 && gridX < gridSize && gridY >= 0 && gridY < gridSize) {
-        removeFactory(gridX, gridY);
-      }
-    }
-  }, 1000);
-}
-
-function handleTouchMove(e) {
-  if (!isDragging) return;
-  e.preventDefault();
-  
-  const touch = e.touches[0];
-  // Cancel long press if moved too much
-  if (Math.abs(touch.clientX - dragStartX) > 10 || Math.abs(touch.clientY - dragStartY) > 10) {
-    clearTimeout(longPressTimer);
-  }
+  e.target.style.transform = 'scale(1.1)';
+  e.target.style.opacity = '0.8';
 }
 
 function handleTouchEnd(e) {
-  if (!isDragging) return;
   e.preventDefault();
   
-  clearTimeout(longPressTimer);
-  longPressTarget = null;
-  
-  const touch = e.changedTouches[0];
-  
   // Reset visual state
-  if (dragElement) {
-    dragElement.style.transform = '';
-    dragElement.style.opacity = '';
+  if (e.target) {
+    e.target.style.transform = '';
+    e.target.style.opacity = '';
   }
   
   // Check if dropped over canvas
   const canvasRect = canvas.getBoundingClientRect();
+  const touch = e.changedTouches[0];
+  
   if (touch.clientX >= canvasRect.left && touch.clientX <= canvasRect.right &&
       touch.clientY >= canvasRect.top && touch.clientY <= canvasRect.bottom) {
     
@@ -673,95 +751,73 @@ function handleTouchEnd(e) {
     const gridY = Math.floor(mouseY / tileSize);
 
     if (gridX >= 0 && gridX < gridSize && gridY >= 0 && gridY < gridSize) {
-      // Check if we're moving an existing factory
-      const existingFactoryType = grid[gridY][gridX];
-      if (existingFactoryType === COMPONENTS.FACTORY_NORMAL || existingFactoryType === COMPONENTS.FACTORY_CENTRAL) {
-        // Try to move the factory to a new position
-        const fromX = gridX;
-        const fromY = gridY;
-        const toX = Math.floor(dragStartX / tileSize);
-        const toY = Math.floor(dragStartY / tileSize);
-        
-        if (moveFactory(fromX, fromY, toX, toY)) {
-          showNotification("Factory moved!");
+      // Handle collection box placement
+      if (draggingFactoryType === 'collection') {
+        if (!collectionPlaced) {
+          grid[gridY][gridX] = COMPONENTS.COLLECTION;
+          collectionPlaced = true;
+          hideCollectionIcon();
+          updateInfo();
+          showNotification("Collection box placed! Now you can build factories.");
+        } else {
+          showNotification("Collection box already placed!");
         }
         return;
       }
       
-      // Otherwise proceed with normal placement
-      if (grid[gridY][gridX] === COMPONENTS.EMPTY) {
-        // Handle collection box placement
-        if (draggingFactoryType === 'collection') {
-          if (!collectionPlaced) {
-            grid[gridY][gridX] = COMPONENTS.COLLECTION;
-            collectionPlaced = true;
-            hideCollectionIcon();
-            updateInfo();
-            showNotification("Collection box placed! Now you can build factories.");
-          } else {
-            showNotification("Collection box already placed!");
-          }
-          return;
+      // Prevent factory placement if collection box not placed
+      if (!collectionPlaced) {
+        showNotification("Place the collection box first!");
+        return;
+      }
+      
+      let cost = 0;
+      if (draggingFactoryType === 'normal') {
+        cost = getNormalFactoryCost();
+        if (!normalFactoryPlaced){
+          normalFactoryPlaced = true;
+          showCentralFactory();
         }
-        
-        // Prevent factory placement if collection box not placed
-        if (!collectionPlaced) {
-          showNotification("Place the collection box first!");
-          return;
-        }
-        
-        let cost = 0;
-        if (draggingFactoryType === 'normal') {
-          cost = getNormalFactoryCost();
-          if (!normalFactoryPlaced){
-            normalFactoryPlaced = true;
-            showCentralFactory();
-          }
-        } else if (draggingFactoryType === 'central') {
-          cost = getCentralFactoryCost();
-        }
+      } else if (draggingFactoryType === 'central') {
+        cost = getCentralFactoryCost();
+      }
 
-        // Check if player can buy
-        if (playerPoints >= cost || (draggingFactoryType === 'normal' && normalFactoriesCount === 0)) {
-          let compType;
-          if (draggingFactoryType === 'normal') {
-            compType = COMPONENTS.FACTORY_NORMAL;
-            normalFactoriesCount++;
-            if (cost > 0) playerPoints -= cost;
-          } else {
-            compType = COMPONENTS.FACTORY_CENTRAL;
-            centralFactoriesCount++;
-            playerPoints -= cost;
-          }
-          grid[gridY][gridX] = compType;
-          const id = factoryIdCounter++;
-          factories.push({ id, x: gridX, y: gridY, type: draggingFactoryType });
-          paths[id] = [];
-          updateInfo();
-          updateCostsDisplay();
+      // Check if player can buy
+      if (playerPoints >= cost || (draggingFactoryType === 'normal' && normalFactoriesCount === 0)) {
+        let compType;
+        if (draggingFactoryType === 'normal') {
+          compType = COMPONENTS.FACTORY_NORMAL;
+          normalFactoriesCount++;
+          if (cost > 0) playerPoints -= cost;
         } else {
-          showNotification(`Not enough points! You need ${cost} points to buy a ${draggingFactoryType} factory.`);
+          compType = COMPONENTS.FACTORY_CENTRAL;
+          centralFactoriesCount++;
+          playerPoints -= cost;
         }
+        grid[gridY][gridX] = compType;
+        const id = factoryIdCounter++;
+        factories.push({ id, x: gridX, y: gridY, type: draggingFactoryType });
+        paths[id] = [];
+        updateInfo();
+        updateCostsDisplay();
+        updateProductionRates();
+      } else {
+        showNotification(`Not enough points! You need ${cost} points to buy a ${draggingFactoryType} factory.`);
       }
     }
   }
   
-  isDragging = false;
-  dragElement = null;
   draggingFactoryType = null;
 }
 
 // Add touch event listeners for factory icons
 normalFactoryIcon.addEventListener('touchstart', (e) => handleTouchStart(e, 'normal'), { passive: false });
-normalFactoryIcon.addEventListener('touchmove', handleTouchMove, { passive: false });
 normalFactoryIcon.addEventListener('touchend', handleTouchEnd, { passive: false });
 
 centralFactoryIcon.addEventListener('touchstart', (e) => handleTouchStart(e, 'central'), { passive: false });
-centralFactoryIcon.addEventListener('touchmove', handleTouchMove, { passive: false });
 centralFactoryIcon.addEventListener('touchend', handleTouchEnd, { passive: false });
 
 collectionIcon.addEventListener('touchstart', (e) => handleTouchStart(e, 'collection'), { passive: false });
-collectionIcon.addEventListener('touchmove', handleTouchMove, { passive: false });
 collectionIcon.addEventListener('touchend', handleTouchEnd, { passive: false });
 
 // Keep existing drag and drop for desktop
@@ -851,6 +907,7 @@ canvas.addEventListener('drop', (e) => {
     paths[id] = [];
     updateInfo();
     updateCostsDisplay();
+    updateProductionRates();
   } else {
     showNotification(`Not enough points! You need ${cost} points to buy a ${draggingFactoryType} factory.`);
   }
@@ -872,7 +929,40 @@ function getEventPos(e) {
   }
 }
 
+function handleFactoryClick(e) {
+  e.preventDefault();
+  const pos = getEventPos(e);
+  const gridX = Math.floor(pos.x / tileSize);
+  const gridY = Math.floor(pos.y / tileSize);
+
+  if (gridX < 0 || gridX >= gridSize || gridY < 0 || gridY >= gridSize) return;
+
+  // Check if we're in moving mode
+  if (isMovingFactory && selectedFactory) {
+    if (grid[gridY][gridX] === COMPONENTS.EMPTY) {
+      if (moveFactory(selectedFactory.x, selectedFactory.y, gridX, gridY)) {
+        isMovingFactory = false;
+        selectedFactory = null;
+      }
+    }
+    return;
+  }
+
+  // Check if clicked on a factory
+  const factory = factories.find(f => f.x === gridX && f.y === gridY);
+  if (factory) {
+    selectedFactory = factory;
+    const rect = canvas.getBoundingClientRect();
+    const menuX = rect.left + gridX * tileSize;
+    const menuY = rect.top + gridY * tileSize;
+    showFactoryMenu(menuX, menuY);
+  }
+}
+
 function startDrawing(e) {
+  // If we're in moving mode or have a selected factory, don't start drawing
+  if (isMovingFactory || selectedFactory) return;
+  
   // Prevent path drawing if collection box not placed
   if (!collectionPlaced) {
     showNotification("Place the collection box first!");
@@ -992,6 +1082,15 @@ function stopDrawing(e) {
   currentPath = null;
 }
 
+// Add both mouse and touch event listeners for factory interaction
+canvas.addEventListener('click', handleFactoryClick);
+canvas.addEventListener('touchstart', (e) => {
+  // Only handle if not drawing
+  if (!isDrawing) {
+    handleFactoryClick(e);
+  }
+}, { passive: false });
+
 // Add both mouse and touch event listeners for path drawing
 canvas.addEventListener('mousedown', startDrawing);
 canvas.addEventListener('mousemove', continueDrawing);
@@ -1006,7 +1105,7 @@ class Coin {
     this.factoryId = factoryId;
     this.pathIndex = 0;
     this.offset = 0;
-    this.speed = 4;
+    this.speed = 1;
     this.active = true;
     this.pulsePhase = Math.random() * Math.PI * 2; // For pulsing animation
   }
@@ -1074,6 +1173,12 @@ function drawGrid() {
     for (let x = 0; x < gridSize; x++) {
       const tileX = x * tileSize;
       const tileY = y * tileSize;
+
+      // Highlight selected factory
+      if (selectedFactory && selectedFactory.x === x && selectedFactory.y === y) {
+        ctx.fillStyle = 'rgba(0, 212, 255, 0.3)';
+        ctx.fillRect(tileX, tileY, tileSize, tileSize);
+      }
 
       if (grid[y][x] === COMPONENTS.FACTORY_NORMAL) {
         // Normal factory with gradient and glow
@@ -1231,8 +1336,7 @@ function spawnCoins() {
   for (const f of factories) {
     const path = paths[f.id];
     if (path && path.length > 1) {
-      const alreadyHasCoin = coins.some(c => c.factoryId === f.id && c.active);
-      if (!alreadyHasCoin && playerPoints >= 0) {
+      if (playerPoints >= 0) {
         coins.push(new Coin(f.id));
       }
     }
@@ -1260,7 +1364,7 @@ updateCostsDisplay();
 updateInfo();
 gameLoop();
 spawnCoins();
-setInterval(spawnCoins, 500); // spawn coins periodically
+setInterval(spawnCoins, 1250); // spawn coins periodically
 
 
 </script>
