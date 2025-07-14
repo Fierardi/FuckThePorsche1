@@ -35,6 +35,7 @@
     z-index: -1;
   }
   
+  
   .particle {
     position: absolute;
     background: rgba(255, 255, 255, 0.1);
@@ -309,8 +310,120 @@
   }
   
 </style>
+<style>
+.pause-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(20, 30, 40, 0.92);
+  z-index: 9999;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.4s;
+}
+.pause-overlay.active {
+  display: flex;
+  opacity: 1;
+  pointer-events: all;
+}
+.pause-content {
+  background: #222e3a;
+  padding: 36px 30px;
+  border-radius: 16px;
+  box-shadow: 0 6px 32px #0008;
+  text-align: center;
+}
+.pause-content h2 {
+  color: #00d4ff;
+  margin-bottom: 28px;
+  font-size: 2em;
+  letter-spacing: 1px;
+}
+.pause-btn-main {
+  font-size: 1.2em;
+  padding: 12px 32px;
+  background: linear-gradient(90deg, #00d4ff, #1de9b6);
+  border: none;
+  border-radius: 8px;
+  color: #14202b;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 2px 10px #00d4ff55;
+  transition: background 0.2s, transform 0.2s;
+}
+.pause-btn-main:hover {
+  background: linear-gradient(90deg, #1de9b6, #00d4ff);
+  transform: scale(1.04);
+}
+.pause-btn {
+  position: fixed;
+  top: 18px;
+  right: 28px;
+  z-index: 10000;
+  background: #182230cc;
+  color: #00d4ff;
+  border: none;
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  font-size: 1.9em;
+  cursor: pointer;
+  box-shadow: 0 2px 8px #00d4ff33;
+  transition: background 0.2s, color 0.2s;
+}
+.pause-btn:hover {
+  background: #00d4ff;
+  color: #182230;
+}
+
+
+.menu-content {
+  background: #222e3a;
+  padding: 40px 32px;
+  border-radius: 18px;
+  box-shadow: 0 6px 32px #0008;
+  text-align: center;
+}
+.menu-content h1 {
+  color: #00d4ff;
+  margin-bottom: 32px;
+  font-size: 2.5em;
+  letter-spacing: 2px;
+}
+.menu-btn {
+  font-size: 1.3em;
+  padding: 14px 36px;
+  background: linear-gradient(90deg, #00d4ff, #1de9b6);
+  border: none;
+  border-radius: 8px;
+  color: #14202b;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 2px 10px #00d4ff55;
+  transition: background 0.2s, transform 0.2s;
+}
+.menu-btn:hover {
+  background: linear-gradient(90deg, #1de9b6, #00d4ff);
+  transform: scale(1.04);
+}
+.menu-overlay.hide {
+  opacity: 0;
+  pointer-events: none;
+}
+</style>
 </head>
 <body>
+  <!-- Pause Button -->
+  <button id="pauseBtn" class="pause-btn" title="Pause Game">⏸</button>
+  <!-- Pause Menu Overlay -->
+  <div id="pauseMenuOverlay" class="pause-overlay">
+    <div class="pause-content">
+      <h2>Game Paused</h2>
+      <button id="mainMenuBtn" class="pause-btn-main">Main Menu</button>
+      <button id="resumeBtn" class="pause-btn-main">Resume</button>
+    </div>
+  </div>
+
 
 <div class="bg-particles" id="particles"></div>
 
@@ -344,7 +457,33 @@
 </div>
 
 <script>
-// Create animated background particles
+// Pause Menu logic
+let paused = false;
+const pauseBtn = document.getElementById('pauseBtn');
+const pauseOverlay = document.getElementById('pauseMenuOverlay');
+const resumeBtn = document.getElementById('resumeBtn');
+const mainMenuBtn = document.getElementById('mainMenuBtn');
+
+mainMenuBtn.addEventListener('click', () => {
+  window.location.href = 'index.html';
+});
+
+function setPaused(state) {
+  paused = state;
+  if (paused) {
+    pauseOverlay.classList.add('active');
+  } else {
+    pauseOverlay.classList.remove('active');
+  }
+}
+pauseBtn.addEventListener('click', () => setPaused(true));
+resumeBtn.addEventListener('click', () => setPaused(false));
+// Optional: Pause/resume with Escape key
+window.addEventListener('keydown', e => {
+  if (e.key === 'Escape') setPaused(!paused);
+});
+
+
 function createParticles() {
   const particlesContainer = document.getElementById('particles');
   for (let i = 0; i < 50; i++) {
@@ -367,6 +506,7 @@ const ctx = canvas.getContext('2d');
 
 const gridSize = 7;
 const tileSize = 71;
+// Canvas is fixed at 500x500px and tileSize is fixed at 71px as before.
 
 const COMPONENTS = {
   EMPTY: 0,
@@ -419,6 +559,12 @@ let collectionPlaced = false;
 let normalFactoryPlaced = false;
 let normalFactoriesCount = 0;
 let centralFactoriesCount = 0;
+
+// Touch interaction states
+let touchStartTime = 0;
+let isLongPress = false;
+let longPressTimer = null;
+let lastTouchTime = 0;
 
 // Calculate costs
 function getNormalFactoryCost() {
@@ -475,6 +621,9 @@ function updateCostsDisplay() {
   }
 }
 
+const wipeThresholds = [1000, 100000, 1000000];
+let factoriesWipedThresholds = [];
+
 function updateInfo() {
   if (!collectionPlaced) {
     info.textContent = "📦 Place Collection Box First!";
@@ -485,15 +634,44 @@ function updateInfo() {
     if (playerPoints >= 1000000000) {
       displayPoints = (playerPoints / 1000000000).toFixed(1) + 'b';
     } else if (playerPoints >= 1000000) {
-      displayPoints = (playerPoints / 1000000000).toFixed(1) + 'm';
+      displayPoints = (playerPoints / 1000000).toFixed(1) + 'm';
     } else if (playerPoints >= 1000) {
       displayPoints = (playerPoints / 1000).toFixed(1) + 'k';
     } else {
       displayPoints = playerPoints.toString();
     }
     
-    info.textContent = ` $: ${displayPoints}`;
+    info.textContent = `💎 $: ${displayPoints}`;
     info.style.color = '#00d4ff';
+  }
+
+  // --- WIPE FACTORIES AT THRESHOLDS ---
+  for (const threshold of wipeThresholds) {
+    if (playerPoints >= threshold && !factoriesWipedThresholds.includes(threshold) && factories.length > 1) {
+      factoriesWipedThresholds.push(threshold);
+      // Choose the first factory to keep
+      const keepFactory = factories[0];
+      // Remove all other factories from grid and arrays
+      for (let i = factories.length - 1; i >= 0; i--) {
+        if (factories[i].id !== keepFactory.id) {
+          // Remove from grid
+          grid[factories[i].y][factories[i].x] = COMPONENTS.EMPTY;
+          // Remove path
+          delete paths[factories[i].id];
+          // Remove coins
+          coins = coins.filter(c => c.factoryId !== factories[i].id);
+          factories.splice(i, 1);
+        }
+      }
+      // Remove all paths except the one for the kept factory
+      for (const pid in paths) {
+        if (parseInt(pid) !== keepFactory.id) delete paths[pid];
+      }
+      // Remove all coins except for the kept factory
+      coins = coins.filter(c => c.factoryId === keepFactory.id);
+      showNotification(`All factories except one have vanished at ${threshold.toLocaleString()} points!`);
+      updateProductionRates();
+    }
   }
 }
 
@@ -572,75 +750,148 @@ function updateProductionRates() {
 normalUpgradeElem.addEventListener('click', upgradeNormalFactory);
 centralUpgradeElem.addEventListener('click', upgradeCentralFactory);
 
-// Factory management functions
+// Enhanced factory management functions
 function showFactoryMenu(factory) {
   // Remove any existing menu
   const existingMenu = document.getElementById('factory-menu');
   if (existingMenu) existingMenu.remove();
 
-  // Create menu on the left side
+  // Create menu optimized for touch
   const menu = document.createElement('div');
   menu.id = 'factory-menu';
   menu.style.position = 'fixed';
   menu.style.left = '20px';
   menu.style.top = '50%';
   menu.style.transform = 'translateY(-50%)';
-  menu.style.background = 'rgba(0, 0, 0, 0.9)';
+  menu.style.background = 'rgba(0, 0, 0, 0.95)';
   menu.style.border = '2px solid #00d4ff';
   menu.style.borderRadius = '15px';
-  menu.style.padding = '15px';
+  menu.style.padding = '20px';
   menu.style.zIndex = '1000';
   menu.style.display = 'flex';
   menu.style.flexDirection = 'column';
-  menu.style.gap = '10px';
-  menu.style.minWidth = '150px';
+  menu.style.gap = '15px';
+  menu.style.minWidth = '200px';
+  menu.style.boxShadow = '0 10px 30px rgba(0, 0, 0, 0.5)';
+
+  // Add title
+  const title = document.createElement('div');
+  title.textContent = `${factory.type === 'normal' ? 'Normal' : 'Central'} Factory`;
+  title.style.color = '#00d4ff';
+  title.style.fontSize = '1.2rem';
+  title.style.fontWeight = 'bold';
+  title.style.textAlign = 'center';
+  title.style.marginBottom = '10px';
+  menu.appendChild(title);
 
   // Add buttons with larger touch areas
   const moveBtn = document.createElement('button');
   moveBtn.textContent = 'Move Factory';
-  moveBtn.style.padding = '12px 20px';
+  moveBtn.style.padding = '15px 25px';
   moveBtn.style.background = 'linear-gradient(135deg, #00d4ff, #0088ff)';
   moveBtn.style.border = 'none';
   moveBtn.style.borderRadius = '10px';
   moveBtn.style.color = 'white';
   moveBtn.style.cursor = 'pointer';
-  moveBtn.style.fontSize = '1rem';
-  moveBtn.addEventListener('click', () => {
+  moveBtn.style.fontSize = '1.1rem';
+  moveBtn.style.fontWeight = 'bold';
+  moveBtn.style.minHeight = '50px';
+  moveBtn.style.transition = 'all 0.2s ease';
+  moveBtn.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    moveBtn.style.transform = 'scale(0.95)';
+  });
+  moveBtn.addEventListener('touchend', (e) => {
+    e.preventDefault();
+    moveBtn.style.transform = 'scale(1)';
     isMovingFactory = true;
     menu.remove();
-    showNotification('Select new location for factory');
+    showNotification('Tap new location for factory');
+  });
+  moveBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    isMovingFactory = true;
+    menu.remove();
+    showNotification('Tap new location for factory');
   });
 
   const removeBtn = document.createElement('button');
   removeBtn.textContent = 'Remove Factory';
-  removeBtn.style.padding = '12px 20px';
+  removeBtn.style.padding = '15px 25px';
   removeBtn.style.background = 'linear-gradient(135deg, #ff4757, #cc0000)';
   removeBtn.style.border = 'none';
   removeBtn.style.borderRadius = '10px';
   removeBtn.style.color = 'white';
   removeBtn.style.cursor = 'pointer';
-  removeBtn.style.fontSize = '1rem';
-  removeBtn.addEventListener('click', () => {
+  removeBtn.style.fontSize = '1.1rem';
+  removeBtn.style.fontWeight = 'bold';
+  removeBtn.style.minHeight = '50px';
+  removeBtn.style.transition = 'all 0.2s ease';
+  removeBtn.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    removeBtn.style.transform = 'scale(0.95)';
+  });
+  removeBtn.addEventListener('touchend', (e) => {
+    e.preventDefault();
+    removeBtn.style.transform = 'scale(1)';
+    removeFactory(factory.x, factory.y);
+    menu.remove();
+  });
+  removeBtn.addEventListener('click', (e) => {
+    e.preventDefault();
     removeFactory(factory.x, factory.y);
     menu.remove();
   });
 
   const cancelBtn = document.createElement('button');
   cancelBtn.textContent = 'Cancel';
-  cancelBtn.style.padding = '12px 20px';
+  cancelBtn.style.padding = '15px 25px';
   cancelBtn.style.background = 'linear-gradient(135deg, #666666, #333333)';
   cancelBtn.style.border = 'none';
   cancelBtn.style.borderRadius = '10px';
   cancelBtn.style.color = 'white';
   cancelBtn.style.cursor = 'pointer';
-  cancelBtn.style.fontSize = '1rem';
-  cancelBtn.addEventListener('click', () => {
+  cancelBtn.style.fontSize = '1.1rem';
+  cancelBtn.style.fontWeight = 'bold';
+  cancelBtn.style.minHeight = '50px';
+  cancelBtn.style.transition = 'all 0.2s ease';
+  cancelBtn.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    cancelBtn.style.transform = 'scale(0.95)';
+  });
+  cancelBtn.addEventListener('touchend', (e) => {
+    e.preventDefault();
+    cancelBtn.style.transform = 'scale(1)';
+    menu.remove();
+    selectedFactory = null;
+  });
+  cancelBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    menu.remove();
+    selectedFactory = null;
+  });
+
+  // --- Delete Path Button ---
+  const deletePathBtn = document.createElement('button');
+  deletePathBtn.textContent = 'Delete Path';
+  deletePathBtn.className = 'menu-btn';
+  deletePathBtn.style.background = 'linear-gradient(90deg, #ff4757, #ff6b00)';
+  deletePathBtn.style.color = '#fff';
+  deletePathBtn.style.marginBottom = '14px';
+  deletePathBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    delete paths[factory.id];
+    // Remove all coins from this factory
+    coins = coins.filter(c => c.factoryId !== factory.id);
+    showNotification('Path deleted for this factory!');
+    updateProductionRates();
     menu.remove();
     selectedFactory = null;
   });
 
   menu.appendChild(moveBtn);
   menu.appendChild(removeBtn);
+  menu.appendChild(deletePathBtn);
   menu.appendChild(cancelBtn);
 
   document.body.appendChild(menu);
@@ -689,7 +940,10 @@ function removeFactory(gridX, gridY) {
 }
 
 function moveFactory(fromX, fromY, toX, toY) {
-  if (grid[toY][toX] !== COMPONENTS.EMPTY) return false;
+  if (grid[toY][toX] !== COMPONENTS.EMPTY) {
+    showNotification("Cannot move factory to occupied tile!");
+    return false;
+  }
   
   const factoryIndex = factories.findIndex(f => f.x === fromX && f.y === fromY);
   if (factoryIndex === -1) return false;
@@ -701,18 +955,54 @@ function moveFactory(fromX, fromY, toX, toY) {
   grid[toY][toX] = factory.type === 'normal' ? COMPONENTS.FACTORY_NORMAL : COMPONENTS.FACTORY_CENTRAL;
   factory.x = toX;
   factory.y = toY;
-  
-  // Update the path starting point if it exists
-  if (paths[factory.id] && paths[factory.id].length > 0) {
-    paths[factory.id][0] = { x: toX, y: toY };
+
+  // Remove the path for this factory when moved
+  if (paths[factory.id]) {
+    delete paths[factory.id];
   }
-  
-  showNotification("Factory moved successfully!");
+
+  // Try to auto-connect to an adjacent path if present (same as on placement)
+  const adjacentOffsets = [
+    {dx: 0, dy: -1}, // up
+    {dx: 0, dy: 1},  // down
+    {dx: -1, dy: 0}, // left
+    {dx: 1, dy: 0},  // right
+  ];
+  let connected = false;
+  for (const offset of adjacentOffsets) {
+    const nx = toX + offset.dx;
+    const ny = toY + offset.dy;
+    if (
+      nx >= 0 && nx < gridSize &&
+      ny >= 0 && ny < gridSize
+    ) {
+      for (const pathId in paths) {
+        const path = paths[pathId];
+        if (Array.isArray(path)) {
+          for (let i = 0; i < path.length; i++) {
+            if (path[i].x === nx && path[i].y === ny) {
+              // Connect the new factory's path to this path
+              paths[factory.id] = [{x: toX, y: toY}, ...path.slice(i)];
+              connected = true;
+              break;
+            }
+          }
+        }
+        if (connected) break;
+      }
+    }
+    if (connected) break;
+  }
+  if (!connected) {
+    paths[factory.id] = [];
+  }
+
+  showNotification("Factory moved successfully! Path updated.");
   updateProductionRates();
   return true;
 }
 
-// Touch event handlers for factory icons
+// Enhanced touch event handlers for factory icons
 function handleTouchStart(e, factoryType) {
   e.preventDefault();
   draggingFactoryType = factoryType;
@@ -790,7 +1080,42 @@ function handleTouchEnd(e) {
         grid[gridY][gridX] = compType;
         const id = factoryIdCounter++;
         factories.push({ id, x: gridX, y: gridY, type: draggingFactoryType });
-        paths[id] = [];
+        // Try to auto-connect to an adjacent path if present (touch version)
+        const adjacentOffsets = [
+          {dx: 0, dy: -1}, // up
+          {dx: 0, dy: 1},  // down
+          {dx: -1, dy: 0}, // left
+          {dx: 1, dy: 0},  // right
+        ];
+        let connected = false;
+        for (const offset of adjacentOffsets) {
+          const nx = gridX + offset.dx;
+          const ny = gridY + offset.dy;
+          if (
+            nx >= 0 && nx < gridSize &&
+            ny >= 0 && ny < gridSize
+          ) {
+            // Check if this tile is part of any path
+            for (const pathId in paths) {
+              const path = paths[pathId];
+              if (Array.isArray(path)) {
+                for (let i = 0; i < path.length; i++) {
+                  if (path[i].x === nx && path[i].y === ny) {
+                    // Connect the new factory's path to this path
+                    paths[id] = [{x: gridX, y: gridY}, ...path.slice(i)];
+                    connected = true;
+                    break;
+                  }
+                }
+              }
+              if (connected) break;
+            }
+          }
+          if (connected) break;
+        }
+        if (!connected) {
+          paths[id] = [];
+        }
         updateInfo();
         updateCostsDisplay();
         updateProductionRates();
@@ -803,7 +1128,7 @@ function handleTouchEnd(e) {
   draggingFactoryType = null;
 }
 
-// Add touch event listeners for factory icons
+// Enhanced touch event handlers for factory icons
 normalFactoryIcon.addEventListener('touchstart', (e) => handleTouchStart(e, 'normal'), { passive: false });
 normalFactoryIcon.addEventListener('touchend', handleTouchEnd, { passive: false });
 
@@ -897,7 +1222,42 @@ canvas.addEventListener('drop', (e) => {
     grid[gridY][gridX] = compType;
     const id = factoryIdCounter++;
     factories.push({ id, x: gridX, y: gridY, type: draggingFactoryType });
-    paths[id] = [];
+    // Try to auto-connect to an adjacent path if present
+    const adjacentOffsets = [
+      {dx: 0, dy: -1}, // up
+      {dx: 0, dy: 1},  // down
+      {dx: -1, dy: 0}, // left
+      {dx: 1, dy: 0},  // right
+    ];
+    let connected = false;
+    for (const offset of adjacentOffsets) {
+      const nx = gridX + offset.dx;
+      const ny = gridY + offset.dy;
+      if (
+        nx >= 0 && nx < gridSize &&
+        ny >= 0 && ny < gridSize
+      ) {
+        // Check if this tile is part of any path
+        for (const pathId in paths) {
+          const path = paths[pathId];
+          if (Array.isArray(path)) {
+            for (let i = 0; i < path.length; i++) {
+              if (path[i].x === nx && path[i].y === ny) {
+                // Connect the new factory's path to this path
+                paths[id] = [{x: gridX, y: gridY}, ...path.slice(i)];
+                connected = true;
+                break;
+              }
+            }
+          }
+          if (connected) break;
+        }
+      }
+      if (connected) break;
+    }
+    if (!connected) {
+      paths[id] = [];
+    }
     updateInfo();
     updateCostsDisplay();
     updateProductionRates();
@@ -906,10 +1266,15 @@ canvas.addEventListener('drop', (e) => {
   }
 });
 
-// Enhanced touch support for path drawing
+// Enhanced touch support for canvas interactions
 function getEventPos(e) {
   const rect = canvas.getBoundingClientRect();
-  if (e.touches) {
+  if (e.type === 'touchend' && e.changedTouches && e.changedTouches.length > 0) {
+    return {
+      x: e.changedTouches[0].clientX - rect.left,
+      y: e.changedTouches[0].clientY - rect.top
+    };
+  } else if (e.touches && e.touches.length > 0) {
     return {
       x: e.touches[0].clientX - rect.left,
       y: e.touches[0].clientY - rect.top
@@ -919,6 +1284,121 @@ function getEventPos(e) {
       x: e.clientX - rect.left,
       y: e.clientY - rect.top
     };
+  }
+}
+
+
+function clearLongPressTimer() {
+  if (longPressTimer) {
+    clearTimeout(longPressTimer);
+    longPressTimer = null;
+  }
+}
+
+function handleCanvasTouchStart(e) {
+  e.preventDefault();
+  const pos = getEventPos(e);
+  const gridX = Math.floor(pos.x / tileSize);
+  const gridY = Math.floor(pos.y / tileSize);
+
+  if (gridX < 0 || gridX >= gridSize || gridY < 0 || gridY >= gridSize) return;
+
+  touchStartTime = Date.now();
+  touchStartPos = { x: pos.x, y: pos.y };
+  isLongPress = false;
+
+  // Start long press timer for factory menu
+  const factory = factories.find(f => f.x === gridX && f.y === gridY);
+  if (factory && !isMovingFactory) {
+    longPressTimer = setTimeout(() => {
+      isLongPress = true;
+      selectedFactory = factory;
+      showFactoryMenu(factory);
+      // Add haptic feedback if available
+      if (navigator.vibrate) {
+        navigator.vibrate(50);
+      }
+    }, 500); // 500ms for long press
+  }
+
+  // If not long pressing, start drawing
+  if (!isLongPress && !factory) {
+    startDrawing(e);
+  }
+}
+
+function handleCanvasTouchMove(e) {
+  e.preventDefault();
+  const pos = getEventPos(e);
+  
+  // Check if we've moved too far for a long press
+  const distance = Math.sqrt(
+    Math.pow(pos.x - touchStartPos.x, 2) + 
+    Math.pow(pos.y - touchStartPos.y, 2)
+  );
+  
+  if (distance > 10) {
+    clearLongPressTimer();
+    isLongPress = false;
+  }
+
+  // Continue drawing if we're in drawing mode
+  if (isDrawing) {
+    continueDrawing(e);
+  }
+}
+
+function handleCanvasTouchEnd(e) {
+  e.preventDefault();
+  clearLongPressTimer();
+  
+  const pos = getEventPos(e);
+  const gridX = Math.floor(pos.x / tileSize);
+  const gridY = Math.floor(pos.y / tileSize);
+
+  console.log('[handleCanvasTouchEnd] gridX:', gridX, 'gridY:', gridY, 'isMovingFactory:', isMovingFactory, 'selectedFactory:', selectedFactory);
+
+  if (gridX < 0 || gridX >= gridSize || gridY < 0 || gridY >= gridSize) return;
+
+  const currentTime = Date.now();
+  const touchDuration = currentTime - touchStartTime;
+
+  // Handle factory moving
+  if (isMovingFactory && selectedFactory) {
+    console.log('[handleCanvasTouchEnd] Attempting to move factory:', selectedFactory, 'to', gridX, gridY);
+    if (grid[gridY][gridX] === COMPONENTS.EMPTY) {
+      if (moveFactory(selectedFactory.x, selectedFactory.y, gridX, gridY)) {
+        isMovingFactory = false;
+        selectedFactory = null;
+        console.log('[handleCanvasTouchEnd] Move successful, clearing move mode');
+      }
+    } else {
+      showNotification("Cannot move factory to occupied tile! Tap another empty tile or Cancel.");
+      console.log('[handleCanvasTouchEnd] Invalid move, tile occupied');
+      // Do NOT clear isMovingFactory or selectedFactory, let user try again
+      return;
+    }
+    return;
+  }
+
+  // Handle short tap on factory (if not long press)
+  if (!isLongPress && touchDuration < 500) {
+    const factory = factories.find(f => f.x === gridX && f.y === gridY);
+    if (factory) {
+      // Double tap detection
+      if (currentTime - lastTouchTime < 300) {
+        // Double tap - show menu immediately
+        selectedFactory = factory;
+        showFactoryMenu(factory);
+        console.log('[handleCanvasTouchEnd] Double tap, showing menu for', factory);
+      }
+      lastTouchTime = currentTime;
+    }
+  }
+
+  // Stop drawing
+  if (isDrawing) {
+    stopDrawing(e);
   }
 }
 
@@ -937,10 +1417,15 @@ function handleFactoryClick(e) {
         isMovingFactory = false;
         selectedFactory = null;
       }
+    } else {
+      showNotification("Cannot move factory to occupied tile! Tap another empty tile or Cancel.");
+      // Do NOT clear isMovingFactory or selectedFactory, let user try again
+      return;
     }
     return;
   }
 
+  // Only show menu if clicked directly on a factory
   // Check if clicked on a factory
   const factory = factories.find(f => f.x === gridX && f.y === gridY);
   if (factory) {
@@ -965,20 +1450,98 @@ function startDrawing(e) {
 
   const factory = factories.find(f => f.x === gridX && f.y === gridY);
   if (factory && !selectedFactory) {
+    // Start drawing from the factory tile, but do NOT add the factory tile to the path yet
     isDrawing = true;
     currentFactoryId = factory.id;
     currentPath = [];
     paths[currentFactoryId] = currentPath;
-    currentPath.push({ x: gridX, y: gridY });
+    // Wait for first move to add the adjacent tile
   } else if (!factory) {
-    // Allow path drawing even if menu is open
-    isDrawing = true;
+    // Check if the tile is adjacent to a factory
+    let adjacentFactory = null;
+    for (const f of factories) {
+      if (
+        (Math.abs(f.x - gridX) === 1 && f.y === gridY) ||
+        (Math.abs(f.y - gridY) === 1 && f.x === gridX)
+      ) {
+        adjacentFactory = f;
+        break;
+      }
+    }
+    if (adjacentFactory && !selectedFactory) {
+      // Start drawing from the adjacent tile only (do NOT add the factory tile)
+      isDrawing = true;
+      currentFactoryId = adjacentFactory.id;
+      // Try to auto-connect to an adjacent path if present (path start version)
+      const adjacentOffsets = [
+        {dx: 0, dy: -1}, // up
+        {dx: 0, dy: 1},  // down
+        {dx: -1, dy: 0}, // left
+        {dx: 1, dy: 0},  // right
+      ];
+      let connected = false;
+      for (const offset of adjacentOffsets) {
+        const nx = gridX + offset.dx;
+        const ny = gridY + offset.dy;
+        if (
+          nx >= 0 && nx < gridSize &&
+          ny >= 0 && ny < gridSize
+        ) {
+          for (const pathId in paths) {
+            const path = paths[pathId];
+            if (Array.isArray(path)) {
+              for (let i = 0; i < path.length; i++) {
+                if (path[i].x === nx && path[i].y === ny) {
+                  // Connect the new path to this path
+                  // Check that the rest of the path does not go through any other factory (except the starting factory)
+                  let valid = true;
+                  for (let j = i; j < path.length; j++) {
+                    const tile = path[j];
+                    // Allow the starting factory but not any other
+                    if ((tile.x !== adjacentFactory.x || tile.y !== adjacentFactory.y) &&
+                        (grid[tile.y][tile.x] === COMPONENTS.FACTORY_NORMAL || grid[tile.y][tile.x] === COMPONENTS.FACTORY_CENTRAL)) {
+                      valid = false;
+                      break;
+                    }
+                  }
+                  if (valid) {
+                    // Only connect up to the first factory (if any)
+                    let cutoff = path.length;
+                    for (let j = i + 1; j < path.length; j++) {
+                      const tile = path[j];
+                      if (grid[tile.y][tile.x] === COMPONENTS.FACTORY_NORMAL || grid[tile.y][tile.x] === COMPONENTS.FACTORY_CENTRAL) {
+                        cutoff = j;
+                        break;
+                      }
+                    }
+                    currentPath = [{x: adjacentFactory.x, y: adjacentFactory.y}, {x: gridX, y: gridY}, ...path.slice(i, cutoff)];
+                    paths[currentFactoryId] = currentPath;
+                    connected = true;
+                  }
+                  break;
+                }
+              }
+            }
+            if (connected) break;
+          }
+        }
+        if (connected) break;
+      }
+      if (!connected) {
+        currentPath = [{x: adjacentFactory.x, y: adjacentFactory.y}, {x: gridX, y: gridY}];
+        paths[currentFactoryId] = currentPath;
+      }
+    } else {
+      // Allow path drawing even if menu is open
+      isDrawing = true;
+    }
   }
 }
 
 function continueDrawing(e) {
   if (!isDrawing) return;
   e.preventDefault();
+  touchDidDraw = true;
 
   const pos = getEventPos(e);
   const gridX = Math.floor(pos.x / tileSize);
@@ -1005,11 +1568,12 @@ function continueDrawing(e) {
       }
     }
   } else if (currentFactoryId) {
-    // Starting point (factory position is already added)
+    // First move from the factory: start the path with the first adjacent tile only
     currentPath = paths[currentFactoryId] || [];
     currentPath.push({ x: gridX, y: gridY });
   }
 }
+
 
 function stopDrawing(e) {
   if (!isDrawing) return;
@@ -1075,16 +1639,61 @@ function stopDrawing(e) {
 
 // Add both mouse and touch event listeners for factory interaction
 canvas.addEventListener('click', handleFactoryClick);
-canvas.addEventListener('touchend', handleFactoryClick, { passive: false });
+
 
 // Add both mouse and touch event listeners for path drawing
 canvas.addEventListener('mousedown', startDrawing);
 canvas.addEventListener('mousemove', continueDrawing);
 canvas.addEventListener('mouseup', stopDrawing);
 
-canvas.addEventListener('touchstart', startDrawing, { passive: false });
-canvas.addEventListener('touchmove', continueDrawing, { passive: false });
-canvas.addEventListener('touchend', stopDrawing, { passive: false });
+// Touch event state for unified handling
+let touchStartPos = null;
+let touchDidDraw = false;
+canvas.addEventListener('touchstart', function(e) {
+  touchDidDraw = false;
+  const pos = getEventPos(e);
+  touchStartPos = pos;
+  // Only start drawing if not on a factory tile
+  const gridX = Math.floor(pos.x / tileSize);
+  const gridY = Math.floor(pos.y / tileSize);
+  const factory = factories.find(f => f.x === gridX && f.y === gridY);
+  if (!factory) {
+    startDrawing(e);
+  }
+}, { passive: false });
+canvas.addEventListener('touchmove', function(e) {
+  if (!touchStartPos) return;
+  const pos = getEventPos(e);
+  const dx = Math.abs(pos.x - touchStartPos.x);
+  const dy = Math.abs(pos.y - touchStartPos.y);
+  if (dx > 5 || dy > 5) touchDidDraw = true;
+  continueDrawing(e);
+}, { passive: false });
+canvas.addEventListener('touchend', function(e) {
+  const pos = getEventPos(e);
+  const gridX = Math.floor(pos.x / tileSize);
+  const gridY = Math.floor(pos.y / tileSize);
+  const factory = factories.find(f => f.x === gridX && f.y === gridY);
+  // Allow move mode to work
+  if (isMovingFactory && selectedFactory) {
+    handleCanvasTouchEnd(e);
+    touchDidDraw = false;
+    touchStartPos = null;
+    return;
+  }
+  if (touchDidDraw) {
+    if (!factory) {
+      stopDrawing(e);
+    }
+    // If touchDidDraw and ended on a factory, do nothing (prevents path removal)
+  } else {
+    // If tap on factory, open menu
+    handleFactoryClick(e);
+    handleCanvasTouchEnd(e);
+  }
+  touchDidDraw = false;
+  touchStartPos = null;
+}, { passive: false });
 
 class Coin {
   constructor(factoryId) {
@@ -1160,6 +1769,24 @@ function drawGrid() {
       const tileX = x * tileSize;
       const tileY = y * tileSize;
 
+      // Highlight path tiles with Convai bolt color
+      let isPathTile = false;
+      for (const pId in paths) {
+        const path = paths[pId];
+        if (path && path.find(tile => tile.x === x && tile.y === y)) {
+          isPathTile = true;
+          break;
+        }
+      }
+      if (isPathTile) {
+        // Bolt blue fill with glow
+        ctx.save();
+        ctx.shadowColor = '#00d4ff';
+        ctx.shadowBlur = 16;
+        ctx.fillStyle = 'rgba(0, 212, 255, 0.45)';
+        ctx.fillRect(tileX + 6, tileY + 6, tileSize - 12, tileSize - 12);
+        ctx.restore();
+      }
       // Highlight selected factory
       if (selectedFactory && selectedFactory.x === x && selectedFactory.y === y) {
         ctx.fillStyle = 'rgba(0, 212, 255, 0.3)';
@@ -1319,6 +1946,7 @@ function drawCoins() {
 }
 
 function spawnCoins() {
+  if (paused) return;
   for (const f of factories) {
     const path = paths[f.id];
     if (path && path.length > 1) {
@@ -1337,9 +1965,11 @@ function update() {
 }
 
 function gameLoop() {
-  update();
-  drawGrid();
-  drawCoins();
+  if (!paused) {
+    update();
+    drawGrid();
+    drawCoins();
+  }
   requestAnimationFrame(gameLoop);
 }
 
@@ -1351,6 +1981,14 @@ updateInfo();
 gameLoop();
 spawnCoins();
 setInterval(spawnCoins, 1250); // spawn coins periodically
+
+
+
+</script>
+</body>
+</html>
+
+</html>
 
 
 

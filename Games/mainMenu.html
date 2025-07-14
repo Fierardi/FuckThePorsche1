@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<link rel="manifest" href="/manifest.json">
+<link rel="manifest" href="/game/manifest.json">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
 <meta name="theme-color" content="#000000">
@@ -321,144 +321,122 @@
   </style>
 </head>
 <body>
-  <div class="bg-particles" id="particles"></div>
-  <div class="bg-factory-icons" id="factory-icons"></div>
-  
-  <div class="menu-container">
-    <h1>MoneyFactory</h1>
-    <div class="subtitle">Build • Automate • Profit</div>
+    <div class="bg-particles" id="particles"></div>
+    <div class="bg-factory-icons" id="factory-icons"></div>
     
-    <div class="menu-buttons">
-      <button class="menu-btn" id="startGameBtn">
-        🚀 Start Game
-      </button>
-      <button class="menu-btn secondary" id="tutorialBtn">
-        📚 How to Play
-      </button>
-      <button class="menu-btn tertiary" id="settingsBtn">
-        ⚙️ Settings
-      </button>
+    <div class="menu-container">
+      <h1>MoneyFactory</h1>
+      <div class="subtitle">Build • Automate • Profit</div>
+      
+      <div class="menu-buttons">
+        <button class="menu-btn" id="startGameBtn">
+        🐣 Easy
+        </button>
+        <button class="menu-btn secondary" id="tutorialBtn">
+        🐥 Medium
+        </button>
+        <button class="menu-btn tertiary" id="settingsBtn">
+        🐧 Hard
+        </button>
+      </div>
     </div>
-  </div>
+    
+
+    
+    <div class="loading" id="loading">
+      <div class="spinner"></div>
+      <p>Loading MoneyFactory...</p>
+    </div>
   
-  <div class="game-info">
-    <p>💰 Build factories and create automated money streams</p>
-    <p>🏭 Connect paths to transport coins to the collection point</p>
-    <p>⚡ Upgrade to more powerful factories for bigger profits</p>
-  </div>
-  
-  <div class="loading" id="loading">
-    <div class="spinner"></div>
-    <p>Loading MoneyFactory...</p>
-  </div>
-
-  <script>
-    // Create animated background particles
-    function createParticles() {
-      const particlesContainer = document.getElementById('particles');
-      for (let i = 0; i < 80; i++) {
-        const particle = document.createElement('div');
-        particle.className = 'particle';
-        particle.style.left = Math.random() * 100 + '%';
-        particle.style.top = Math.random() * 100 + '%';
-        particle.style.width = Math.random() * 6 + 2 + 'px';
-        particle.style.height = particle.style.width;
-        particle.style.animationDelay = Math.random() * 8 + 's';
-        particle.style.animationDuration = (Math.random() * 6 + 6) + 's';
-        particlesContainer.appendChild(particle);
+    <script>
+      // Create animated background particles
+      function createParticles() {
+        const particlesContainer = document.getElementById('particles');
+        for (let i = 0; i < 80; i++) {
+          const particle = document.createElement('div');
+          particle.className = 'particle';
+          particle.style.left = Math.random() * 100 + '%';
+          particle.style.top = Math.random() * 100 + '%';
+          particle.style.width = Math.random() * 6 + 2 + 'px';
+          particle.style.height = particle.style.width;
+          particle.style.animationDelay = Math.random() * 8 + 's';
+          particle.style.animationDuration = (Math.random() * 6 + 6) + 's';
+          particlesContainer.appendChild(particle);
+        }
       }
-    }
-    
-    // Create floating factory icons in background
-    function createFactoryIcons() {
-      const iconsContainer = document.getElementById('factory-icons');
-      const icons = ['🏭', '⚡', '💰', '🔧', '⚙️', '📈'];
       
-      for (let i = 0; i < 15; i++) {
-        const icon = document.createElement('div');
-        icon.className = 'bg-icon';
-        icon.textContent = icons[Math.floor(Math.random() * icons.length)];
-        icon.style.left = Math.random() * 100 + '%';
-        icon.style.top = Math.random() * 100 + '%';
-        icon.style.animationDelay = Math.random() * 12 + 's';
-        icon.style.animationDuration = (Math.random() * 8 + 10) + 's';
-        iconsContainer.appendChild(icon);
+      // Create floating factory icons in background
+      function createFactoryIcons() {
+        const iconsContainer = document.getElementById('factory-icons');
+        const icons = ['🏭', '⚡', '💰', '🔧', '⚙️', '📈'];
+        
+        for (let i = 0; i < 15; i++) {
+          const icon = document.createElement('div');
+          icon.className = 'bg-icon';
+          icon.textContent = icons[Math.floor(Math.random() * icons.length)];
+          icon.style.left = Math.random() * 100 + '%';
+          icon.style.top = Math.random() * 100 + '%';
+          icon.style.animationDelay = Math.random() * 12 + 's';
+          icon.style.animationDuration = (Math.random() * 8 + 10) + 's';
+          iconsContainer.appendChild(icon);
+        }
       }
-    }
-    
-    // Show loading animation
-    function showLoading() {
-      document.getElementById('loading').style.display = 'block';
-    }
-    
-    // Add click sound effect (optional)
-    function playClickSound() {
-      // You can add audio here if desired
-      // const audio = new Audio('click.mp3');
-      // audio.play();
-    }
-    
-    // Button event listeners
-    document.getElementById('startGameBtn').addEventListener('click', () => {
-      playClickSound();
-      showLoading();
       
-      // Simulate loading time for dramatic effect
-      setTimeout(() => {
-        // Replace 'money-factory.html' with your actual game file
-        window.location.href = 'money-factory.html';
-      }, 1500);
-    });
-    
-    document.getElementById('tutorialBtn').addEventListener('click', () => {
-      playClickSound();
+      // Show loading animation
+      function showLoading() {
+        document.getElementById('loading').style.display = 'block';
+      }
       
-      // Show tutorial modal or redirect to tutorial page
-      alert(`🎮 HOW TO PLAY MoneyFactory 🎮
-
-🏭 FACTORIES:
-• Drag factories from the right panel onto the grid
-• Normal factories (🏭) produce 1 coin, first one is free!
-• Central factories (⚡) produce 5 coins but cost more
-
-📍 PATHS:
-• Click and drag from factories to draw paths
-• Coins will follow these paths to the collection point (green box)
-• Paths can merge and connect to create complex networks
-
-💰 STRATEGY:
-• Start with free normal factories
-• Build paths to the collection point (top-right corner)
-• Earn points to buy more expensive but profitable factories
-• Create efficient networks to maximize your profits!
-
-Good luck building your money empire! 🚀`);
-    });
-    
-    document.getElementById('settingsBtn').addEventListener('click', () => {
-      playClickSound();
+      // Add click sound effect (optional)
+      function playClickSound() {
+        // You can add audio here if desired
+        // const audio = new Audio('click.mp3');
+        // audio.play();
+      }
       
-      // Show settings modal or redirect to settings page
-      alert(`Settings panel coming soon!`);
-    });
-    
-    // Initialize animations
-    createParticles();
-    createFactoryIcons();
-    
-    // Add some interactive hover sounds (optional)
-    document.querySelectorAll('.menu-btn').forEach(btn => {
-      btn.addEventListener('mouseenter', () => {
-        // Optional hover sound effect
+      // Button event listeners
+      document.getElementById('startGameBtn').addEventListener('click', () => {
+        playClickSound();
+        showLoading();
+        
+        // Simulate loading time for dramatic effect
+        setTimeout(() => {
+          // Replace 'money-factory.html' with your actual game file
+          window.location.href = 'money-factory.html';
+        }, 1500);
       });
-    });
-    
-    // Keyboard navigation
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        document.getElementById('startGameBtn').click();
-      }
-    });
-  </script>
-</body>
-</html>
+      
+      document.getElementById('tutorialBtn').addEventListener('click', () => {
+        playClickSound();
+        
+        // Show tutorial modal or redirect to tutorial page
+        alert(`Coming soon!`);
+      });
+      
+      document.getElementById('settingsBtn').addEventListener('click', () => {
+        playClickSound();
+        
+        // Show settings modal or redirect to settings page
+        alert(`Coming soon!`);
+      });
+      
+      // Initialize animations
+      createParticles();
+      createFactoryIcons();
+      
+      // Add some interactive hover sounds (optional)
+      document.querySelectorAll('.menu-btn').forEach(btn => {
+        btn.addEventListener('mouseenter', () => {
+          // Optional hover sound effect
+        });
+      });
+      
+      // Keyboard navigation
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          document.getElementById('startGameBtn').click();
+        }
+      });
+    </script>
+  </body>
+  </html>
