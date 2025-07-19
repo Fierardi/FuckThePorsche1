@@ -645,7 +645,12 @@
             <button class="tab-btn active" data-tab="public">Public</button>
             <button class="tab-btn" data-tab="private">Private</button>
           </div>
-          <input type="text" class="user-search" id="userSearch" placeholder="Search users..." style="display: none;">
+          <div id="userInfoSection" class="user-info-section" style="display: none;">
+            <h4>Your Username:</h4>
+            <div class="username-display" id="usernameDisplay"></div>
+            <small style="color: #666; font-size: 0.75rem;">Share this with friends to connect!</small>
+          </div>
+          <input type="text" class="user-search" id="userSearch" placeholder="Search users by name..." style="display: none;">
         </div>
         <div class="chat-list" id="chatList">
           <!-- Chat items will be populated here -->
@@ -698,8 +703,11 @@
   let publicChannel = null;
   let privateChannels = {};
   let onlineUsers = new Set();
+  let allRegisteredUsers = new Set();
+  let userDirectory = new Map(); // Store user info
   let typingTimeout = null;
   let isTyping = false;
+  let userRegistrationChannel = null;
   
   const userDisplay = document.getElementById('user-display');
   const loginPrompt = document.getElementById('login-prompt');
@@ -712,20 +720,30 @@
   const userSearch = document.getElementById('userSearch');
   const chatTitle = document.getElementById('chatTitle');
   const typingIndicator = document.getElementById('typingIndicator');
+  const userInfoSection = document.getElementById('userInfoSection');
+  const usernameDisplay = document.getElementById('usernameDisplay');
 
   // Initialize channels
   function initializeChannels() {
     publicChannel = ably.channels.get('napoligames-public-chat');
+    userRegistrationChannel = ably.channels.get('napoligames-user-directory');
     
     // Subscribe to public chat
     publicChannel.subscribe(handlePublicMessage);
+    
+    // Subscribe to user registration updates
+    userRegistrationChannel.subscribe(handleUserRegistration);
     
     // Load public chat history
     loadChatHistory('public');
     
     // Subscribe to presence for online users
-    publicChannel.presence.enter();
+    publicChannel.presence.enter(getUserName());
     publicChannel.presence.subscribe(handlePresenceUpdate);
+    
+    // Register current user and load user directory
+    registerUser();
+    loadUserDirectory();
   }
 
   // Get Netlify username
@@ -761,6 +779,9 @@
       `;
       loginPrompt.style.display = 'none';
       
+      // Show username in sidebar
+      usernameDisplay.textContent = username;
+      
       // Enable chat input
       input.disabled = false;
       sendBtn.disabled = false;
@@ -773,6 +794,7 @@
     } else {
       userDisplay.innerHTML = '';
       loginPrompt.style.display = 'block';
+      usernameDisplay.textContent = '';
       
       // Disable chat input
       input.disabled = true;
@@ -788,12 +810,70 @@
 
   // Handle presence updates (online users)
   function handlePresenceUpdate(presenceMsg) {
+    const username = presenceMsg.data || presenceMsg.clientId;
     if (presenceMsg.action === 'enter') {
-      onlineUsers.add(presenceMsg.data || presenceMsg.clientId);
+      onlineUsers.add(username);
     } else if (presenceMsg.action === 'leave') {
-      onlineUsers.delete(presenceMsg.data || presenceMsg.clientId);
+      onlineUsers.delete(username);
     }
     updateChatList();
+  }
+
+  // Register user in directory
+  function registerUser() {
+    const currentUser = getUserName();
+    const userId = getUserId();
+    if (!currentUser || !userId) return;
+    
+    const userInfo = {
+      username: currentUser,
+      userId: userId,
+      lastSeen: new Date().toISOString(),
+      joinDate: new Date().toISOString()
+    };
+    
+    // Add to local directory
+    userDirectory.set(currentUser, userInfo);
+    allRegisteredUsers.add(currentUser);
+    
+    // Broadcast user registration
+    userRegistrationChannel.publish('user-register', userInfo);
+  }
+
+  // Handle user registration messages
+  function handleUserRegistration(msg) {
+    if (msg.name === 'user-register') {
+      const userInfo = msg.data;
+      userDirectory.set(userInfo.username, userInfo);
+      allRegisteredUsers.add(userInfo.username);
+      updateChatList();
+    } else if (msg.name === 'user-directory-request') {
+      // Someone is requesting the user directory, send our info
+      registerUser();
+    }
+  }
+
+  // Load user directory from history
+  function loadUserDirectory() {
+    userRegistrationChannel.history({ limit: 100 }, (err, resultPage) => {
+      if (err) {
+        console.error('Error loading user directory:', err);
+        return;
+      }
+      
+      resultPage.items.forEach(msg => {
+        if (msg.name === 'user-register') {
+          const userInfo = msg.data;
+          userDirectory.set(userInfo.username, userInfo);
+          allRegisteredUsers.add(userInfo.username);
+        }
+      });
+      
+      updateChatList();
+      
+      // Request other users to re-register (in case we missed some)
+      userRegistrationChannel.publish('user-directory-request', { requester: getUserName() });
+    });
   }
 
   // Update chat list (sidebar)
@@ -814,28 +894,63 @@
     } else {
       let html = '';
       
-      // Show search results or all online users
+      // Show search results from all registered users
       const searchTerm = userSearch.value.toLowerCase();
-      const filteredUsers = Array.from(onlineUsers).filter(user => 
+      const filteredUsers = Array.from(allRegisteredUsers).filter(user => 
         user !== currentUser && 
         user.toLowerCase().includes(searchTerm)
       );
 
-      filteredUsers.forEach(user => {
-        const isActive = currentChat === getPrivateChatId(currentUser, user);
-        html += `
-          <div class="chat-item ${isActive ? 'active' : ''}" data-chat="${getPrivateChatId(currentUser, user)}" data-user="${user}">
-            <div class="avatar">${user.charAt(0).toUpperCase()}</div>
-            <div class="info">
-              <div class="name">${user}</div>
-              <div class="preview">Click to start chatting</div>
+      if (filteredUsers.length === 0 && searchTerm) {
+        html = `<div style="padding: 1rem; text-align: center; color: #999;">
+          No users found matching "${searchTerm}"
+        </div>`;
+      } else if (filteredUsers.length === 0) {
+        html = `<div style="padding: 1rem; text-align: center; color: #999;">
+          <p>No other users have joined yet.</p>
+          <p><strong>To find users:</strong></p>
+          <p>• Share your username: <strong>${currentUser}</strong></p>
+          <p>• Ask them to search for you!</p>
+        </div>`;
+      } else {
+        filteredUsers.forEach(user => {
+          const isActive = currentChat === getPrivateChatId(currentUser, user);
+          const isOnline = onlineUsers.has(user);
+          const userInfo = userDirectory.get(user);
+          
+          html += `
+            <div class="chat-item ${isActive ? 'active' : ''}" data-chat="${getPrivateChatId(currentUser, user)}" data-user="${user}">
+              <div class="avatar" style="position: relative;">
+                ${user.charAt(0).toUpperCase()}
+                ${isOnline ? '<div class="online-dot"></div>' : ''}
+              </div>
+              <div class="info">
+                <div class="name">${user} ${isOnline ? '🟢' : '⚫'}</div>
+                <div class="preview">${isOnline ? 'Online now' : userInfo ? `Last seen ${formatLastSeen(userInfo.lastSeen)}` : 'Click to chat'}</div>
+              </div>
             </div>
-          </div>
-        `;
-      });
+          `;
+        });
+      }
 
-      chatList.innerHTML = html || '<div style="padding: 1rem; text-align: center; color: #999;">No users found</div>';
+      chatList.innerHTML = html;
     }
+  }
+
+  // Format last seen time
+  function formatLastSeen(lastSeenISO) {
+    const lastSeen = new Date(lastSeenISO);
+    const now = new Date();
+    const diffMs = now - lastSeen;
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+    
+    if (diffMins < 5) return 'just now';
+    if (diffMins < 60) return `${diffMins}m ago`;
+    if (diffHours < 24) return `${diffHours}h ago`;
+    if (diffDays < 7) return `${diffDays}d ago`;
+    return lastSeen.toLocaleDateString();
   }
 
   // Generate private chat ID
@@ -1075,10 +1190,12 @@
       if (tab === 'public') {
         currentChatType = 'public';
         userSearch.style.display = 'none';
+        userInfoSection.style.display = 'none';
         switchChat('public');
       } else {
         currentChatType = 'private';
         userSearch.style.display = 'block';
+        userInfoSection.style.display = 'block';
       }
       
       updateChatList();
@@ -1144,6 +1261,8 @@
   window.netlifyIdentity.on('logout', () => {
     updateUserDisplay();
     onlineUsers.clear();
+    allRegisteredUsers.clear();
+    userDirectory.clear();
     privateChannels = {};
     currentChat = 'public';
     currentChatType = 'public';
