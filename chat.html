@@ -133,6 +133,26 @@
       color: white;
     }
 
+    .tab-notification-badge {
+      background: var(--apple-red);
+      color: white;
+      border-radius: 50%;
+      min-width: 18px;
+      height: 18px;
+      font-size: 0.7rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      margin-left: 0.5rem;
+      padding: 0 4px;
+    }
+
+    .tab-btn.active .tab-notification-badge {
+      background: rgba(255, 255, 255, 0.9);
+      color: var(--apple-red);
+    }
+
     .user-search {
       width: 100%;
       padding: 0.5rem;
@@ -611,6 +631,58 @@
           padding: 0.5rem 1rem;
         }
 
+        .unread-badge {
+          position: absolute;
+          top: -5px;
+          right: -5px;
+          background: var(--apple-red);
+          color: white;
+          border-radius: 50%;
+          width: 20px;
+          height: 20px;
+          font-size: 0.7rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-weight: 600;
+        }
+
+        .unread-indicator {
+          color: var(--apple-red);
+          font-weight: bold;
+          margin-left: 0.5rem;
+        }
+
+        .notification {
+          position: fixed;
+          top: 60px;
+          right: 20px;
+          background: white;
+          border: 1px solid #ddd;
+          border-radius: 10px;
+          padding: 1rem;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+          max-width: 300px;
+          z-index: 1001;
+          animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+          from { transform: translateX(100%); opacity: 0; }
+          to { transform: translateX(0); opacity: 1; }
+        }
+
+        .notification-title {
+          font-weight: 600;
+          margin-bottom: 0.5rem;
+          color: var(--apple-black);
+        }
+
+        .notification-content {
+          color: var(--apple-gray);
+          font-size: 0.9rem;
+        }
+
   </style>
 </head>
 <body>
@@ -643,7 +715,7 @@
         <div class="sidebar-header">
           <div class="chat-tabs">
             <button class="tab-btn active" data-tab="public">Public</button>
-            <button class="tab-btn" data-tab="private">Private</button>
+            <button class="tab-btn" data-tab="private" id="privateTabBtn">Private <span id="privateNotificationBadge" class="tab-notification-badge" style="display: none;">0</span></button>
           </div>
           <div id="userInfoSection" class="user-info-section" style="display: none;">
             <h4>Your Username:</h4>
@@ -709,6 +781,8 @@
   let typingTimeout = null;
   let isTyping = false;
   let userRegistrationChannel = null;
+  let unreadMessages = new Map(); // Track unread messages per chat
+  let notificationPermission = 'default'; // Track notification permission status
   
   const userDisplay = document.getElementById('user-display');
   const loginPrompt = document.getElementById('login-prompt');
@@ -723,6 +797,38 @@
   const typingIndicator = document.getElementById('typingIndicator');
   const userInfoSection = document.getElementById('userInfoSection');
   const usernameDisplay = document.getElementById('usernameDisplay');
+  const imagePreview = document.getElementById('imagePreview');
+  const privateNotificationBadge = document.getElementById('privateNotificationBadge');
+
+  // Update private tab notification badge
+  function updatePrivateTabBadge() {
+    let totalUnread = 0;
+    unreadMessages.forEach(count => {
+      totalUnread += count;
+    });
+    
+    if (totalUnread > 0) {
+      privateNotificationBadge.textContent = totalUnread;
+      privateNotificationBadge.style.display = 'inline-flex';
+    } else {
+      privateNotificationBadge.style.display = 'none';
+    }
+  }
+
+  // Show preview of selected image before sending
+  imageInput.addEventListener('change', function() {
+    if (imageInput.files && imageInput.files[0]) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        imagePreview.src = e.target.result;
+        imagePreview.style.display = 'block';
+      };
+      reader.readAsDataURL(imageInput.files[0]);
+    } else {
+      imagePreview.src = '';
+      imagePreview.style.display = 'none';
+    }
+  });
 
   // Initialize channels
   function initializeChannels() {
@@ -768,6 +874,20 @@
     return user ? user.id : null;
   }
 
+  // Request notification permission
+  function requestNotificationPermission() {
+    if ('Notification' in window) {
+      Notification.requestPermission().then(permission => {
+        notificationPermission = permission;
+        if (permission === 'granted') {
+          console.log('Notification permission granted');
+        } else if (permission === 'denied') {
+          console.log('Notification permission denied');
+        }
+      });
+    }
+  }
+
   // Update UI based on login status
   function updateUserDisplay() {
     const username = getUserName();
@@ -788,6 +908,9 @@
       sendBtn.disabled = false;
       fileBtn.disabled = false;
       input.placeholder = 'Type a message...';
+      
+      // Request notification permission when user logs in
+      requestNotificationPermission();
       
       // Initialize channels after login
       initializeChannels();
@@ -872,8 +995,26 @@
       
       updateChatList();
       
+      // Subscribe to all private channels for the current user
+      subscribeToAllPrivateChannels();
+
       // Request other users to re-register (in case we missed some)
       userRegistrationChannel.publish('user-directory-request', { requester: getUserName() });
+    });
+  }
+
+  // Subscribe to all private channels for the current user
+  function subscribeToAllPrivateChannels() {
+    const currentUser = getUserName();
+    if (!currentUser) return;
+    allRegisteredUsers.forEach(otherUser => {
+      if (otherUser !== currentUser) {
+        const chatId = getPrivateChatId(currentUser, otherUser);
+        if (!privateChannels[chatId]) {
+          privateChannels[chatId] = ably.channels.get(`private-${chatId}`);
+          privateChannels[chatId].subscribe(handlePrivateMessage);
+        }
+      }
     });
   }
 
@@ -915,19 +1056,22 @@
         </div>`;
       } else {
         filteredUsers.forEach(user => {
-          const isActive = currentChat === getPrivateChatId(currentUser, user);
+          const chatId = getPrivateChatId(currentUser, user);
+          const isActive = currentChat === chatId;
           const isOnline = onlineUsers.has(user);
           const userInfo = userDirectory.get(user);
+          const unreadCount = unreadMessages.get(chatId) || 0;
           
           html += `
-            <div class="chat-item ${isActive ? 'active' : ''}" data-chat="${getPrivateChatId(currentUser, user)}" data-user="${user}">
+            <div class="chat-item ${isActive ? 'active' : ''}" data-chat="${chatId}" data-user="${user}">
               <div class="avatar" style="position: relative;">
                 ${user.charAt(0).toUpperCase()}
                 ${isOnline ? '<div class="online-dot"></div>' : ''}
+                ${unreadCount > 0 ? `<div class="unread-badge">${unreadCount}</div>` : ''}
               </div>
               <div class="info">
-                <div class="name">${user} ${isOnline ? '🟢' : '⚫'}</div>
-                <div class="preview">${isOnline ? 'Online now' : userInfo ? `Last seen ${formatLastSeen(userInfo.lastSeen)}` : 'Click to chat'}</div>
+                <div class="name">${user} ${isOnline ? '🟢' : '⚫'} ${unreadCount > 0 ? `<span class="unread-indicator">●</span>` : ''}</div>
+                <div class="preview">${unreadCount > 0 ? `${unreadCount} unread message${unreadCount > 1 ? 's' : ''}` : (isOnline ? 'Online now' : userInfo ? `Last seen ${formatLastSeen(userInfo.lastSeen)}` : 'Click to chat')}</div>
               </div>
             </div>
           `;
@@ -962,15 +1106,42 @@
   // Handle public message
   function handlePublicMessage(msg) {
     if (currentChatType === 'public') {
+      // Don't display our own messages (they're already shown via optimistic update)
+      if (msg.name === getUserName()) {
+        return;
+      }
       displayMessage(msg.name, msg.data, msg.timestamp);
     }
   }
 
   // Handle private message
   function handlePrivateMessage(msg) {
-    if (currentChat === msg.extras.chatId) {
-      displayMessage(msg.name, msg.data, msg.timestamp);
+    // Check if this is a private message with chatId
+    if (msg.data && msg.data.isPrivate && msg.data.chatId) {
+      // Don't display our own messages (they're already shown via optimistic update)
+      if (msg.name === getUserName()) {
+        return;
+      }
+      
+      // Always display the message if we're currently in this chat
+      if (currentChat === msg.data.chatId) {
+        displayMessage(msg.name, msg.data.content, msg.timestamp);
+      } else {
+        // Message for a different chat - track as unread and show notification
+        const currentCount = unreadMessages.get(msg.data.chatId) || 0;
+        unreadMessages.set(msg.data.chatId, currentCount + 1);
+        
+        // Update chat list to show unread indicator
+        updateChatList();
+        
+        // Update private tab badge
+        updatePrivateTabBadge();
+        
+        // Show a simple notification
+        showNotification(`New message from ${msg.name}`, msg.data.content);
+      }
     }
+    // Note: Messages for other chats will be loaded when switching to them via loadChatHistory
   }
 
   // Display message in chat
@@ -1010,6 +1181,66 @@
     modalImg.src = imageUrl;
   }
 
+  // Show notification for new messages
+  function showNotification(title, content) {
+    // Handle different content types
+    let displayContent = content;
+    if (typeof content === 'object' && content.type === 'image') {
+      displayContent = '📷 Image';
+    } else if (typeof content === 'string' && content.length > 50) {
+      displayContent = content.substring(0, 50) + '...';
+    }
+    
+    // Show system push notification if permission granted
+    if ('Notification' in window && notificationPermission === 'granted') {
+      const systemNotification = new Notification(title, {
+        body: displayContent,
+        icon: 'Images/Icon.png', // Use your app icon
+        badge: 'Images/Icon.png',
+        tag: 'napoligames-chat', // Prevents duplicate notifications
+        requireInteraction: false,
+        silent: false
+      });
+      
+      // Auto-close system notification after 5 seconds
+      setTimeout(() => {
+        systemNotification.close();
+      }, 5000);
+      
+      // Handle click on system notification
+      systemNotification.onclick = function() {
+        window.focus(); // Bring the browser window to front
+        systemNotification.close();
+      };
+    }
+    
+    // Also show in-app notification
+    const notification = document.createElement('div');
+    notification.className = 'notification';
+    
+    notification.innerHTML = `
+      <div class="notification-title">${title}</div>
+      <div class="notification-content">${displayContent}</div>
+    `;
+    
+    // Add to page
+    document.body.appendChild(notification);
+    
+    // Auto-remove after 4 seconds
+    setTimeout(() => {
+      if (notification.parentNode) {
+        notification.parentNode.removeChild(notification);
+      }
+    }, 4000);
+    
+    // Remove on click
+    notification.addEventListener('click', () => {
+      if (notification.parentNode) {
+        notification.parentNode.removeChild(notification);
+      }
+    });
+  }
+
   // Close image modal
   document.querySelector('.image-modal-close').onclick = function() {
     document.getElementById('imageModal').style.display = 'none';
@@ -1033,7 +1264,13 @@
           return;
         }
         resultPage.items.reverse().forEach(msg => {
-          displayMessage(msg.name, msg.data, msg.timestamp);
+          // Handle new private message format
+          if (msg.data && msg.data.isPrivate && msg.data.content !== undefined) {
+            displayMessage(msg.name, msg.data.content, msg.timestamp);
+          } else {
+            // Handle old format or other message types
+            displayMessage(msg.name, msg.data, msg.timestamp);
+          }
         });
       });
     } else if (chatType === 'private' && chatId) {
@@ -1045,7 +1282,12 @@
             return;
           }
           resultPage.items.reverse().forEach(msg => {
-            displayMessage(msg.name, msg.data, msg.timestamp);
+            if (msg.data && msg.data.isPrivate && msg.data.content !== undefined) {
+              displayMessage(msg.name, msg.data.content, msg.timestamp);
+            } else {
+              // Handle old format or other message types
+              displayMessage(msg.name, msg.data, msg.timestamp);
+            }
           });
         });
       }
@@ -1063,6 +1305,9 @@
     } else {
       chatTitle.textContent = `Chat with ${otherUser}`;
       
+      // Mark messages as read for this chat
+      unreadMessages.delete(chatId);
+      
       // Create private channel if doesn't exist
       if (!privateChannels[chatId]) {
         privateChannels[chatId] = ably.channels.get(`private-${chatId}`);
@@ -1071,6 +1316,12 @@
       
       loadChatHistory('private', chatId);
     }
+    
+    // Update chat list to remove unread indicators
+    updateChatList();
+    
+    // Update private tab badge
+    updatePrivateTabBadge();
   }
 
   // Convert image to base64
@@ -1122,7 +1373,13 @@
     } else {
       const channel = privateChannels[currentChat];
       if (channel) {
-        channel.publish(name, messageData, { chatId: currentChat });
+        // Include chatId in the message data for private messages
+        const privateMessageData = {
+          content: messageData,
+          chatId: currentChat,
+          isPrivate: true
+        };
+        channel.publish(name, privateMessageData);
         // Optimistically display the message immediately
         displayMessage(name, messageData, new Date());
       }
@@ -1130,6 +1387,8 @@
 
     input.value = '';
     imageInput.value = '';
+    imagePreview.src = '';
+    imagePreview.style.display = 'none';
     
     // Clear typing indicator
     clearTimeout(typingTimeout);
