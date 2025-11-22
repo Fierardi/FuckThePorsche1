@@ -17,7 +17,6 @@
   gtag('config', 'G-WGE5P95VRW');
 </script>
 
-
     <style>
         /* Apple-inspired CSS */
         @import url('https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;500;600&display=swap');
@@ -44,6 +43,108 @@
             padding-top: 44px;
             line-height: 1.5;
             -webkit-font-smoothing: antialiased;
+        }
+        
+        /* Welcome Popup Styles */
+        #welcome-popup {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.85);
+            justify-content: center;
+            align-items: center;
+            z-index: 3000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        #welcome-popup.active {
+            opacity: 1;
+        }
+        
+        .popup-content {
+            background-color: #fff;
+            border-radius: 18px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow: hidden;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+            position: relative;
+        }
+        
+        #welcome-popup.active .popup-content {
+            transform: scale(1);
+        }
+        
+        .popup-image {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-radius: 18px 18px 0 0;
+        }
+        
+        .popup-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 36px;
+            height: 36px;
+            background-color: rgba(0, 0, 0, 0.7);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background-color 0.3s ease;
+            z-index: 10;
+        }
+        
+        .popup-close:hover {
+            background-color: rgba(0, 0, 0, 0.9);
+        }
+        
+        .popup-text {
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .popup-text h2 {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--apple-black);
+        }
+        
+        .popup-text p {
+            font-size: 17px;
+            color: var(--apple-gray);
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+        
+        .popup-button {
+            background-color: var(--apple-blue);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 980px;
+            font-size: 17px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        
+        .popup-button:hover {
+            background-color: #2284f5;
         }
         
         /* Header Styling */
@@ -521,6 +622,18 @@
                 width: 100%;
                 max-width: 320px;
             }
+            
+            .popup-content {
+                width: 95%;
+            }
+            
+            .popup-text h2 {
+                font-size: 24px;
+            }
+            
+            .popup-text p {
+                font-size: 15px;
+            }
         }
         
         @media (max-width: 480px) {
@@ -569,30 +682,22 @@
                 transform: translateY(0);
             }
         }
-
-     /*     .games-section {
-    background-image: url('Images/napoli.png'); /* Path to your image */
- /*     background-size: cover; /* Make the image cover the entire section */
- /*     background-position: center; /* Center the image */
-  /*    padding: 40px 0; /* Add some padding for spacing */
-  /*    color: white; /* Adjust text color for contrast */
-   /*   width: 100%; /* Ensure the section takes up the full width */
-   /*   margin: 0; /* Remove any default margin */
-   /*   box-sizing: border-box; /* Ensure padding doesn't cause overflow */
-/*  }
-
-@media (max-width: 768px) {
-    .games-section {
-        background-size: cover; /* On small screens, make sure the background covers the section */
-   /*   }*/
-/*}    */
-
-
     </style>
 </head>
 
-
 <body>
+  <!-- Welcome Popup -->
+  <div id="welcome-popup">
+    <div class="popup-content">
+      <button class="popup-close" onclick="closeWelcomePopup()">&times;</button>
+      <img src="Images/NapoliIconChr.png" alt="Welcome to NapoliGames" class="popup-image">
+      <div class="popup-text">
+        <h2>Welcome to NapoliGames!</h2>
+        <button class="popup-button" onclick="closeWelcomePopup()">Start Playing</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Header -->
   <header class="header">
     <div class="logo">
@@ -607,8 +712,6 @@
     </div>
   </header>
 
-
-
     <!-- Search Bar Container (initially hidden) -->
     <div class="search-container" id="search-container">
         <input type="text" id="search-input" placeholder="Search for games..." oninput="searchGames()">
@@ -617,11 +720,9 @@
     <!-- Hero Section -->
     <section class="hero">
         <div class="hero-content">
-            <h1>New Chat Function</h1>
-            <p>Only on <strong>NapoliGames</strong> can you chat seamlessly with your friends while enjoying your favorite games.</p> 
-            <button class="hero-button" onclick="window.location.href='chat.html'">Explore Napoli-Chat</button>
-
-
+            <h1>New Games</h1>
+            <p>Only on <strong>NapoliGames</strong> </p> 
+            <button class="hero-button" onclick="window.location.href='games.html'">Explore NapoliGames</button>
         </div>
     </section>
 
@@ -633,95 +734,81 @@
         </h2>
         
         <div class="game-container" id="game-container">
-            <!-- Game Card 1 -->
-
-<div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g26/class-436/')" data-title="Basket Random">
-<img src="Images/basketRandom.png" alt="Hextris">
-<h2>Basket Random</h2>
-</div>
-
-<div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g77/class-52/')" data-title="Free Kick Screamers">
-<img src="Images/Free Kick Screamers.jpeg" alt="Hextris">
-<h2>Free Kick Screamers</h2>
-</div>
-
-<div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g6/class-146/')" data-title="Speeed Pool King">
-<img src="Images/speed-pool-king.png" alt="Hextris">
-<h2>Speeed Pool King</h2>
-</div>
-
-<div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g74/class-265/')" data-title="Darts Pro">
-<img src="Images/Darts Pro.png" alt="Hextris">
-<h2>Darts Pro</h2>
-</div>
-
-<div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g6/class-144/')" data-title="Farm Battles">
-<img src="Images/Farm Battles.jpeg" alt="Hextris">
-<h2>Farm Battles</h2>
-</div>
-
-
-            <div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g/class-505/')" data-title="Block Blast">
-                <img src="Images/PaperIo2.jpg" alt="Block Blast">
-                <h2>Paper Io 2</h2>
-            </div>
-        
-            <!-- Game Card 2 -->
-            <div class="game-card" onclick="openGame('https://plainchess.timwoelfle.de/')" data-title="Hextris">
-                <img src="Images/chess.png" alt="Hextris">
-                <h2>Chess</h2>
-            </div>
-        
-        
-
-
-
-<!-- Game Card 6 -->
-            <div class="game-card" onclick="openGame('https://www.lasvegasdirect.com/blackjack/')" data-title="Blackjack">
-                <img src="Images/blackJackIcon.png" alt="Blackjack">
-                <h2>Blackjack</h2>
+            <!-- Game Cards -->
+            <div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g6/class-146/')" data-title="Speeed Pool King">
+                <img src="Images/speed-pool-king.png" alt="Hextris">
+                <h2>Speeed Pool King</h2>
             </div>
 
-</div>
+            <div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g74/class-265/')" data-title="Darts Pro">
+                <img src="Images/Darts Pro.png" alt="Hextris">
+                <h2>Darts Pro</h2>
+            </div>
+
+            <div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g6/class-144/')" data-title="Farm Battles">
+                <img src="Images/Farm Battles.jpeg" alt="Hextris">
+                <h2>Farm Battles</h2>
+            </div>
+
+            <div class="game-card" onclick="openGame('games/mainMenu.html')" data-title="MoneyFactory">
+                <img src="Images/CoinIcon.png" alt="Hextris">
+                <h2>Money Factory</h2>
+            </div>
+
+            <div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g77/class-47/')" data-title="Grow Up the Cats">
+                <img src="Images/poki-grow-up-the-cats-icon-filled.png" alt="Grow Up the Cats">
+                <h2>Grow Up the Cats</h2>
+            </div>
+
+            <div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g6/class-145/')" data-title="Mowing Mazes">
+                <img src="Images/mowingMazes.png" alt="Mowing Mazes">
+                <h2>Mowing Mazes</h2>
+            </div>
+
+            <div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g4/class-185/')" data-title="Cosmos Lines">
+                <img src="Images/poki-cosmos-lines-icon-filled-256.png" alt="Mowing Mazes">
+                <h2>Cosmos Lines</h2>
+            </div>
+
+            <div class="game-card" onclick="openGame('https://mathsedu1510.github.io/g22/class-358/')" data-title="Flip Bros">
+                <img src="Images/unnamed.png" alt="Flip Bros">
+                <h2>Flip Bros</h2>
+            </div>
+        </div>
     </section>
     
-<!-- Categories Section -->
-<section class="categories-section">
-    <h2 class="section-title">Game Categories</h2>
-    <p class="section-subtitle">Find games that match your interests and playing style.</p>
-    
-    <div class="categories-container">
-        <!-- Arcade Category -->
-        <a href="comingSoon.html" class="category-card">
-            <div class="category-icon">🎮</div>
-            <h3 class="category-title">Arcade</h3>
-            <p class="category-desc">Classic gameplay with simple controls and increasing difficulty levels.</p>
-        </a>
+    <!-- Categories Section -->
+    <section class="categories-section">
+        <h2 class="section-title">Game Categories</h2>
+        <p class="section-subtitle">Find games that match your interests and playing style.</p>
         
-        <!-- Puzzle Category -->
-        <a href="comingSoon.html" class="category-card">
-            <div class="category-icon">🧩</div>
-            <h3 class="category-title">Puzzle</h3>
-            <p class="category-desc">Challenge your mind with brain teasers and logic puzzles.</p>
-        </a>
-        
-        <!-- Sports Category -->
-        <a href="comingSoon.html" class="category-card">
-            <div class="category-icon">⚽</div>
-            <h3 class="category-title">Sports</h3>
-            <p class="category-desc">Competitive games based on real-world sports and activities.</p>
-        </a>
-        
-        <!-- Racing Category -->
-        <a href="comingSoon.html" class="category-card">
-            <div class="category-icon">🏎️</div>
-            <h3 class="category-title">Racing</h3>
-            <p class="category-desc">Test your reflexes with fast-paced racing games.</p>
-        </a>
-    </div>
-</section>
+        <div class="categories-container">
+            <a href="comingSoon.html" class="category-card">
+                <div class="category-icon">🎮</div>
+                <h3 class="category-title">Arcade</h3>
+                <p class="category-desc">Classic gameplay with simple controls and increasing difficulty levels.</p>
+            </a>
+            
+            <a href="comingSoon.html" class="category-card">
+                <div class="category-icon">🧩</div>
+                <h3 class="category-title">Puzzle</h3>
+                <p class="category-desc">Challenge your mind with brain teasers and logic puzzles.</p>
+            </a>
+            
+            <a href="comingSoon.html" class="category-card">
+                <div class="category-icon">⚽</div>
+                <h3 class="category-title">Sports</h3>
+                <p class="category-desc">Competitive games based on real-world sports and activities.</p>
+            </a>
+            
+            <a href="comingSoon.html" class="category-card">
+                <div class="category-icon">🏎️</div>
+                <h3 class="category-title">Racing</h3>
+                <p class="category-desc">Test your reflexes with fast-paced racing games.</p>
+            </a>
+        </div>
+    </section>
 
-    
     <!-- Featured Game Section -->
     <section class="featured-section">
         <div class="featured-container">
@@ -760,36 +847,52 @@
     </footer>
 
     <script>
+        // Show welcome popup on page load
+        window.addEventListener('load', function() {
+            const popup = document.getElementById('welcome-popup');
+            popup.style.display = 'flex';
+            setTimeout(() => {
+                popup.classList.add('active');
+            }, 100);
+        });
 
- document.addEventListener('DOMContentLoaded', () => {
-    if (!window.netlifyIdentity) {
-      console.error('Netlify Identity widget not loaded');
-      return;
-    }
+        // Close welcome popup
+        function closeWelcomePopup() {
+            const popup = document.getElementById('welcome-popup');
+            popup.classList.remove('active');
+            setTimeout(() => {
+                popup.style.display = 'none';
+            }, 300);
+        }
 
-    window.netlifyIdentity.init();
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!window.netlifyIdentity) {
+                console.error('Netlify Identity widget not loaded');
+                return;
+            }
 
-    // Wait a bit to ensure user status is checked
-    setTimeout(() => {
-      const user = window.netlifyIdentity.currentUser();
-      console.log('Current user after init:', user);
+            window.netlifyIdentity.init();
 
-      if (!user) {
-        console.log('No user logged in, opening login widget...');
-        window.netlifyIdentity.open('login');
-      } else {
-        console.log('User is already logged in, not opening login widget.');
-      }
-    }, 100); // small delay to let Netlify Identity finish init
+            setTimeout(() => {
+                const user = window.netlifyIdentity.currentUser();
+                console.log('Current user after init:', user);
 
-    const loginBtn = document.getElementById('login-btn');
-    if (loginBtn) {
-      loginBtn.addEventListener('click', e => {
-        e.preventDefault();
-        window.netlifyIdentity.open('login');
-      });
-    }
-  });
+                if (!user) {
+                    console.log('No user logged in, opening login widget...');
+                    window.netlifyIdentity.open('login');
+                } else {
+                    console.log('User is already logged in, not opening login widget.');
+                }
+            }, 100);
+
+            const loginBtn = document.getElementById('login-btn');
+            if (loginBtn) {
+                loginBtn.addEventListener('click', e => {
+                    e.preventDefault();
+                    window.netlifyIdentity.open('login');
+                });
+            }
+        });
 
         function openGame(url) {
             document.getElementById("game-frame").src = url;
@@ -800,11 +903,10 @@
             }, 10);
             
             const gameTitle = document.querySelector(`[onclick="openGame('${url}')"]`).getAttribute('data-title');
-            const score = 1000; // Replace with actual score logic
+            const score = 1000;
             setGameScore(gameTitle, score);
         }
 
-        // Function to close game modal
         function closeGame() {
             const modal = document.getElementById("game-modal");
             modal.classList.remove('active');
@@ -815,7 +917,6 @@
             }, 300);
         }
 
-        // Function to toggle search bar
         function toggleSearch() {
             const searchContainer = document.getElementById('search-container');
             const searchInput = document.getElementById('search-input');
@@ -830,7 +931,6 @@
             }
         }
 
-        // Function to search games
         function searchGames() {
             const searchInput = document.getElementById('search-input').value.toLowerCase();
             const gameContainer = document.getElementById('game-container');
@@ -850,7 +950,6 @@
             gameContainer.style.display = hasMatches ? 'grid' : 'none';
         }
 
-        // Function to toggle fullscreen mode
         function toggleSimulatedFullscreen() {
             const body = document.body;
             const fullscreenButtonImage = document.querySelector('.fullscreen-button img');
@@ -864,14 +963,12 @@
             }
         }
 
-        // Function to scroll to games section
         function scrollToGames() {
             document.getElementById('games-section').scrollIntoView({ 
                 behavior: 'smooth' 
             });
         }
 
-        // Hide the search bar when clicking outside
         document.addEventListener('click', function(event) {
             const searchContainer = document.getElementById('search-container');
             const searchInput = document.getElementById('search-input');
@@ -885,7 +982,6 @@
             }
         });
 
-        // IndexedDB setup and functions
         let db;
         const request = indexedDB.open('GameScoresDB', 1);
         
@@ -962,64 +1058,48 @@
         }
         
         function openLogin() {
-            // Placeholder for login functionality
             alert('Login feature coming soon!');
         }
 
         function getRandomGame() {
-    // Get all game cards
-    const gameCards = document.querySelectorAll('.game-card');
-    
-    // Select a random game card
-    const randomIndex = Math.floor(Math.random() * gameCards.length);
-    const randomGame = gameCards[randomIndex];
-    
-    // Extract game information
-    const gameTitle = randomGame.querySelector('h2').textContent.trim();
-    const gameImage = randomGame.querySelector('img').src;
-    const gameUrl = randomGame.getAttribute('onclick').match(/'([^']+)'/)[1];
-    
-    return {
-        title: gameTitle,
-        image: gameImage,
-        url: gameUrl
-    };
-}
+            const gameCards = document.querySelectorAll('.game-card');
+            const randomIndex = Math.floor(Math.random() * gameCards.length);
+            const randomGame = gameCards[randomIndex];
+            
+            const gameTitle = randomGame.querySelector('h2').textContent.trim();
+            const gameImage = randomGame.querySelector('img').src;
+            const gameUrl = randomGame.getAttribute('onclick').match(/'([^']+)'/)[1];
+            
+            return {
+                title: gameTitle,
+                image: gameImage,
+                url: gameUrl
+            };
+        }
 
-// Function to update the featured game section
-function updateFeaturedGame() {
-    const game = getRandomGame();
-    
-    // Update featured game content
-    document.querySelector('.featured-image img').src = game.image;
-    document.querySelector('.featured-title').textContent = `Featured: ${game.title}`;
-    
-    // Create descriptions based on game title or use default
-    const descriptions = {
-        "Block Blast": "Block Blast combines strategy and quick thinking in an addictive puzzle experience. Clear blocks, create powerful combos, and challenge yourself with increasingly difficult levels.",
-        "Hextris": "Hextris is a fast-paced puzzle game where you rotate a hexagon to prevent blocks from stacking up to the top. Test your reflexes and strategic thinking!",
-        "Google Maps Snake": "Navigate your snake around a map to collect passengers and items in this Google Maps version of the classic Snake game.",
-        "2048": "Join the numbers and get to the 2048 tile! This addictive puzzle game challenges you to combine matching numbers.",
-        "Subway Surfers": "Dash through the subway tracks, avoid obstacles, and escape the inspector in this thrilling endless runner.",
-        "Basketball": "Test your shooting skills in this basketball game where precision and timing are key to scoring points.",
-        "Drift Boss": "Drive your car along winding roads, maintaining control as you drift around sharp corners to achieve high scores."
-    };
-    
-    // Set description (use custom if available, otherwise use a generic one)
-    const description = descriptions[game.title] || `${game.title} offers exciting gameplay that will keep you entertained for hours. Test your skills and see why it's one of our featured games!`;
-    document.querySelector('.featured-desc').textContent = description;
-    
-    // Update play button
-    document.querySelector('.featured-button').setAttribute('onclick', `openGame('${game.url}')`);
-}
+        function updateFeaturedGame() {
+            const game = getRandomGame();
+            
+            document.querySelector('.featured-image img').src = game.image;
+            document.querySelector('.featured-title').textContent = `Featured: ${game.title}`;
+            
+            const descriptions = {
+                "Block Blast": "Block Blast combines strategy and quick thinking in an addictive puzzle experience. Clear blocks, create powerful combos, and challenge yourself with increasingly difficult levels.",
+                "Hextris": "Hextris is a fast-paced puzzle game where you rotate a hexagon to prevent blocks from stacking up to the top. Test your reflexes and strategic thinking!",
+                "Google Maps Snake": "Navigate your snake around a map to collect passengers and items in this Google Maps version of the classic Snake game.",
+                "2048": "Join the numbers and get to the 2048 tile! This addictive puzzle game challenges you to combine matching numbers.",
+                "Subway Surfers": "Dash through the subway tracks, avoid obstacles, and escape the inspector in this thrilling endless runner.",
+                "Basketball": "Test your shooting skills in this basketball game where precision and timing are key to scoring points.",
+                "Drift Boss": "Drive your car along winding roads, maintaining control as you drift around sharp corners to achieve high scores."
+            };
+            
+            const description = descriptions[game.title] || `${game.title} offers exciting gameplay that will keep you entertained for hours. Test your skills and see why it's one of our featured games!`;
+            document.querySelector('.featured-desc').textContent = description;
+            
+            document.querySelector('.featured-button').setAttribute('onclick', `openGame('${game.url}')`);
+        }
 
-// Run the update function when the page loads
-document.addEventListener('DOMContentLoaded', updateFeaturedGame);
-
-
-
-
-
+        document.addEventListener('DOMContentLoaded', updateFeaturedGame);
     </script>
 </body>
 </html>
