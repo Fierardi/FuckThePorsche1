@@ -1,10 +1,6 @@
-// chat.js - Chat functionality for NapoliGames
-
-console.log('Chat.js loaded');
+// chat.js - Polished Chat functionality for NapoliGames
 
 const ably = new Ably.Realtime('pAtgVw.EXDaZQ:wd-xVxcDaSS_l_u-Y8fRZsPsxcpWzH8PvsZPKzRkbDY');
-
-console.log('Ably initialized');
 
 // Global variables
 let currentChat = 'public';
@@ -20,7 +16,7 @@ let userRegistrationChannel = null;
 let unreadMessages = new Map();
 let notificationPermission = 'default';
 
-// DOM elements - will be initialized when DOM is ready
+// DOM elements - initialized when DOM is ready
 let userDisplay, loginPrompt, chatDiv, input, sendBtn, fileBtn;
 let imageInput, chatList, userSearch, chatTitle, typingIndicator;
 let userInfoSection, usernameDisplay, imagePreview, privateNotificationBadge;
@@ -42,8 +38,6 @@ function initDOMElements() {
   usernameDisplay = document.getElementById('usernameDisplay');
   imagePreview = document.getElementById('imagePreview');
   privateNotificationBadge = document.getElementById('privateNotificationBadge');
-  
-  console.log('DOM elements initialized');
 }
 
 // Update private tab notification badge
@@ -66,6 +60,15 @@ function setupImagePreview() {
   if (imageInput) {
     imageInput.addEventListener('change', function() {
       if (imageInput.files && imageInput.files[0]) {
+        const file = imageInput.files[0];
+        
+        // Check file size (max 5MB)
+        if (file.size > 5 * 1024 * 1024) {
+          alert('Image too large. Maximum size is 5MB.');
+          imageInput.value = '';
+          return;
+        }
+        
         const reader = new FileReader();
         reader.onload = function(e) {
           if (imagePreview) {
@@ -73,7 +76,7 @@ function setupImagePreview() {
             imagePreview.style.display = 'block';
           }
         };
-        reader.readAsDataURL(imageInput.files[0]);
+        reader.readAsDataURL(file);
       } else if (imagePreview) {
         imagePreview.src = '';
         imagePreview.style.display = 'none';
@@ -84,7 +87,6 @@ function setupImagePreview() {
 
 // Initialize channels
 function initializeChannels() {
-  console.log('Initializing channels...');
   publicChannel = ably.channels.get('napoligames-public-chat');
   userRegistrationChannel = ably.channels.get('napoligames-user-directory');
   
@@ -93,12 +95,14 @@ function initializeChannels() {
   
   loadChatHistory('public');
   
-  publicChannel.presence.enter(getUserName());
+  const username = getUserName();
+  if (username) {
+    publicChannel.presence.enter(username);
+  }
   publicChannel.presence.subscribe(handlePresenceUpdate);
   
   registerUser();
   loadUserDirectory();
-  console.log('Channels initialized');
 }
 
 function getUserName() {
@@ -122,24 +126,20 @@ function getUserId() {
 }
 
 function requestNotificationPermission() {
-  if ('Notification' in window) {
+  if ('Notification' in window && notificationPermission === 'default') {
     Notification.requestPermission().then(permission => {
       notificationPermission = permission;
-      console.log('Notification permission:', permission);
     });
   }
 }
 
 function updateChatUserDisplay() {
-  console.log('updateChatUserDisplay called');
   const username = getUserName();
-  console.log('Username:', username);
   
   if (username && userDisplay) {
-    console.log('User is logged in, initializing chat');
     userDisplay.innerHTML = `
       <div class="logged-in-name">
-        Welcome, ${username}
+        Welcome, ${escapeHtml(username)}
         <button class="logout-button" onclick="logoutChat()">Logout</button>
       </div>
     `;
@@ -153,13 +153,10 @@ function updateChatUserDisplay() {
     if (sendBtn) sendBtn.disabled = false;
     if (fileBtn) fileBtn.disabled = false;
     
-    console.log('Chat inputs enabled');
-    
     requestNotificationPermission();
     initializeChannels();
     updateChatList();
   } else {
-    console.log('User not logged in');
     if (userDisplay) userDisplay.innerHTML = '';
     if (loginPrompt) loginPrompt.style.display = 'block';
     if (usernameDisplay) usernameDisplay.textContent = '';
@@ -176,9 +173,16 @@ function updateChatUserDisplay() {
   }
 }
 
+// Escape HTML to prevent XSS
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
 function handlePresenceUpdate(presenceMsg) {
   const username = presenceMsg.data || presenceMsg.clientId;
-  if (presenceMsg.action === 'enter') {
+  if (presenceMsg.action === 'enter' || presenceMsg.action === 'present') {
     onlineUsers.add(username);
   } else if (presenceMsg.action === 'leave') {
     onlineUsers.delete(username);
@@ -201,7 +205,9 @@ function registerUser() {
   userDirectory.set(currentUser, userInfo);
   allRegisteredUsers.add(currentUser);
   
-  userRegistrationChannel.publish('user-register', userInfo);
+  if (userRegistrationChannel) {
+    userRegistrationChannel.publish('user-register', userInfo);
+  }
 }
 
 function handleUserRegistration(msg) {
@@ -216,11 +222,10 @@ function handleUserRegistration(msg) {
 }
 
 function loadUserDirectory() {
+  if (!userRegistrationChannel) return;
+  
   userRegistrationChannel.history({ limit: 100 }, (err, resultPage) => {
-    if (err) {
-      console.error('Error loading user directory:', err);
-      return;
-    }
+    if (err) return;
     
     resultPage.items.forEach(msg => {
       if (msg.name === 'user-register') {
@@ -239,6 +244,7 @@ function loadUserDirectory() {
 function subscribeToAllPrivateChannels() {
   const currentUser = getUserName();
   if (!currentUser) return;
+  
   allRegisteredUsers.forEach(otherUser => {
     if (otherUser !== currentUser) {
       const chatId = getPrivateChatId(currentUser, otherUser);
@@ -272,11 +278,11 @@ function updateChatList() {
     );
 
     if (filteredUsers.length === 0 && searchTerm) {
-      html = `<div style="padding: 1rem; text-align: center; color: #999;">No users found matching "${searchTerm}"</div>`;
+      html = `<div style="padding: 1rem; text-align: center; color: #999;">No users found matching "${escapeHtml(searchTerm)}"</div>`;
     } else if (filteredUsers.length === 0) {
       html = `<div style="padding: 1rem; text-align: center; color: #999;">
         <p>No other users have joined yet.</p>
-        <p><strong>Share your username:</strong> ${currentUser}</p>
+        <p><strong>Share your username:</strong> ${escapeHtml(currentUser)}</p>
       </div>`;
     } else {
       filteredUsers.forEach(user => {
@@ -287,13 +293,13 @@ function updateChatList() {
         const unreadCount = unreadMessages.get(chatId) || 0;
         
         html += `
-          <div class="chat-item ${isActive ? 'active' : ''}" data-chat="${chatId}" data-user="${user}">
+          <div class="chat-item ${isActive ? 'active' : ''}" data-chat="${chatId}" data-user="${escapeHtml(user)}">
             <div class="avatar" style="position: relative;">
-              ${user.charAt(0).toUpperCase()}
+              ${escapeHtml(user.charAt(0).toUpperCase())}
               ${unreadCount > 0 ? `<div class="unread-badge">${unreadCount}</div>` : ''}
             </div>
             <div class="info">
-              <div class="name">${user} ${isOnline ? '🟢' : '⚫'} ${unreadCount > 0 ? `<span class="unread-indicator">●</span>` : ''}</div>
+              <div class="name">${escapeHtml(user)} ${isOnline ? '🟢' : '⚫'} ${unreadCount > 0 ? `<span class="unread-indicator">●</span>` : ''}</div>
               <div class="preview">${unreadCount > 0 ? `${unreadCount} unread` : (isOnline ? 'Online' : userInfo ? formatLastSeen(userInfo.lastSeen) : 'Click to chat')}</div>
             </div>
           </div>
@@ -325,7 +331,7 @@ function getPrivateChatId(user1, user2) {
 }
 
 function handlePublicMessage(msg) {
-  if (currentChatType === 'public' && msg.name !== getUserName()) {
+  if (currentChatType === 'public' && currentChat === 'public' && msg.name !== getUserName()) {
     displayMessage(msg.name, msg.data, msg.timestamp);
   }
 }
@@ -353,22 +359,30 @@ function displayMessage(username, messageData, timestamp) {
   const messageDiv = document.createElement('div');
   messageDiv.className = `message ${username === currentUserName ? 'self' : ''}`;
   
-  let content = '';
+  const contentDiv = document.createElement('div');
+  contentDiv.className = 'message-content';
   
   if (typeof messageData === 'string') {
-    content = `
-      <div class="message-content">${username}: ${messageData}</div>
-      <div class="message-timestamp">${new Date(timestamp).toLocaleTimeString()}</div>
-    `;
-  } else if (messageData.type === 'image') {
-    content = `
-      <div class="message-content">${username}:</div>
-      <img src="${messageData.url}" alt="Shared image" class="message-image" onclick="showImageModal('${messageData.url}')">
-      <div class="message-timestamp">${new Date(timestamp).toLocaleTimeString()}</div>
-    `;
+    // Safely display username and message
+    contentDiv.textContent = `${username}: ${messageData}`;
+    messageDiv.appendChild(contentDiv);
+  } else if (messageData && messageData.type === 'image') {
+    contentDiv.textContent = `${username}:`;
+    messageDiv.appendChild(contentDiv);
+    
+    const img = document.createElement('img');
+    img.src = messageData.url;
+    img.alt = 'Shared image';
+    img.className = 'message-image';
+    img.onclick = () => showImageModal(messageData.url);
+    messageDiv.appendChild(img);
   }
   
-  messageDiv.innerHTML = content;
+  const timestampDiv = document.createElement('div');
+  timestampDiv.className = 'message-timestamp';
+  timestampDiv.textContent = new Date(timestamp).toLocaleTimeString();
+  messageDiv.appendChild(timestampDiv);
+  
   chatDiv.appendChild(messageDiv);
   chatDiv.scrollTop = chatDiv.scrollHeight;
 }
@@ -390,22 +404,28 @@ function showChatNotification(title, content) {
     displayContent = content.substring(0, 50) + '...';
   }
   
+  // System notification
   if ('Notification' in window && notificationPermission === 'granted') {
-    const systemNotification = new Notification(title, {
-      body: displayContent,
-      icon: 'Images/Icon.png',
-      tag: 'napoligames-chat',
-    });
-    
-    setTimeout(() => systemNotification.close(), 5000);
-    systemNotification.onclick = () => { window.focus(); systemNotification.close(); };
+    try {
+      const systemNotification = new Notification(title, {
+        body: displayContent,
+        icon: 'Images/Icon.png',
+        tag: 'napoligames-chat',
+      });
+      
+      setTimeout(() => systemNotification.close(), 5000);
+      systemNotification.onclick = () => { window.focus(); systemNotification.close(); };
+    } catch (e) {
+      // Fail silently if notification fails
+    }
   }
   
+  // In-app notification
   const notification = document.createElement('div');
   notification.className = 'notification';
   notification.innerHTML = `
-    <div class="notification-title">${title}</div>
-    <div class="notification-content">${displayContent}</div>
+    <div class="notification-title">${escapeHtml(title)}</div>
+    <div class="notification-content">${escapeHtml(displayContent)}</div>
   `;
   
   document.body.appendChild(notification);
@@ -422,16 +442,14 @@ function loadChatHistory(chatType, chatId = null) {
   if (!chatDiv) return;
   chatDiv.innerHTML = '';
   
-  if (chatType === 'public') {
-    publicChannel.history((err, resultPage) => {
-      if (err) {
-        console.error('Error loading public history:', err);
-        return;
-      }
+  if (chatType === 'public' && publicChannel) {
+    publicChannel.history({ limit: 50 }, (err, resultPage) => {
+      if (err) return;
+      
       resultPage.items.reverse().forEach(msg => {
         if (msg.data && msg.data.isPrivate && msg.data.content !== undefined) {
           displayMessage(msg.name, msg.data.content, msg.timestamp);
-        } else {
+        } else if (!msg.data || !msg.data.isPrivate) {
           displayMessage(msg.name, msg.data, msg.timestamp);
         }
       });
@@ -439,11 +457,9 @@ function loadChatHistory(chatType, chatId = null) {
   } else if (chatType === 'private' && chatId) {
     const channel = privateChannels[chatId];
     if (channel) {
-      channel.history((err, resultPage) => {
-        if (err) {
-          console.error('Error loading private history:', err);
-          return;
-        }
+      channel.history({ limit: 50 }, (err, resultPage) => {
+        if (err) return;
+        
         resultPage.items.reverse().forEach(msg => {
           if (msg.data && msg.data.isPrivate && msg.data.content !== undefined) {
             displayMessage(msg.name, msg.data.content, msg.timestamp);
@@ -477,6 +493,11 @@ function switchChat(chatType, chatId = 'public', otherUser = null) {
   
   updateChatList();
   updatePrivateTabBadge();
+  
+  // Focus input
+  if (input && !input.disabled) {
+    setTimeout(() => input.focus(), 100);
+  }
 }
 
 function convertImageToBase64(file) {
@@ -500,9 +521,26 @@ async function sendChatMessage() {
     return;
   }
 
+  // Disable send button while sending
+  const originalSendText = sendBtn ? sendBtn.textContent : 'Send';
+  if (sendBtn) {
+    sendBtn.disabled = true;
+    sendBtn.textContent = 'Sending...';
+  }
+
   let messageData;
   
   if (imageFile) {
+    // Check file size (max 5MB)
+    if (imageFile.size > 5 * 1024 * 1024) {
+      alert('Image too large. Maximum size is 5MB.');
+      if (sendBtn) {
+        sendBtn.disabled = false;
+        sendBtn.textContent = originalSendText;
+      }
+      return;
+    }
+    
     try {
       const base64Image = await convertImageToBase64(imageFile);
       messageData = {
@@ -511,38 +549,53 @@ async function sendChatMessage() {
         filename: imageFile.name
       };
     } catch (error) {
-      alert('Error uploading image');
+      alert('Error uploading image. Please try again.');
+      if (sendBtn) {
+        sendBtn.disabled = false;
+        sendBtn.textContent = originalSendText;
+      }
       return;
     }
   } else {
     messageData = text;
   }
 
-  if (currentChatType === 'public') {
-    publicChannel.publish(name, messageData);
-    displayMessage(name, messageData, new Date());
-  } else {
-    const channel = privateChannels[currentChat];
-    if (channel) {
-      const privateMessageData = {
-        content: messageData,
-        chatId: currentChat,
-        isPrivate: true
-      };
-      channel.publish(name, privateMessageData);
+  try {
+    if (currentChatType === 'public') {
+      await publicChannel.publish(name, messageData);
       displayMessage(name, messageData, new Date());
+    } else {
+      const channel = privateChannels[currentChat];
+      if (channel) {
+        const privateMessageData = {
+          content: messageData,
+          chatId: currentChat,
+          isPrivate: true
+        };
+        await channel.publish(name, privateMessageData);
+        displayMessage(name, messageData, new Date());
+      }
+    }
+
+    // Clear inputs on success
+    if (input) input.value = '';
+    if (imageInput) imageInput.value = '';
+    if (imagePreview) {
+      imagePreview.src = '';
+      imagePreview.style.display = 'none';
+    }
+    
+    clearTimeout(typingTimeout);
+    if (isTyping) sendTypingIndicator(false);
+  } catch (error) {
+    alert('Failed to send message. Please try again.');
+  } finally {
+    // Re-enable send button
+    if (sendBtn) {
+      sendBtn.disabled = false;
+      sendBtn.textContent = originalSendText;
     }
   }
-
-  if (input) input.value = '';
-  if (imageInput) imageInput.value = '';
-  if (imagePreview) {
-    imagePreview.src = '';
-    imagePreview.style.display = 'none';
-  }
-  
-  clearTimeout(typingTimeout);
-  if (isTyping) sendTypingIndicator(false);
 }
 
 function sendTypingIndicator(typing) {
@@ -564,23 +617,15 @@ function showWelcomeNotification() {
 }
 
 function logoutChat() {
-  window.netlifyIdentity.logout();
+  if (window.netlifyIdentity) {
+    window.netlifyIdentity.logout();
+  }
 }
 
 // Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
-  console.log('DOMContentLoaded fired');
-  
   // Initialize all DOM elements
   initDOMElements();
-  
-  console.log('Elements found:', {
-    sendBtn: !!sendBtn,
-    input: !!input,
-    chatList: !!chatList,
-    userSearch: !!userSearch,
-    netlifyIdentity: !!window.netlifyIdentity
-  });
   
   // Setup image preview
   setupImagePreview();
@@ -589,31 +634,31 @@ document.addEventListener('DOMContentLoaded', () => {
   if (fileBtn) {
     fileBtn.addEventListener('click', (e) => {
       e.preventDefault();
-      if (imageInput) {
-        imageInput.click();
-      }
+      if (imageInput) imageInput.click();
     });
     
-    // Also handle touch events for better mobile support
     fileBtn.addEventListener('touchend', (e) => {
       e.preventDefault();
-      if (imageInput) {
-        imageInput.click();
-      }
-    });
+      e.stopPropagation();
+      if (imageInput) imageInput.click();
+    }, { passive: false });
   }
   
-  // Event listeners
+  // Send button
   if (sendBtn) {
-    console.log('Adding click listener to send button');
     sendBtn.addEventListener('click', sendChatMessage);
   }
 
+  // Enter key to send (Shift+Enter for new line in future)
   if (input) {
     input.addEventListener('keydown', e => {
-      if (e.key === 'Enter') sendChatMessage();
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendChatMessage();
+      }
     });
 
+    // Typing indicator
     input.addEventListener('input', () => {
       if (!isTyping) sendTypingIndicator(true);
       clearTimeout(typingTimeout);
@@ -644,10 +689,12 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  // User search
   if (userSearch) {
     userSearch.addEventListener('input', updateChatList);
   }
 
+  // Chat item clicks
   if (chatList) {
     chatList.addEventListener('click', (e) => {
       const chatItem = e.target.closest('.chat-item');
@@ -667,7 +714,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Close image modal handlers
+  // Image modal handlers
   const modalClose = document.querySelector('.image-modal-close');
   const imageModal = document.getElementById('imageModal');
   
@@ -685,24 +732,19 @@ document.addEventListener('DOMContentLoaded', () => {
     };
   }
 
-  // Netlify Identity initialization
+  // Netlify Identity
   if (window.netlifyIdentity) {
-    console.log('Netlify Identity found, setting up listeners');
-    
     window.netlifyIdentity.on('init', user => {
-      console.log('Netlify Identity init event, user:', user);
       updateChatUserDisplay();
       if (user) showWelcomeNotification();
     });
     
-    window.netlifyIdentity.on('login', user => {
-      console.log('Netlify Identity login event');
+    window.netlifyIdentity.on('login', () => {
       updateChatUserDisplay();
       window.netlifyIdentity.close();
     });
 
     window.netlifyIdentity.on('logout', () => {
-      console.log('Netlify Identity logout event');
       updateChatUserDisplay();
       onlineUsers.clear();
       allRegisteredUsers.clear();
@@ -712,20 +754,15 @@ document.addEventListener('DOMContentLoaded', () => {
       currentChatType = 'public';
     });
     
-    console.log('Calling netlifyIdentity.init()');
     window.netlifyIdentity.init();
     
-    // Check if user is already logged in after a short delay
+    // Check if user is already logged in
     setTimeout(() => {
       const currentUser = window.netlifyIdentity.currentUser();
-      console.log('Checking for existing user after init:', currentUser);
       if (currentUser) {
-        console.log('User already logged in, initializing chat');
         updateChatUserDisplay();
       }
     }, 500);
-  } else {
-    console.error('Netlify Identity not found!');
   }
 
   // Header login button
@@ -733,11 +770,13 @@ document.addEventListener('DOMContentLoaded', () => {
   if (loginBtn) {
     loginBtn.addEventListener('click', (e) => {
       e.preventDefault();
-      const user = window.netlifyIdentity.currentUser();
-      if (user) {
-        logoutChat();
-      } else {
-        window.netlifyIdentity.open();
+      if (window.netlifyIdentity) {
+        const user = window.netlifyIdentity.currentUser();
+        if (user) {
+          logoutChat();
+        } else {
+          window.netlifyIdentity.open();
+        }
       }
     });
   }
