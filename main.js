@@ -12,6 +12,12 @@ function openGame(url) {
         modal.classList.add('active');
     }, 10);
     
+    // Hide floating menu when game opens
+    const floatingMenu = document.querySelector('.menu');
+    if (floatingMenu) {
+        floatingMenu.style.display = 'none';
+    }
+    
     const gameCard = document.querySelector(`[onclick*="${url}"]`);
     if (gameCard) {
         const gameTitle = gameCard.getAttribute('data-title');
@@ -24,6 +30,12 @@ function closeGame() {
     const modal = document.getElementById("game-modal");
     modal.classList.remove('active');
     
+    // Show floating menu when game closes
+    const floatingMenu = document.querySelector('.menu');
+    if (floatingMenu) {
+        floatingMenu.style.display = 'flex';
+    }
+    
     setTimeout(() => {
         document.getElementById("game-frame").src = "";
         modal.style.display = "none";
@@ -34,12 +46,24 @@ function openGameCard(url) {
     document.getElementById('gameIframe').src = url;
     document.getElementById('gameOverlay').style.display = 'block';
     document.body.style.overflow = 'hidden';
+    
+    // Hide floating menu when game opens
+    const floatingMenu = document.querySelector('.menu');
+    if (floatingMenu) {
+        floatingMenu.style.display = 'none';
+    }
 }
 
 function closeGameCard() {
     document.getElementById('gameOverlay').style.display = 'none';
     document.getElementById('gameIframe').src = '';
     document.body.style.overflow = '';
+    
+    // Show floating menu when game closes
+    const floatingMenu = document.querySelector('.menu');
+    if (floatingMenu) {
+        floatingMenu.style.display = 'flex';
+    }
 }
 
 // ============================================

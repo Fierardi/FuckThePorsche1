@@ -362,6 +362,129 @@ h1 {
   transform: scale(0.95);
 }
 
+.audio-button {
+  background: var(--snap-gray);
+  color: var(--snap-text);
+  border: none;
+  padding: 0;
+  border-radius: 50%;
+  cursor: pointer;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  font-size: 1.4rem;
+}
+
+.audio-button:hover {
+  background: #E0E0E0;
+  transform: scale(1.05);
+}
+
+.audio-button:active {
+  transform: scale(0.95);
+}
+
+.audio-button.recording {
+  background: var(--snap-red);
+  color: white;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(255, 92, 92, 0.7);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 10px rgba(255, 92, 92, 0);
+  }
+}
+
+.file-preview {
+  display: none;
+  padding: 0.5rem;
+  background: var(--snap-gray);
+  border-radius: 12px;
+  margin-top: 0.5rem;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.file-preview.active {
+  display: flex;
+}
+
+.file-preview-info {
+  flex: 1;
+  font-size: 0.85rem;
+  color: var(--snap-text);
+}
+
+.file-preview-remove {
+  background: var(--snap-red);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.message-file {
+  background: var(--snap-gray);
+  padding: 0.75rem;
+  border-radius: 12px;
+  margin-top: 0.3rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.message-file:hover {
+  background: #E0E0E0;
+}
+
+.message-file-icon {
+  font-size: 1.5rem;
+}
+
+.message-file-info {
+  flex: 1;
+}
+
+.message-file-name {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.message-file-size {
+  font-size: 0.75rem;
+  opacity: 0.7;
+}
+
+.message audio {
+  width: 100%;
+  max-width: 300px;
+  height: 40px;
+  margin-top: 0.5rem;
+  border-radius: 20px;
+  outline: none;
+}
+
 .input-row button.send-btn {
   background: var(--snap-blue);
   color: white;
@@ -600,6 +723,42 @@ h1 {
   max-width: 320px;
   z-index: 1001;
   animation: slideIn 0.3s ease;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-left: 4px solid var(--snap-blue);
+}
+
+.notification.offline-notification {
+  border-left: 4px solid var(--snap-purple);
+  max-width: 400px;
+}
+
+.notification:hover {
+  transform: translateX(-5px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.18);
+}
+
+.notification-fade-out {
+  animation: fadeOut 0.3s ease forwards;
+}
+
+.notification-details {
+  margin-top: 0.75rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.sender-badge {
+  background: var(--snap-gray);
+  color: var(--snap-text);
+  padding: 0.4rem 0.75rem;
+  border-radius: 100px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
 }
 
 @keyframes slideIn {
@@ -610,6 +769,17 @@ h1 {
   to { 
     transform: translateX(0); 
     opacity: 1; 
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(120%);
+    opacity: 0;
   }
 }
 
